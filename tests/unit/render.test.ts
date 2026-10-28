@@ -80,6 +80,8 @@ describe('página renderizada', () => {
     expect(out).toContain('content="https://menelucas.com/banner.jpg"')
     const versioned = renderPage({ resume, ui, locale, site: { ...site, ogVersion: 'abc12345' }, css: '' })
     expect(versioned).toContain('content="https://menelucas.com/banner-abc12345.jpg"')
+    expect(out).toContain('property="og:image:secure_url" content="https://menelucas.com/banner.jpg"')
+    expect(out).toContain('property="og:image:type" content="image/jpeg"')
     expect(out).toContain('name="twitter:card" content="summary_large_image"')
     expect(out).toContain('name="theme-color" content="#010102" media="(prefers-color-scheme: dark)"')
     expect(out).toContain('name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"')

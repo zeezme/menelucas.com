@@ -57,6 +57,8 @@ function Document({ resume, ui, locale, site, css }: RenderInput) {
         <meta property="og:locale" content={ogLocale(locale)} />
         <meta property="og:locale:alternate" content={ogLocale(other)} />
         <meta property="og:image" content={meta.image} />
+        <meta property="og:image:secure_url" content={meta.image} />
+        <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:width" content={String(OG_IMAGE.width)} />
         <meta property="og:image:height" content={String(OG_IMAGE.height)} />
         <meta property="og:image:alt" content={resume.basics.name} />
