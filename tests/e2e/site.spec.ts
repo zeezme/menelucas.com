@@ -34,7 +34,7 @@ for (const p of PAGES) {
       await expect(page.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute('href', 'https://www.linkedin.com/in/meneluca')
       await expect(page.getByRole('link', { name: /e-?mail/i })).toHaveAttribute('href', 'mailto:lukascass@gmail.com')
       await expect(page.locator('a[href^="https://wa.me/5511961750560"]')).toHaveCount(1)
-      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /^https:\/\/menelucas\.com\/banner-[0-9a-f]{8}\.jpg$/)
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', new RegExp(`^https://menelucas[.]com/banner-${p.path === '/' ? 'pt' : 'en'}-[0-9a-f]{8}[.]jpg$`))
       await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
       const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}')
       const person = ld['@graph'].find((n: { '@type': string }) => n['@type'] === 'Person')
@@ -43,6 +43,16 @@ for (const p of PAGES) {
       expect(person.telephone).toBeUndefined()
       expect(ld['@graph'].some((n: { '@type': string }) => n['@type'] === 'ProfilePage')).toBe(true)
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /^index, follow/)
+    })
+
+    test('og:image do idioma existe e é um JPEG 1200×630', async ({ page, request }) => {
+      await page.goto(p.path)
+      const url = new URL((await page.locator('meta[property="og:image"]').getAttribute('content')) ?? '')
+      const res = await request.get(url.pathname)
+      expect(res.status()).toBe(200)
+      expect(res.headers()['content-type']).toBe('image/jpeg')
+      const meta = await (await import('sharp')).default(await res.body()).metadata()
+      expect([meta.width, meta.height]).toEqual([1200, 630])
     })
 
     for (const scheme of ['dark', 'light'] as const) {

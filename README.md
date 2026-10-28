@@ -49,7 +49,8 @@ O schema fica em [`src/schema/resume.ts`](src/schema/resume.ts); campos desconhe
 Extensões ao JSON Resume: `work[].sections[]` (subtítulos de projeto), `skills[].keywords` por idioma e `meta.pdf` (PDF de cada idioma).
 Os PDFs (`public/cv.pdf`, `public/cv-en.pdf`) são mantidos como estão e usados só para download.
 
-Para gerar de novo avatar e favicons: `npm run assets -- caminho/para/foto.png`.
+Para gerar de novo avatar e favicons: `npm run assets -- <foto> --bust=… --face=…` (ver `scripts/assets.ts`).
+Para regerar os banners de compartilhamento (um por idioma, `public/banner-pt.jpg` e `banner-en.jpg`): `npm run banner -- <foto.jpg>`.
 
 ## Deploy
 

@@ -24,7 +24,7 @@ export const skillKeywords = (resume: Resume, locale: Locale): string[] =>
 export function buildHeadMeta(resume: Resume, locale: Locale, site: SiteConfig): HeadMeta {
   const { basics } = resume
   const abs = (path: string) => `${site.origin}${path}`
-  const ogImage = abs(`/${ogImagePath(site)}`)
+  const ogImage = abs(`/${ogImagePath(site, locale)}`)
   const label = pick(basics.label, locale)
   const role = roleOf(label)
   const techs = labelTags(label).split(' | ')[0] ?? ''

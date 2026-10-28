@@ -1,3 +1,5 @@
+import type { Locale } from './schema/resume'
+
 /** Configuração de publicação. `BASE_PATH` permite publicar em um prefixo (ex.: /staging/). */
 const normalizeBase = (value: string): string => {
   const withLeading = value.startsWith('/') ? value : `/${value}`
@@ -10,7 +12,7 @@ export interface SiteConfig {
   /** Prefixo de caminho, sempre com barras nas pontas. */
   base: string
   /** Hash do og:image; entra no nome do arquivo para o WhatsApp/LinkedIn não reaproveitarem um preview antigo. */
-  ogVersion?: string
+  ogVersions?: Partial<Record<Locale, string>>
 }
 
 export const siteConfig = (env: Record<string, string | undefined> = process.env): SiteConfig => ({
@@ -21,8 +23,13 @@ export const siteConfig = (env: Record<string, string | undefined> = process.env
 /** Só a publicação na raiz é indexável; prefixos (staging) recebem noindex. */
 export const isIndexable = (site: SiteConfig): boolean => site.base === '/'
 
-export const OG_IMAGE = { path: 'banner.jpg', width: 1200, height: 630 } as const
+export const OG_IMAGE = { width: 1200, height: 630 } as const
 
-/** `banner-<hash>.jpg` quando há versão: um nome novo a cada troca, sem depender de query string. */
-export const ogImagePath = (site: SiteConfig): string =>
-  site.ogVersion ? OG_IMAGE.path.replace('.jpg', `-${site.ogVersion}.jpg`) : OG_IMAGE.path
+/** Banner de cada idioma, como está em public/ (gerado por `npm run banner`). */
+export const ogImageSource = (locale: Locale): string => `banner-${locale}.jpg`
+
+/** `banner-<idioma>-<hash>.jpg` quando há versão: um nome novo a cada troca, sem depender de query string. */
+export const ogImagePath = (site: SiteConfig, locale: Locale): string => {
+  const version = site.ogVersions?.[locale]
+  return version ? `banner-${locale}-${version}.jpg` : ogImageSource(locale)
+}

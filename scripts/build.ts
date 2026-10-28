@@ -7,7 +7,7 @@ import { resume, ui } from '../src/content'
 import { renderPage } from '../src/render'
 import { buildRobots, buildSitemap } from '../src/seo/head'
 import { LOCALES } from '../src/schema/resume'
-import { isIndexable, OG_IMAGE, ogImagePath, siteConfig } from '../src/site'
+import { isIndexable, ogImagePath, ogImageSource, siteConfig } from '../src/site'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 export const distDir = join(root, 'dist')
@@ -28,15 +28,17 @@ function compileCss(base: string): string {
 /** Gera `dist/`: `/` (PT) e `/en/` (EN) como HTML estático, mais os arquivos de `public/`. */
 export function build(): void {
   const base = siteConfig()
-  const ogVersion = createHash('sha1').update(readFileSync(join(root, 'public', OG_IMAGE.path))).digest('hex').slice(0, 8)
-  const site = { ...base, ogVersion }
+  const hash = (file: string) => createHash('sha1').update(readFileSync(join(root, 'public', file))).digest('hex').slice(0, 8)
+  const site = { ...base, ogVersions: { pt: hash(ogImageSource('pt')), en: hash(ogImageSource('en')) } }
   rmSync(distDir, { recursive: true, force: true })
   mkdirSync(join(distDir, 'assets'), { recursive: true })
   cpSync(join(root, 'public'), distDir, { recursive: true })
   if (!existsSync(FONT_SRC)) throw new Error(`Fonte não encontrada: ${FONT_SRC}`)
   cpSync(FONT_SRC, join(distDir, 'assets/inter-latin.woff2'))
 
-  cpSync(join(root, 'public', OG_IMAGE.path), join(distDir, ogImagePath(site)))
+  for (const locale of LOCALES) {
+    cpSync(join(root, 'public', ogImageSource(locale)), join(distDir, ogImagePath(site, locale)))
+  }
 
   const css = compileCss(site.base)
   for (const locale of LOCALES) {
