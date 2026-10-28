@@ -96,7 +96,14 @@ export function Header({ resume, locale, base, t }: Props) {
         <p>{pick(basics.location.note, locale)}</p>
       </div>
 
-      <nav aria-label={t('contactNav')} className="sm:col-start-2 sm:row-start-1">
+      {/* Mobile: grupo próprio no fim, separado das ações por divisor e rótulo (proximidade = agrupamento). */}
+      <nav
+        aria-label={t('contactNav')}
+        className="order-last mt-1 border-t border-hairline pt-5 sm:order-none sm:col-start-2 sm:row-start-1 sm:mt-0 sm:border-0 sm:pt-0"
+      >
+        <p aria-hidden="true" className="mb-3 text-xs font-medium uppercase tracking-[0.08em] text-ink-subtle sm:hidden">
+          {t('contactNav')}
+        </p>
         <ul className="grid grid-cols-2 gap-2 sm:-mr-2 sm:flex sm:gap-0">
           {linkedin ? (
             <ContactLink href={linkedin.url} label={linkedin.network} rel="me noopener">
