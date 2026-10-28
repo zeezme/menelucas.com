@@ -1,0 +1,70 @@
+import { describe, expect, it } from 'vitest'
+import resumeJson from '../../content/resume.json'
+import uiJson from '../../content/ui.json'
+import { LOCALES, parseResume, parseUi } from '../../src/schema/resume'
+
+const resume = parseResume(resumeJson)
+const everyText = JSON.stringify(resumeJson)
+
+describe('resume.json', () => {
+  it('valida contra o schema', () => {
+    expect(() => parseResume(resumeJson)).not.toThrow()
+    expect(() => parseUi(uiJson)).not.toThrow()
+  })
+
+  it('rejeita idioma faltando', () => {
+    const broken = structuredClone(resumeJson) as { basics: { summary: Record<string, string> } }
+    delete broken.basics.summary['en']
+    expect(() => parseResume(broken)).toThrow(/summary/)
+  })
+
+  it('rejeita campos desconhecidos e datas inválidas', () => {
+    const extra = { ...structuredClone(resumeJson), cpf: '000' }
+    expect(() => parseResume(extra)).toThrow()
+    const badDate = structuredClone(resumeJson) as { work: { startDate: string }[] }
+    badDate.work = badDate.work.map((w) => ({ ...w, startDate: '2026-13' }))
+    expect(() => parseResume(badDate)).toThrow()
+  })
+
+  it('mantém os números dos PDFs exatamente como estão', () => {
+    expect(everyText).toContain('20 mil usuários em cerca de 175 ms')
+    expect(everyText).toContain('flags 20,000 users in about 175 ms')
+    expect(everyText).toContain('26–36% mais rápido')
+    expect(everyText).toContain('26–36% faster')
+    expect(everyText).toContain('até 3 milhões de registros')
+    expect(everyText).toContain('up to 3 million records')
+    expect(everyText).toContain('cerca de 15 s')
+    expect(everyText).toContain('mais de 100 testes')
+    expect(everyText).toContain('5 anos')
+    expect(everyText).toContain('5 years')
+  })
+
+  it('tem a mesma estrutura em PT e EN (mesmas quantidades)', () => {
+    for (const group of resume.skills) {
+      expect(group.keywords.pt.length, group.name.en).toBe(group.keywords.en.length)
+    }
+  })
+
+  it('lista experiências em ordem cronológica decrescente', () => {
+    const starts = resume.work.map((w) => w.startDate)
+    expect(starts).toEqual([...starts].sort().reverse())
+  })
+
+  it('não expõe dados sensíveis (CPF, endereço)', () => {
+    expect(everyText).not.toMatch(/\d{3}\.\d{3}\.\d{3}-\d{2}/)
+    expect(everyText.toLowerCase()).not.toMatch(/\b(cpf|rua|avenida|cep)\b/)
+    expect(resume.basics.location).not.toHaveProperty('address')
+  })
+
+  it('usa apenas os contatos definidos no briefing', () => {
+    expect(resume.basics.email).toBe('lukascass@gmail.com')
+    const urls = resume.basics.profiles.map((p) => p.url)
+    expect(urls).toContain('https://www.linkedin.com/in/meneluca')
+    expect(urls).toContain('https://github.com/Zeezme')
+    expect(urls.some((u) => u.startsWith('https://wa.me/5511961750560?text='))).toBe(true)
+  })
+
+  it('tem PDFs configurados para cada idioma', () => {
+    for (const l of LOCALES) expect(resume.meta.pdf[l]).toMatch(/\.pdf$/)
+  })
+})

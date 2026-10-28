@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListBucket",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket"],
+      "Resource": "arn:aws:s3:::lucas-menezes-cv-861601215563-sa-east-1"
+    },
+    {
+      "Sid": "WriteObjects",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject"],
+      "Resource": "arn:aws:s3:::lucas-menezes-cv-861601215563-sa-east-1/*"
+    },
+    {
+      "Sid": "InvalidateCdn",
+      "Effect": "Allow",
+      "Action": ["cloudfront:CreateInvalidation"],
+      "Resource": "arn:aws:cloudfront::861601215563:distribution/E3C8ULS0AL34JE"
+    }
+  ]
+}

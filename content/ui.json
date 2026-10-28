@@ -1,0 +1,18 @@
+{
+  "skipLink": { "pt": "Pular para o conteúdo", "en": "Skip to content" },
+  "downloadPdf": { "pt": "Baixar PDF", "en": "Download PDF" },
+  "languageNav": { "pt": "Idioma", "en": "Language" },
+  "contactNav": { "pt": "Contato", "en": "Contact" },
+  "summary": { "pt": "Resumo", "en": "Summary" },
+  "skills": { "pt": "Competências", "en": "Skills" },
+  "experience": { "pt": "Experiência", "en": "Experience" },
+  "education": { "pt": "Formação", "en": "Education" },
+  "languages": { "pt": "Idiomas", "en": "Languages" },
+  "emailLabel": { "pt": "Enviar e-mail", "en": "Send email" },
+  "whatsappLabel": { "pt": "Conversar no WhatsApp", "en": "Chat on WhatsApp" },
+  "linkedinLabel": { "pt": "Perfil no LinkedIn", "en": "LinkedIn profile" },
+  "githubLabel": { "pt": "Perfil no GitHub", "en": "GitHub profile" },
+  "avatarAlt": { "pt": "Foto de Lucas Menezes", "en": "Photo of Lucas Menezes" },
+  "langPt": { "pt": "Português", "en": "Portuguese" },
+  "langEn": { "pt": "Inglês", "en": "English" }
+}

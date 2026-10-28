@@ -1,0 +1,71 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Destino do deploy'
+        type: choice
+        options: [production, staging]
+        default: production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: sa-east-1
+  S3_BUCKET: lucas-menezes-cv-861601215563-sa-east-1
+  CLOUDFRONT_DISTRIBUTION_ID: E3C8ULS0AL34JE
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # OIDC: sem chaves de acesso no repositório
+      contents: read
+    env:
+      TARGET: ${{ inputs.target || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Build (staging usa o prefixo /staging/)
+        run: |
+          if [ "$TARGET" = "staging" ]; then export BASE_PATH=/staging/; fi
+          npm run build
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync para o S3
+        run: |
+          DEST="s3://$S3_BUCKET"
+          if [ "$TARGET" = "staging" ]; then DEST="$DEST/staging"; fi
+          # Arquivos estáticos (imagens, fontes, PDFs): cache de 1 dia.
+          aws s3 sync dist "$DEST" --exclude "*.html" \
+            --cache-control "public, max-age=86400"
+          # HTML sempre revalidado.
+          aws s3 sync dist "$DEST" --exclude "*" --include "*.html" \
+            --cache-control "no-cache" --content-type "text/html; charset=utf-8"
+
+      - name: Invalidar o CloudFront
+        run: |
+          if [ "$TARGET" = "staging" ]; then PATHS="/staging/*"; else PATHS="/*"; fi
+          aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "$PATHS"

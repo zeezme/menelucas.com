@@ -1,0 +1,205 @@
+{
+  "meta": {
+    "locales": ["pt", "en"],
+    "defaultLocale": "pt",
+    "pdf": { "pt": "/cv.pdf", "en": "/cv-en.pdf" }
+  },
+  "basics": {
+    "name": "Lucas Augusto Muniz Menezes",
+    "label": {
+      "pt": "Engenheiro de Software Sênior | TypeScript, Node.js, React | Sistemas Distribuídos, Segurança, AML/KYC",
+      "en": "Senior Software Engineer | TypeScript, Node.js, NestJS, React | Distributed Systems & Security"
+    },
+    "email": "lukascass@gmail.com",
+    "phone": "+55 11 96175-0560",
+    "location": {
+      "city": "Osasco",
+      "region": "SP",
+      "countryCode": "BR",
+      "note": { "pt": "Osasco, SP", "en": "Osasco, SP, Brazil (open to remote)" }
+    },
+    "summary": {
+      "pt": "Engenheiro de Software Sênior com 5 anos de experiência profissional, especializado em criar do zero sistemas críticos com TypeScript, Node.js, NestJS e React. Na Blaze (iGaming regulado), arquitetei e implementei o core multi-tenant de validação de identidade de uma plataforma de KYC e a refatoração do backoffice e do monitoramento de risco com regras de AML, da modelagem de dados à segurança, observabilidade e testes, além de conduzir os code reviews do time. Antes, desenvolvi ERPs fiscais com emissão de NF-e.",
+      "en": "Senior Software Engineer with 5 years of professional experience, specialized in building critical systems from scratch with TypeScript, Node.js, NestJS and React. At Blaze (regulated iGaming), I designed and built the multi-tenant identity verification core of a KYC platform and led the redesign of the back-office and risk monitoring with AML rules, from data modeling to security, observability and testing, while leading code reviews for the team. Previously built tax-compliance ERPs with electronic invoicing (NF-e)."
+    },
+    "profiles": [
+      { "network": "LinkedIn", "url": "https://www.linkedin.com/in/meneluca" },
+      { "network": "GitHub", "url": "https://github.com/Zeezme" },
+      {
+        "network": "WhatsApp",
+        "url": "https://wa.me/5511961750560?text=Ol%C3%A1%2C%20Lucas!%20Vi%20seu%20curr%C3%ADculo%20em%20menelucas.com"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "name": { "pt": "Principais", "en": "Core" },
+      "keywords": {
+        "pt": ["TypeScript", "JavaScript", "Node.js", "NestJS", "React", "Next.js", "PostgreSQL", "Redis", "Apache Kafka", "AWS"],
+        "en": ["TypeScript", "JavaScript", "Node.js", "NestJS", "React", "Next.js", "PostgreSQL", "Redis", "Apache Kafka", "AWS"]
+      }
+    },
+    {
+      "name": { "pt": "Back-end e arquitetura", "en": "Back-end and architecture" },
+      "keywords": {
+        "pt": ["APIs REST", "GraphQL", "OpenAPI", "Zod", "microsserviços", "arquitetura orientada a eventos", "padrão outbox", "multi-tenant", "TypeORM", "MikroORM", "Drizzle"],
+        "en": ["REST APIs", "GraphQL", "OpenAPI", "Zod", "microservices", "event-driven architecture", "multi-tenancy", "outbox pattern", "TypeORM", "MikroORM", "Drizzle"]
+      }
+    },
+    {
+      "name": { "pt": "Segurança e DevOps", "en": "Security and DevOps" },
+      "keywords": {
+        "pt": ["OAuth 2.0/PKCE", "JWT", "MFA", "RBAC", "CSP", "Docker", "GitHub Actions", "CI/CD", "AWS (EC2, S3, SNS, SQS)", "observabilidade"],
+        "en": ["OAuth 2.0/PKCE", "JWT", "MFA", "RBAC", "CSP", "Docker", "GitHub Actions", "CI/CD", "AWS (EC2, S3, SNS, SQS)", "observability"]
+      }
+    },
+    {
+      "name": { "pt": "Testes e front-end", "en": "Testing and front-end" },
+      "keywords": {
+        "pt": ["Jest", "Vitest", "Supertest", "Testcontainers", "TanStack Query", "Tailwind CSS", "Storybook", "Electron", "MCP (IA)"],
+        "en": ["Jest", "Vitest", "Supertest", "Testcontainers", "TanStack Query", "Tailwind CSS", "Storybook", "Electron", "MCP (AI)"]
+      }
+    },
+    {
+      "name": { "pt": "Domínio", "en": "Domain" },
+      "keywords": {
+        "pt": ["KYC", "AML", "gestão de risco", "iGaming regulado", "ERP fiscal (NF-e)"],
+        "en": ["KYC", "AML", "risk management", "regulated iGaming", "tax and electronic invoicing (NF-e)"]
+      }
+    }
+  ],
+  "work": [
+    {
+      "id": "blaze",
+      "name": "Blaze",
+      "position": { "pt": "Engenheiro de Software Sênior", "en": "Senior Software Engineer" },
+      "startDate": "2026-02",
+      "endDate": "2026-09",
+      "location": { "pt": "Remoto (PJ)", "en": "Remote (contractor)" },
+      "summary": {
+        "pt": "Responsável pela arquitetura e implementação de serviços críticos de identidade, compliance e risco, da modelagem de domínio e dados até segurança, observabilidade e testes, além de code reviews frequentes do time.",
+        "en": "Owned the architecture and implementation of critical identity, compliance and risk services, from domain and data modeling to security, observability and testing, and performed frequent code reviews for the team."
+      },
+      "sections": [
+        {
+          "title": {
+            "pt": "Plataforma de KYC: validação de identidade multi-tenant | criada do zero; principal autor",
+            "en": "KYC platform: multi-tenant identity verification | built from scratch; main author"
+          },
+          "highlights": [
+            {
+              "pt": "Projetei o core da plataforma: um serviço modular de validação de identidade multi-tenant, que atende todos os clientes com isolamento de dados no PostgreSQL e trilha de auditoria imutável.",
+              "en": "Designed the platform core: a modular, multi-tenant identity verification service serving every client with isolated PostgreSQL data and an immutable audit trail."
+            },
+            {
+              "pt": "Desenvolvi a autenticação (login, MFA, sessões JWT e chaves de API) e o controle de acesso por perfis (RBAC) entre empresas clientes com cache em Redis, protegido contra roubo de sessão e força bruta e coberto por testes unitários, de integração e e2e.",
+              "en": "Built authentication (login, MFA, JWT sessions, API keys) and role-based access control (RBAC) across client companies with Redis caching, hardened against session hijacking and brute force and covered by unit, integration and end-to-end tests."
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Backoffice, monitoramento de risco e AML da plataforma Blaze (iGaming regulado)",
+            "en": "Back-office, risk monitoring and AML for the Blaze platform (regulated iGaming)"
+          },
+          "highlights": [
+            {
+              "pt": "Implementei regras antifraude de AML (ganhos excessivos, múltiplas contas bancárias, origem de fundos) com processamento orientado a eventos; a rotina diária sinaliza 20 mil usuários em cerca de 175 ms.",
+              "en": "Implemented anti-fraud AML rules (excessive winnings, multiple bank accounts, source of funds) with event-driven processing; the daily routine flags 20,000 users in about 175 ms."
+            },
+            {
+              "pt": "Refatorei o backoffice e o painel de monitoramento de risco com melhorias de design e performance: endpoint de monitoramento 26–36% mais rápido e dashboard que levava cerca de 15 s acelerado com chamadas paralelas, validado com benchmarks de até 3 milhões de registros.",
+              "en": "Refactored the back-office and risk monitoring dashboard with design and performance improvements: monitoring endpoint 26–36% faster and a dashboard that took about 15 s sped up with parallel requests, validated with benchmarks of up to 3 million records."
+            },
+            {
+              "pt": "Criei do zero o painel usado pela equipe de compliance para acompanhar jogadores, alertas e transações (MFA, acesso por permissões, design system no Storybook) e escrevi mais de 100 testes unitários e e2e.",
+              "en": "Built from scratch the dashboard the compliance team uses to monitor players, alerts and transactions (MFA, role-based access, Storybook design system) and wrote over 100 unit and end-to-end tests."
+            },
+            {
+              "pt": "Criei ferramentas internas: app Electron de saúde dos serviços e deploys na AWS e ferramenta de demandas de DevOps integrada ao Jira e a assistentes de IA via MCP.",
+              "en": "Built internal tools: an Electron app for service health and AWS deployments, and a DevOps request tool integrated with Jira and AI assistants via MCP."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "windel",
+      "name": "Windel Sistemas",
+      "position": { "pt": "Desenvolvedor Full Stack Pleno", "en": "Full Stack Developer" },
+      "startDate": "2025-02",
+      "endDate": "2026-01",
+      "location": { "pt": "Caxias do Sul, RS", "en": "Caxias do Sul, Brazil" },
+      "highlights": [
+        {
+          "pt": "Participei da definição da arquitetura de microsserviços do ERP e integrei o sistema com Nuvemshop e APIs fiscais, ampliando a automação de vendas e emissão fiscal.",
+          "en": "Took part in defining the ERP microservices architecture and integrated it with Nuvemshop and tax APIs, expanding sales and invoicing automation."
+        },
+        {
+          "pt": "Estruturei testes unitários do backend (Jest, Postman), DTOs validados com Zod e plugin de ESLint para remover dependências obsoletas.",
+          "en": "Set up backend unit tests (Jest, Postman), Zod-validated DTOs and a custom ESLint plugin to remove deprecated dependencies."
+        }
+      ]
+    },
+    {
+      "id": "cia-sistemas",
+      "name": "Cia Sistemas",
+      "position": { "pt": "Desenvolvedor Full Stack", "en": "Full Stack Developer" },
+      "startDate": "2023-11",
+      "endDate": "2024-12",
+      "location": { "pt": "Caxias do Sul, RS", "en": "Caxias do Sul, Brazil" },
+      "highlights": [
+        {
+          "pt": "Desenvolvi ERP fiscal com Node.js, React, PostgreSQL e Sequelize, automatizando emissão de NF-e, cálculo de tributos e integrações com APIs fiscais, com testes automatizados em Jest.",
+          "en": "Built a tax-compliance ERP with Node.js, React, PostgreSQL and Sequelize, automating electronic invoicing (NF-e), tax calculation and tax API integrations, with automated tests in Jest."
+        }
+      ]
+    },
+    {
+      "id": "moderniza",
+      "name": "Moderniza Group",
+      "position": { "pt": "Desenvolvedor Full Stack", "en": "Full Stack Developer" },
+      "startDate": "2022-10",
+      "endDate": "2023-06",
+      "location": { "pt": "Caxias do Sul, RS", "en": "Caxias do Sul, Brazil" },
+      "highlights": [
+        {
+          "pt": "Desenvolvi plataforma unificada de integração de sistemas internos com React, Node.js, Express e Redux Toolkit.",
+          "en": "Built a unified platform integrating internal systems with React, Node.js, Express and Redux Toolkit."
+        }
+      ]
+    },
+    {
+      "id": "central-it",
+      "name": "Central IT",
+      "position": { "pt": "Estagiário de Desenvolvimento", "en": "Software Development Intern" },
+      "startDate": "2021-11",
+      "endDate": "2022-10",
+      "location": { "pt": "Caxias do Sul, RS", "en": "Caxias do Sul, Brazil" },
+      "highlights": [
+        {
+          "pt": "Desenvolvi plataforma de chatbots em tempo real com React, TypeScript, Socket.io e Docker.",
+          "en": "Built a real-time chatbot platform with React, TypeScript, Socket.io and Docker."
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": {
+        "pt": "Universidade de Caxias do Sul (UCS)",
+        "en": "University of Caxias do Sul (UCS)"
+      },
+      "area": {
+        "pt": "Tecnólogo em Análise e Desenvolvimento de Sistemas",
+        "en": "Associate Degree in Systems Analysis and Development"
+      },
+      "status": { "pt": "Em andamento", "en": "In progress" }
+    }
+  ],
+  "languages": [
+    { "language": { "pt": "Português", "en": "Portuguese" }, "fluency": { "pt": "nativo", "en": "native" } },
+    { "language": { "pt": "Inglês", "en": "English" }, "fluency": { "pt": "fluente", "en": "fluent" } },
+    { "language": { "pt": "Espanhol", "en": "Spanish" }, "fluency": { "pt": "intermediário", "en": "intermediate" } }
+  ]
+}
