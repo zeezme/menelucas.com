@@ -8,9 +8,9 @@ import sharp from 'sharp'
 /**
  * Gera public/banner-pt.jpg e public/banner-en.jpg (1200×630, og:image de / e /en/) a partir da foto original.
  *
- * O fundo cinza da foto escurece nas bordas; estendê-lo "no braço" deixa uma emenda visível. Por isso a
- * iluminação do fundo é estimada (ignorando a pessoa) e uniformizada antes de estender o cinza para a esquerda.
- * O texto é desenhado em Inter via Chromium.
+ * O fundo da foto tem vinheta, halo e textura; estendê-lo deixa emendas visíveis. Por isso a pessoa é recortada
+ * (máscara suave por distância ao cinza do fundo, com a iluminação uniformizada) e colocada sobre um cinza liso
+ * que cobre o banner inteiro. O texto é desenhado em Inter via Chromium.
  *
  * Uso: npm run banner -- <foto.jpg>
  */
@@ -122,15 +122,35 @@ for (let i = 0; i < N; i++) {
     flat[i * 3 + c] = Math.max(0, Math.min(255, Math.round(v)))
   }
 }
-const TRIM = 2
-const photo = await sharp(flat, { raw: { width: PW, height: PH, channels: 3 } })
-  .extract({ left: PAD + TRIM, top: PAD, width: PHOTO_W - 2 * TRIM, height: photoH })
+// Recorte da pessoa: quanto o pixel (já com iluminação uniformizada) se afasta do cinza do fundo.
+// Ruído, halo e textura do fundo original ficam abaixo do limiar e viram cinza liso; cabelo, pele,
+// camisa, calça, notebook e banco ficam opacos, com borda suave.
+const dist = new Float32Array(N)
+for (let i = 0; i < N; i++) {
+  const dr = (flat[i * 3] ?? 0) - (target[0] ?? 0)
+  const dg = (flat[i * 3 + 1] ?? 0) - (target[1] ?? 0)
+  const db = (flat[i * 3 + 2] ?? 0) - (target[2] ?? 0)
+  dist[i] = Math.sqrt(dr * dr + dg * dg + db * db)
+}
+const smooth = blur(dist, PW, PH, 1)
+const D0 = 9
+const D1 = 22
+const rgba = Buffer.alloc(N * 4)
+for (let i = 0; i < N; i++) {
+  const t = Math.max(0, Math.min(1, ((smooth[i] ?? 0) - D0) / (D1 - D0)))
+  rgba[i * 4] = flat[i * 3] ?? 0
+  rgba[i * 4 + 1] = flat[i * 3 + 1] ?? 0
+  rgba[i * 4 + 2] = flat[i * 3 + 2] ?? 0
+  rgba[i * 4 + 3] = Math.round(t * t * (3 - 2 * t) * 255)
+}
+const photo = await sharp(rgba, { raw: { width: PW, height: PH, channels: 4 } })
+  .extract({ left: PAD, top: PAD, width: PHOTO_W, height: photoH })
   .png()
   .toBuffer()
 const bg = { r: Math.round(target[0] ?? 114), g: Math.round(target[1] ?? 114), b: Math.round(target[2] ?? 114) }
 
 const base = await sharp({ create: { width: W, height: H, channels: 3, background: bg } })
-  .composite([{ input: photo, left: PHOTO_LEFT + TRIM, top: 0 }])
+  .composite([{ input: photo, left: PHOTO_LEFT, top: 0 }])
   .png()
   .toBuffer()
 
