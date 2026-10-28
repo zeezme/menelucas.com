@@ -68,3 +68,45 @@ describe('resume.json', () => {
     for (const l of LOCALES) expect(resume.meta.pdf[l]).toMatch(/\.pdf$/)
   })
 })
+
+describe('projects (seção opcional)', () => {
+  const clone = () => structuredClone(resumeJson) as unknown as Record<string, unknown> & { projects?: Record<string, unknown>[] }
+
+  it('o schema aceita com e sem projects', () => {
+    const without = clone()
+    delete without.projects
+    expect(parseResume(without).projects).toBeUndefined()
+    expect(parseResume({ ...without, projects: [] }).projects).toEqual([])
+    expect(parseResume(resumeJson).projects).toHaveLength(1)
+  })
+
+  it('rejeita projeto com idioma faltando, data inválida ou fim antes do início', () => {
+    const noEn = clone()
+    delete (noEn.projects?.[0]?.['description'] as Record<string, string>)['en']
+    expect(() => parseResume(noEn)).toThrow(/description/)
+
+    const badDate = clone()
+    if (badDate.projects?.[0]) badDate.projects[0]['startDate'] = '2026-13'
+    expect(() => parseResume(badDate)).toThrow()
+
+    const reversed = clone()
+    if (reversed.projects?.[0]) reversed.projects[0]['endDate'] = '2026-01'
+    expect(() => parseResume(reversed)).toThrow(/endDate/)
+
+    const noHighlights = clone()
+    if (noHighlights.projects?.[0]) noHighlights.projects[0]['highlights'] = []
+    expect(() => parseResume(noHighlights)).toThrow()
+  })
+
+  it('iPsiq: em andamento, sem link e sem preços, taxas ou nomes de clientes/médicos', () => {
+    const [ipsiq] = resume.projects ?? []
+    expect(ipsiq?.name).toBe('iPsiq')
+    expect(ipsiq?.startDate).toBe('2026-10')
+    expect(ipsiq?.endDate).toBeUndefined()
+    expect(ipsiq?.url).toBeUndefined()
+    const text = JSON.stringify(ipsiq)
+    expect(text).not.toMatch(/ipsiq\.com/i)
+    expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss/i)
+    expect(ipsiq?.highlights).toHaveLength(4)
+  })
+})

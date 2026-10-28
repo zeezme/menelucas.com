@@ -46,6 +46,8 @@ Edite **apenas** [`content/resume.json`](content/resume.json) (e, para textos da
 O formato segue o [JSON Resume](https://jsonresume.org/schema), com todo texto visível como `{ "pt": "...", "en": "..." }`.
 O schema fica em [`src/schema/resume.ts`](src/schema/resume.ts); campos desconhecidos, datas fora de `AAAA-MM` ou idioma faltando falham o build.
 
+**Projetos:** a seção `projects` é opcional (campos `name`, `roles`, `startDate`, `endDate?`, `description`, `highlights`, `url?`; sem `endDate` mostra "atual"/"present"). Sem o campo, ou com a lista vazia, a seção não aparece: para tirá-la basta remover o item do `resume.json`. Projetos não entram no JSON-LD.
+
 Extensões ao JSON Resume: `work[].sections[]` (subtítulos de projeto), `skills[].keywords` por idioma e `meta.pdf` (PDF de cada idioma).
 Os PDFs (`public/cv.pdf`, `public/cv-en.pdf`) são mantidos como estão e usados só para download.
 

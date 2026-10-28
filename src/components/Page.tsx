@@ -1,7 +1,7 @@
 import type { Locale, Resume, UiStrings } from '../schema/resume'
 import { createT } from '../i18n'
 import { Header } from './Header'
-import { Education, Experience, Languages, Skills, Summary } from './Sections'
+import { Education, Experience, Languages, Projects, Skills, Summary } from './Sections'
 
 interface Props {
   resume: Resume
@@ -26,6 +26,7 @@ export function Page({ resume, ui, locale, base }: Props) {
           <Summary resume={resume} locale={locale} t={t} />
           <Skills resume={resume} locale={locale} t={t} />
           <Experience resume={resume} locale={locale} t={t} />
+          <Projects resume={resume} locale={locale} t={t} />
           <Education resume={resume} locale={locale} t={t} />
           <Languages resume={resume} locale={locale} t={t} />
         </main>

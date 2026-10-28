@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { Locale, Resume, Work } from '../schema/resume'
+import type { Locale, Project, Resume, Work } from '../schema/resume'
 import { formatYearMonth, pick, type T } from '../i18n'
 
 export function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
@@ -59,12 +59,18 @@ function Bullets({ items, locale }: { items: { pt: string; en: string }[]; local
   )
 }
 
-function Period({ job, locale }: { job: Work; locale: Locale }) {
+interface DateRange {
+  startDate: string
+  endDate?: string | undefined
+}
+
+/** `02/2026 – 09/2026`; sem data final mostra `present` ("atual"/"present") quando informado. */
+function Period({ range, locale, present }: { range: DateRange; locale: Locale; present?: string }) {
   return (
     <>
-      <time dateTime={job.startDate}>{formatYearMonth(job.startDate, locale)}</time>
+      <time dateTime={range.startDate}>{formatYearMonth(range.startDate, locale)}</time>
       {' – '}
-      {job.endDate ? <time dateTime={job.endDate}>{formatYearMonth(job.endDate, locale)}</time> : null}
+      {range.endDate ? <time dateTime={range.endDate}>{formatYearMonth(range.endDate, locale)}</time> : present}
     </>
   )
 }
@@ -78,7 +84,7 @@ function Job({ job, locale }: { job: Work; locale: Locale }) {
           <span translate="no" className="font-medium text-ink">{job.name}</span>
           <span aria-hidden="true"> · </span>
           <span className="tabular-nums">
-            <Period job={job} locale={locale} />
+            <Period range={job} locale={locale} />
           </span>
           <span aria-hidden="true"> · </span>
           {pick(job.location, locale)}
@@ -104,6 +110,42 @@ export function Experience({ resume, locale, t }: { resume: Resume; locale: Loca
       <div className="flex flex-col gap-4">
         {resume.work.map((job) => (
           <Job key={job.id} job={job} locale={locale} />
+        ))}
+      </div>
+    </Section>
+  )
+}
+
+function ProjectItem({ project, locale, t }: { project: Project; locale: Locale; t: T }) {
+  return (
+    <article className="flex flex-col gap-3 rounded-xl border border-hairline bg-surface-1 p-5">
+      <header>
+        <h3 translate="no" className="text-lg font-semibold leading-snug tracking-title">
+          {project.name}
+        </h3>
+        <p className="mt-1 text-sm text-ink-muted">
+          <span className="font-medium text-ink">{pick(project.roles, locale)}</span>
+          <span aria-hidden="true"> · </span>
+          <span className="tabular-nums">
+            <Period range={project} locale={locale} present={t('present')} />
+          </span>
+        </p>
+      </header>
+      <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">{pick(project.description, locale)}</p>
+      <Bullets items={project.highlights} locale={locale} />
+    </article>
+  )
+}
+
+/** Seção opcional: some quando `projects` está ausente ou vazio (tirar o item do JSON basta). */
+export function Projects({ resume, locale, t }: { resume: Resume; locale: Locale; t: T }) {
+  const projects = resume.projects ?? []
+  if (projects.length === 0) return null
+  return (
+    <Section id="projects" title={t('projects')}>
+      <div className="flex flex-col gap-4">
+        {projects.map((project) => (
+          <ProjectItem key={project.name} project={project} locale={locale} t={t} />
         ))}
       </div>
     </Section>

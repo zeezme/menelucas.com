@@ -49,6 +49,21 @@ const work = z
     message: 'endDate anterior a startDate',
   })
 
+/** Projeto pessoal/atual (JSON Resume `projects`). Sem `endDate` = em andamento. */
+const project = z
+  .strictObject({
+    name: z.string().min(1),
+    roles: localized,
+    startDate: yearMonth,
+    endDate: yearMonth.optional(),
+    description: localized,
+    highlights: z.array(highlight).min(1),
+    url: z.url().optional(),
+  })
+  .refine((p) => p.endDate === undefined || p.endDate >= p.startDate, {
+    message: 'endDate anterior a startDate',
+  })
+
 export const resumeSchema = z.strictObject({
   meta: z.strictObject({
     locales: z.tuple([z.literal('pt'), z.literal('en')]),
@@ -73,6 +88,8 @@ export const resumeSchema = z.strictObject({
   }),
   skills: z.array(z.strictObject({ name: localized, keywords: localizedList })).min(1),
   work: z.array(work).min(1),
+  /** Seção opcional: sem `projects` (ou vazio) a seção não aparece. */
+  projects: z.array(project).optional(),
   education: z
     .array(
       z.strictObject({
@@ -89,6 +106,7 @@ export const resumeSchema = z.strictObject({
 
 export type Resume = z.infer<typeof resumeSchema>
 export type Work = Resume['work'][number]
+export type Project = NonNullable<Resume['projects']>[number]
 
 export function parseResume(data: unknown): Resume {
   const result = resumeSchema.safeParse(data)

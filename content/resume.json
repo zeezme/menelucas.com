@@ -347,6 +347,38 @@
       ]
     }
   ],
+  "projects": [
+    {
+      "name": "iPsiq",
+      "roles": {
+        "pt": "Cofundador e engenheiro full stack",
+        "en": "Co-founder and full stack engineer"
+      },
+      "startDate": "2026-10",
+      "description": {
+        "pt": "Plataforma em desenvolvimento para agendamento e pagamento de consultas em saúde mental, com página própria para cada médico e backoffice da equipe.",
+        "en": "Platform in development for scheduling and paying for mental health consultations, with a dedicated page for each doctor and a back-office for the team."
+      },
+      "highlights": [
+        {
+          "pt": "Arquitetei e desenvolvi o back-end (NestJS, TypeORM, PostgreSQL, Zod) e o front-end (React, Vite, TanStack Query, Tailwind).",
+          "en": "Designed and built the back-end (NestJS, TypeORM, PostgreSQL, Zod) and front-end (React, Vite, TanStack Query, Tailwind)."
+        },
+        {
+          "pt": "Agendamento com reserva temporária e proteção contra reserva dupla, preço em cascata por especialidade e por médico, e auditoria gravada na mesma transação.",
+          "en": "Booking with temporary holds and double-booking protection, cascading prices by specialty and doctor, and audit logs written in the same transaction."
+        },
+        {
+          "pt": "Pagamento com split no ato do agendamento via Asaas (subcontas, notas fiscais e assinaturas), em andamento.",
+          "en": "Payment split at booking time via Asaas (sub-accounts, invoices and subscriptions), in progress."
+        },
+        {
+          "pt": "Ambiente local completo em Docker com LocalStack (S3, SES), deploy automático na AWS a cada push e fluxo de anonimização de dados para a LGPD.",
+          "en": "Full local environment in Docker with LocalStack (S3, SES), automatic AWS deploy on every push, and an LGPD data-anonymization flow."
+        }
+      ]
+    }
+  ],
   "education": [
     {
       "institution": {

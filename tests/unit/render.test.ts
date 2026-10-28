@@ -108,3 +108,40 @@ describe('página renderizada', () => {
     expect(staged).toContain('src="/staging/avatar.webp"')
   })
 })
+
+describe('seção Projetos', () => {
+  const sectionOf = (out: string) => /<section aria-labelledby="projects-title".*?<\/section>/s.exec(out)?.[0] ?? ''
+
+  it.each([
+    ['pt', 'Projetos', 'Cofundador e engenheiro full stack', 'atual'],
+    ['en', 'Projects', 'Co-founder and full stack engineer', 'present'],
+  ] as const)('%s: aparece entre Experiência e Formação, em andamento', (locale, title, role, present) => {
+    const out = html(locale)
+    const section = sectionOf(out)
+    expect(section).toContain(`>${title}</h2>`)
+    expect(section).toContain('iPsiq')
+    expect(section).toContain(role)
+    expect(section).toContain('<time datetime="2026-10">10/2026</time> – ' + present)
+    expect(section).not.toContain('href=')
+    const order = ['experience-title', 'projects-title', 'education-title'].map((id) => out.indexOf(`id="${id}"`))
+    expect(order).toEqual([...order].sort((a, b) => a - b))
+    expect(order.every((i) => i > 0)).toBe(true)
+  })
+
+  it('sem projects (ou vazio) a seção não existe', () => {
+    const without = structuredClone(resume)
+    delete without.projects
+    for (const locale of ['pt', 'en'] as const) {
+      expect(sectionOf(renderPage({ resume: without, ui, locale, site, css: '' }))).toBe('')
+      expect(sectionOf(renderPage({ resume: { ...without, projects: [] }, ui, locale, site, css: '' }))).toBe('')
+    }
+  })
+
+  it('o iPsiq não entra no JSON-LD nem vira link', () => {
+    const out = html('pt')
+    const ld = /<script type="application\/ld\+json">(.*?)<\/script>/s.exec(out)?.[1] ?? ''
+    expect(ld).not.toBe('')
+    expect(ld.toLowerCase()).not.toContain('ipsiq')
+    expect(out.toLowerCase()).not.toContain('ipsiq.com')
+  })
+})
