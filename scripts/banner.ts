@@ -161,12 +161,11 @@ const html = (c: (typeof COPY)[keyof typeof COPY]) => `<!doctype html><html lang
 body{width:${W}px;height:${H}px;position:relative;overflow:hidden;font-family:Inter,sans-serif;color:#fff;
   background:url(data:image/png;base64,${base.toString('base64')}) 0 0/${W}px ${H}px}
 .col{position:absolute;left:107px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center}
-.bar{width:57px;height:6px;border-radius:3px;background:#fff;opacity:.9;margin-bottom:28px}
 h1{font-size:68px;font-weight:700;letter-spacing:-.035em;line-height:1.05}
 .role{font-size:29px;font-weight:500;color:#f5f5f5;margin-top:14px;letter-spacing:-.01em}
 .tech{font-size:24px;font-weight:400;color:#f5f5f5;margin-top:30px;line-height:1.5}
 .url{font-size:24px;font-weight:600;color:#fff;margin-top:52px}
-</style><div class="col"><div class="bar"></div><h1>Lucas Menezes</h1>
+</style><div class="col"><h1>Lucas Menezes</h1>
 <div class="role">${c.role}</div>
 <div class="tech">${c.techs}<br>${c.domain}</div>
 <div class="url">menelucas.com</div></div>`
