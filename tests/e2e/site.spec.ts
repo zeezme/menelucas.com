@@ -30,10 +30,11 @@ for (const p of PAGES) {
 
     test('links externos e metadados sociais', async ({ page }) => {
       await page.goto(p.path)
-      await expect(page.locator('a[href="https://github.com/Zeezme"]')).toHaveAttribute('aria-label', /GitHub/)
-      await expect(page.locator('a[href="https://www.linkedin.com/in/meneluca"]')).toHaveAttribute('aria-label', /LinkedIn/)
+      await expect(page.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/Zeezme')
+      await expect(page.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute('href', 'https://www.linkedin.com/in/meneluca')
+      await expect(page.getByRole('link', { name: /e-?mail/i })).toHaveAttribute('href', 'mailto:lukascass@gmail.com')
       await expect(page.locator('a[href^="https://wa.me/5511961750560"]')).toHaveCount(1)
-      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /^https:\/\/menelucas\.com\/banner\.jpg\?v=[0-9a-f]{8}$/)
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /^https:\/\/menelucas\.com\/banner-[0-9a-f]{8}\.jpg$/)
       await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
       const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}')
       const person = ld['@graph'].find((n: { '@type': string }) => n['@type'] === 'Person')
@@ -62,6 +63,22 @@ for (const p of PAGES) {
         expect(overflow).toBeLessThanOrEqual(0)
       })
     }
+
+    test('mobile mostra os nomes das redes ao lado dos ícones', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 812 })
+      await page.goto(p.path)
+      for (const name of ['LinkedIn', 'GitHub', 'WhatsApp']) {
+        await expect(page.getByRole('link', { name }).getByText(name)).toBeVisible()
+      }
+    })
+
+    test('desktop mostra só os ícones das redes', async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 800 })
+      await page.goto(p.path)
+      // sr-only: continua no DOM (nome acessível), mas ocupa 1px.
+      const box = await page.getByRole('link', { name: 'GitHub' }).getByText('GitHub').boundingBox()
+      expect(box?.width ?? 0).toBeLessThanOrEqual(1)
+    })
 
     test('alvos de toque do cabeçalho têm tamanho mínimo no mobile', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 812 })

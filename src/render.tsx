@@ -84,6 +84,13 @@ function Document({ resume, ui, locale, site, css }: RenderInput) {
   )
 }
 
+/** React serializa alguns atributos em camelCase; scrapers simples (WhatsApp, etc.) esperam minúsculas. */
+const LOWERCASE_ATTRS = ['charSet', 'hrefLang', 'fetchPriority', 'crossOrigin', 'tabIndex', 'dateTime'] as const
+
 export function renderPage(input: RenderInput): string {
-  return `<!doctype html>${renderToStaticMarkup(<Document {...input} />)}`
+  let html = `<!doctype html>${renderToStaticMarkup(<Document {...input} />)}`
+  for (const attr of LOWERCASE_ATTRS) {
+    html = html.replaceAll(` ${attr}=`, ` ${attr.toLowerCase()}=`)
+  }
+  return html
 }

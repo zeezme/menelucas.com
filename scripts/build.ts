@@ -7,7 +7,7 @@ import { resume, ui } from '../src/content'
 import { renderPage } from '../src/render'
 import { buildRobots, buildSitemap } from '../src/seo/head'
 import { LOCALES } from '../src/schema/resume'
-import { isIndexable, OG_IMAGE, siteConfig } from '../src/site'
+import { isIndexable, OG_IMAGE, ogImagePath, siteConfig } from '../src/site'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 export const distDir = join(root, 'dist')
@@ -35,6 +35,8 @@ export function build(): void {
   cpSync(join(root, 'public'), distDir, { recursive: true })
   if (!existsSync(FONT_SRC)) throw new Error(`Fonte não encontrada: ${FONT_SRC}`)
   cpSync(FONT_SRC, join(distDir, 'assets/inter-latin.woff2'))
+
+  cpSync(join(root, 'public', OG_IMAGE.path), join(distDir, ogImagePath(site)))
 
   const css = compileCss(site.base)
   for (const locale of LOCALES) {

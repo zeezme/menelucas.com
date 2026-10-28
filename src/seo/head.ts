@@ -1,6 +1,6 @@
 import type { Locale, Resume } from '../schema/resume'
 import { firstSentence, labelTags, localePath, pick, roleOf } from '../i18n'
-import { OG_IMAGE, type SiteConfig } from '../site'
+import { ogImagePath, type SiteConfig } from '../site'
 
 const OG_LOCALE: Record<Locale, string> = { pt: 'pt_BR', en: 'en_US' }
 
@@ -24,7 +24,7 @@ export const skillKeywords = (resume: Resume, locale: Locale): string[] =>
 export function buildHeadMeta(resume: Resume, locale: Locale, site: SiteConfig): HeadMeta {
   const { basics } = resume
   const abs = (path: string) => `${site.origin}${path}`
-  const ogImage = abs(`/${OG_IMAGE.path}${site.ogVersion ? `?v=${site.ogVersion}` : ''}`)
+  const ogImage = abs(`/${ogImagePath(site)}`)
   const label = pick(basics.label, locale)
   const role = roleOf(label)
   const techs = labelTags(label).split(' | ')[0] ?? ''
