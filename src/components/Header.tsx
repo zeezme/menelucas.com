@@ -36,7 +36,7 @@ function LangToggle({ locale, base, t }: Pick<Props, 'locale' | 'base' | 't'>) {
   ]
   return (
     <nav aria-label={t('languageNav')}>
-      <ul className="flex gap-1 rounded-btn border border-hairline bg-surface-1 p-1">
+      <ul className="flex overflow-hidden rounded-btn border border-hairline bg-surface-1">
         {options.map((o) => {
           const active = o.locale === locale
           return (
@@ -47,7 +47,7 @@ function LangToggle({ locale, base, t }: Pick<Props, 'locale' | 'base' | 't'>) {
                 lang={o.locale}
                 data-lang={o.locale}
                 aria-current={active ? 'page' : undefined}
-                className={`inline-flex min-h-[34px] min-w-[44px] items-center justify-center rounded-md px-3 text-sm font-medium transition-colors ${
+                className={`inline-flex min-h-[42px] min-w-[48px] items-center justify-center px-3 text-sm font-medium transition-colors ${
                   active ? 'bg-surface-3 text-ink' : 'text-ink-subtle hover:text-ink'
                 }`}
               >
