@@ -17,7 +17,7 @@ for (const p of PAGES) {
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lucas Augusto Muniz Menezes')
       await expect(page.getByRole('heading', { level: 2 })).toHaveText(p.h2)
       await expect(page.getByRole('main')).toBeVisible()
-      await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#010102')
+      await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute('content', '#010102')
     })
 
     test('botão de PDF aponta para o PDF do idioma e ele existe', async ({ page, request }) => {
@@ -33,18 +33,26 @@ for (const p of PAGES) {
       await expect(page.locator('a[href="https://github.com/Zeezme"]')).toHaveAttribute('aria-label', /GitHub/)
       await expect(page.locator('a[href="https://www.linkedin.com/in/meneluca"]')).toHaveAttribute('aria-label', /LinkedIn/)
       await expect(page.locator('a[href^="https://wa.me/5511961750560"]')).toHaveCount(1)
-      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', 'https://menelucas.com/banner.jpg')
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /^https:\/\/menelucas\.com\/banner\.jpg\?v=[0-9a-f]{8}$/)
       await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
       const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}')
-      expect(ld['@type']).toBe('Person')
-      expect(ld.telephone).toBeUndefined()
+      const person = ld['@graph'].find((n: { '@type': string }) => n['@type'] === 'Person')
+      expect(person.name).toBe('Lucas Augusto Muniz Menezes')
+      expect(person.knowsAbout).toEqual(expect.arrayContaining(['TypeScript', 'Node.js', 'React']))
+      expect(person.telephone).toBeUndefined()
+      expect(ld['@graph'].some((n: { '@type': string }) => n['@type'] === 'ProfilePage')).toBe(true)
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /^index, follow/)
     })
 
-    test('sem violações de acessibilidade (axe)', async ({ page }) => {
-      await page.goto(p.path)
-      const results = await new AxeBuilder({ page }).analyze()
-      expect(results.violations).toEqual([])
-    })
+    for (const scheme of ['dark', 'light'] as const) {
+      test(`sem violações de acessibilidade (axe), tema ${scheme}`, async ({ page }) => {
+        await page.emulateMedia({ colorScheme: scheme })
+        await page.goto(p.path)
+        await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
+        const results = await new AxeBuilder({ page }).analyze()
+        expect(results.violations).toEqual([])
+      })
+    }
 
     for (const width of [375, 768, 1440, 2560]) {
       test(`sem scroll horizontal em ${width}px`, async ({ page }) => {
@@ -76,6 +84,15 @@ for (const p of PAGES) {
     })
   })
 }
+
+test('sitemap.xml e robots.txt', async ({ request }) => {
+  const sitemap = await (await request.get('/sitemap.xml')).text()
+  expect(sitemap).toContain('<loc>https://menelucas.com/</loc>')
+  expect(sitemap).toContain('<loc>https://menelucas.com/en/</loc>')
+  expect(sitemap).toContain('hreflang="x-default"')
+  const robots = await (await request.get('/robots.txt')).text()
+  expect(robots).toContain('Sitemap: https://menelucas.com/sitemap.xml')
+})
 
 test.describe('detecção de idioma', () => {
   test.describe('navegador em inglês', () => {
@@ -121,6 +138,58 @@ test.describe('detecção de idioma', () => {
     const page = await context.newPage()
     await page.goto('/')
     await expect(page).toHaveURL(/\/en\/$/)
+    await context.close()
+  })
+})
+
+test.describe('tema claro/escuro', () => {
+  const bg = (page: import('@playwright/test').Page) =>
+    page.evaluate(() => getComputedStyle(document.body).backgroundColor)
+  const themeColor = (page: import('@playwright/test').Page) =>
+    page.locator('meta[name="theme-color"]').first().getAttribute('content')
+
+  test('segue o tema do sistema', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' })
+    await page.goto('/')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    expect(await bg(page)).toBe('rgb(255, 255, 255)')
+    expect(await themeColor(page)).toBe('#ffffff')
+
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    expect(await bg(page)).toBe('rgb(1, 1, 2)')
+    expect(await themeColor(page)).toBe('#010102')
+  })
+
+  test('botão alterna, lembra a escolha e ela vence o sistema', async ({ page }) => {
+    await page.goto('/')
+    const toggle = page.getByRole('button', { name: /tema|theme/i })
+    await expect(toggle).toBeVisible()
+    await toggle.click()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    await page.reload()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    await toggle.click()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark')
+  })
+
+  test('funciona com localStorage indisponível', async ({ browser }) => {
+    const context = await browser.newContext({ colorScheme: 'light' })
+    await context.addInitScript(() => {
+      Object.defineProperty(window, 'localStorage', {
+        get() {
+          throw new Error('bloqueado')
+        },
+      })
+    })
+    const page = await context.newPage()
+    await page.goto('/')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    await page.getByRole('button', { name: /tema|theme/i }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
     await context.close()
   })
 })

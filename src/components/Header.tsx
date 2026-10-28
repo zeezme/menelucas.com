@@ -1,6 +1,6 @@
 import type { Locale, Resume } from '../schema/resume'
 import { labelTags, localePath, otherLocale, pick, roleOf, type T } from '../i18n'
-import { DownloadIcon, GitHubIcon, LinkedInIcon, MailIcon, WhatsAppIcon } from './icons'
+import { DownloadIcon, GitHubIcon, LinkedInIcon, MailIcon, MoonIcon, SunIcon, WhatsAppIcon } from './icons'
 
 interface Props {
   resume: Resume
@@ -56,14 +56,14 @@ export function Header({ resume, locale, base, t }: Props) {
   const tags = labelTags(label)
 
   return (
-    <header className="flex flex-col gap-6">
-      <div className="flex items-center gap-4 sm:gap-5">
+    <header className="grid grid-cols-1 gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+      <div className="flex flex-col items-start gap-4 sm:col-start-1 sm:row-start-1 sm:flex-row sm:items-center sm:gap-5">
         <img
           src={`${base}avatar.webp`}
           alt={t('avatarAlt')}
-          width={80}
-          height={80}
-          className="h-16 w-16 shrink-0 rounded-full border border-hairline bg-surface-2 object-cover sm:h-20 sm:w-20"
+          width={96}
+          height={96}
+          className="h-24 w-24 shrink-0 rounded-full border border-hairline bg-surface-2 object-cover sm:h-20 sm:w-20"
           fetchPriority="high"
         />
         <div className="min-w-0">
@@ -73,41 +73,51 @@ export function Header({ resume, locale, base, t }: Props) {
           <p className="mt-1 text-lg font-medium text-ink-muted">{roleOf(label)}</p>
         </div>
       </div>
-      {tags ? <p className="text-pretty text-sm text-ink-subtle">{tags}</p> : null}
-      <p className="text-sm text-ink-subtle">{pick(basics.location.note, locale)}</p>
+      {tags ? <p className="text-pretty text-sm text-ink-subtle sm:col-span-2">{tags}</p> : null}
+      <p className="text-sm text-ink-subtle sm:col-span-2">{pick(basics.location.note, locale)}</p>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <nav aria-label={t('contactNav')}>
-          <ul className="-ml-2 flex items-center">
-            {linkedin ? (
-              <li>
-                <a href={linkedin.url} className={iconLink} aria-label={t('linkedinLabel')} rel="me noopener">
-                  <LinkedInIcon />
-                </a>
-              </li>
-            ) : null}
-            {github ? (
-              <li>
-                <a href={github.url} className={iconLink} aria-label={t('githubLabel')} rel="me noopener">
-                  <GitHubIcon />
-                </a>
-              </li>
-            ) : null}
-            {whatsapp ? (
-              <li>
-                <a href={whatsapp.url} className={iconLink} aria-label={t('whatsappLabel')} rel="noopener">
-                  <WhatsAppIcon />
-                </a>
-              </li>
-            ) : null}
+      <nav aria-label={t('contactNav')} className="sm:col-start-2 sm:row-start-1">
+        <ul className="-ml-2 flex items-center sm:-mr-2 sm:ml-0">
+          {linkedin ? (
             <li>
-              <a href={`mailto:${basics.email}`} className={iconLink} aria-label={`${t('emailLabel')}: ${basics.email}`}>
-                <MailIcon />
+              <a href={linkedin.url} className={iconLink} aria-label={t('linkedinLabel')} rel="me noopener">
+                <LinkedInIcon />
               </a>
             </li>
-          </ul>
-        </nav>
+          ) : null}
+          {github ? (
+            <li>
+              <a href={github.url} className={iconLink} aria-label={t('githubLabel')} rel="me noopener">
+                <GitHubIcon />
+              </a>
+            </li>
+          ) : null}
+          {whatsapp ? (
+            <li>
+              <a href={whatsapp.url} className={iconLink} aria-label={t('whatsappLabel')} rel="noopener">
+                <WhatsAppIcon />
+              </a>
+            </li>
+          ) : null}
+          <li>
+            <a href={`mailto:${basics.email}`} className={iconLink} aria-label={`${t('emailLabel')}: ${basics.email}`}>
+              <MailIcon />
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3 sm:col-span-2">
         <LangToggle locale={locale} base={base} t={t} />
+        {/* Sem display utilitário: a visibilidade (só com JS) vem de [data-theme-toggle] em main.css. */}
+        <button
+          type="button"
+          data-theme-toggle
+          aria-label={t('themeToggle')}
+          className="min-h-touch min-w-touch items-center justify-center rounded-btn border border-hairline bg-surface-1 text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+        >
+          <SunIcon />
+          <MoonIcon />
+        </button>
         <a
           href={`${base}${meta.pdf[locale].slice(1)}`}
           download

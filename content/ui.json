@@ -1,6 +1,7 @@
 {
   "skipLink": { "pt": "Pular para o conteúdo", "en": "Skip to content" },
   "downloadPdf": { "pt": "Baixar PDF", "en": "Download PDF" },
+  "themeToggle": { "pt": "Alternar tema claro/escuro", "en": "Toggle light/dark theme" },
   "languageNav": { "pt": "Idioma", "en": "Language" },
   "contactNav": { "pt": "Contato", "en": "Contact" },
   "summary": { "pt": "Resumo", "en": "Summary" },

@@ -8,7 +8,7 @@ export default defineConfig({
   forbidOnly: !!process.env['CI'],
   retries: process.env['CI'] ? 1 : 0,
   reporter: process.env['CI'] ? [['github'], ['html', { open: 'never' }]] : 'list',
-  use: { baseURL: `http://localhost:${PORT}` },
+  use: { baseURL: `http://localhost:${PORT}`, colorScheme: 'dark' },
   webServer: {
     command: 'npm run build && npm run serve',
     env: { PORT: String(PORT) },

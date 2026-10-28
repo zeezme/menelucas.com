@@ -57,6 +57,8 @@ export const resumeSchema = z.strictObject({
   }),
   basics: z.strictObject({
     name: z.string().min(1),
+    /** Variações do nome usadas em buscas (ex.: sem os sobrenomes do meio). */
+    alternateNames: z.array(z.string().min(1)).optional(),
     label: localized,
     email: z.email(),
     phone: z.string().optional(),
@@ -81,7 +83,7 @@ export const resumeSchema = z.strictObject({
     )
     .min(1),
   languages: z
-    .array(z.strictObject({ language: localized, fluency: localized }))
+    .array(z.strictObject({ code: z.string().regex(/^[a-z]{2}$/), language: localized, fluency: localized }))
     .min(1),
 })
 

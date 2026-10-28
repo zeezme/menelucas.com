@@ -5,12 +5,13 @@ export default {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      // Cores vêm de variáveis CSS (src/styles/main.css) para alternar entre tema escuro e claro.
       colors: {
-        canvas: '#010102',
-        surface: { 1: '#0f1011', 2: '#141516', 3: '#18191a', 4: '#191a1b' },
-        hairline: { DEFAULT: '#23252a', strong: '#34343a' },
-        ink: { DEFAULT: '#f7f8f8', muted: '#d0d6e0', subtle: '#b4bac4' },
-        accent: { DEFAULT: '#3b82f6', solid: '#2563eb', hover: '#1d4ed8' },
+        canvas: 'var(--c-canvas)',
+        surface: { 1: 'var(--c-surface-1)', 2: 'var(--c-surface-2)', 3: 'var(--c-surface-3)', 4: 'var(--c-surface-4)' },
+        hairline: { DEFAULT: 'var(--c-hairline)', strong: 'var(--c-hairline-strong)' },
+        ink: { DEFAULT: 'var(--c-ink)', muted: 'var(--c-ink-muted)', subtle: 'var(--c-ink-subtle)' },
+        accent: { DEFAULT: 'var(--c-accent)', solid: '#2563eb', hover: '#1d4ed8' },
       },
       fontFamily: {
         sans: ['"Inter Variable"', 'Inter', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],

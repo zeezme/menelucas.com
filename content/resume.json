@@ -1,11 +1,20 @@
 {
   "meta": {
-    "locales": ["pt", "en"],
+    "locales": [
+      "pt",
+      "en"
+    ],
     "defaultLocale": "pt",
-    "pdf": { "pt": "/cv.pdf", "en": "/cv-en.pdf" }
+    "pdf": {
+      "pt": "/cv.pdf",
+      "en": "/cv-en.pdf"
+    }
   },
   "basics": {
     "name": "Lucas Augusto Muniz Menezes",
+    "alternateNames": [
+      "Lucas Menezes"
+    ],
     "label": {
       "pt": "Engenheiro de Software Sênior | TypeScript, Node.js, React | Sistemas Distribuídos, Segurança, AML/KYC",
       "en": "Senior Software Engineer | TypeScript, Node.js, NestJS, React | Distributed Systems & Security"
@@ -16,15 +25,24 @@
       "city": "Osasco",
       "region": "SP",
       "countryCode": "BR",
-      "note": { "pt": "Osasco, SP", "en": "Osasco, SP, Brazil (open to remote)" }
+      "note": {
+        "pt": "Osasco, SP",
+        "en": "Osasco, SP, Brazil (open to remote)"
+      }
     },
     "summary": {
       "pt": "Engenheiro de Software Sênior com 5 anos de experiência profissional, especializado em criar do zero sistemas críticos com TypeScript, Node.js, NestJS e React. Na Blaze (iGaming regulado), arquitetei e implementei o core multi-tenant de validação de identidade de uma plataforma de KYC e a refatoração do backoffice e do monitoramento de risco com regras de AML, da modelagem de dados à segurança, observabilidade e testes, além de conduzir os code reviews do time. Antes, desenvolvi ERPs fiscais com emissão de NF-e.",
       "en": "Senior Software Engineer with 5 years of professional experience, specialized in building critical systems from scratch with TypeScript, Node.js, NestJS and React. At Blaze (regulated iGaming), I designed and built the multi-tenant identity verification core of a KYC platform and led the redesign of the back-office and risk monitoring with AML rules, from data modeling to security, observability and testing, while leading code reviews for the team. Previously built tax-compliance ERPs with electronic invoicing (NF-e)."
     },
     "profiles": [
-      { "network": "LinkedIn", "url": "https://www.linkedin.com/in/meneluca" },
-      { "network": "GitHub", "url": "https://github.com/Zeezme" },
+      {
+        "network": "LinkedIn",
+        "url": "https://www.linkedin.com/in/meneluca"
+      },
+      {
+        "network": "GitHub",
+        "url": "https://github.com/Zeezme"
+      },
       {
         "network": "WhatsApp",
         "url": "https://wa.me/5511961750560?text=Ol%C3%A1%2C%20Lucas!%20Vi%20seu%20curr%C3%ADculo%20em%20menelucas.com"
@@ -33,38 +51,153 @@
   },
   "skills": [
     {
-      "name": { "pt": "Principais", "en": "Core" },
+      "name": {
+        "pt": "Principais",
+        "en": "Core"
+      },
       "keywords": {
-        "pt": ["TypeScript", "JavaScript", "Node.js", "NestJS", "React", "Next.js", "PostgreSQL", "Redis", "Apache Kafka", "AWS"],
-        "en": ["TypeScript", "JavaScript", "Node.js", "NestJS", "React", "Next.js", "PostgreSQL", "Redis", "Apache Kafka", "AWS"]
+        "pt": [
+          "TypeScript",
+          "JavaScript",
+          "Node.js",
+          "NestJS",
+          "React",
+          "Next.js",
+          "PostgreSQL",
+          "Redis",
+          "Apache Kafka",
+          "AWS"
+        ],
+        "en": [
+          "TypeScript",
+          "JavaScript",
+          "Node.js",
+          "NestJS",
+          "React",
+          "Next.js",
+          "PostgreSQL",
+          "Redis",
+          "Apache Kafka",
+          "AWS"
+        ]
       }
     },
     {
-      "name": { "pt": "Back-end e arquitetura", "en": "Back-end and architecture" },
+      "name": {
+        "pt": "Back-end e arquitetura",
+        "en": "Back-end and architecture"
+      },
       "keywords": {
-        "pt": ["APIs REST", "GraphQL", "OpenAPI", "Zod", "microsserviços", "arquitetura orientada a eventos", "padrão outbox", "multi-tenant", "TypeORM", "MikroORM", "Drizzle"],
-        "en": ["REST APIs", "GraphQL", "OpenAPI", "Zod", "microservices", "event-driven architecture", "multi-tenancy", "outbox pattern", "TypeORM", "MikroORM", "Drizzle"]
+        "pt": [
+          "APIs REST",
+          "GraphQL",
+          "OpenAPI",
+          "Zod",
+          "microsserviços",
+          "arquitetura orientada a eventos",
+          "padrão outbox",
+          "multi-tenant",
+          "TypeORM",
+          "MikroORM",
+          "Drizzle"
+        ],
+        "en": [
+          "REST APIs",
+          "GraphQL",
+          "OpenAPI",
+          "Zod",
+          "microservices",
+          "event-driven architecture",
+          "multi-tenancy",
+          "outbox pattern",
+          "TypeORM",
+          "MikroORM",
+          "Drizzle"
+        ]
       }
     },
     {
-      "name": { "pt": "Segurança e DevOps", "en": "Security and DevOps" },
+      "name": {
+        "pt": "Segurança e DevOps",
+        "en": "Security and DevOps"
+      },
       "keywords": {
-        "pt": ["OAuth 2.0/PKCE", "JWT", "MFA", "RBAC", "CSP", "Docker", "GitHub Actions", "CI/CD", "AWS (EC2, S3, SNS, SQS)", "observabilidade"],
-        "en": ["OAuth 2.0/PKCE", "JWT", "MFA", "RBAC", "CSP", "Docker", "GitHub Actions", "CI/CD", "AWS (EC2, S3, SNS, SQS)", "observability"]
+        "pt": [
+          "OAuth 2.0/PKCE",
+          "JWT",
+          "MFA",
+          "RBAC",
+          "CSP",
+          "Docker",
+          "GitHub Actions",
+          "CI/CD",
+          "AWS (EC2, S3, SNS, SQS)",
+          "observabilidade"
+        ],
+        "en": [
+          "OAuth 2.0/PKCE",
+          "JWT",
+          "MFA",
+          "RBAC",
+          "CSP",
+          "Docker",
+          "GitHub Actions",
+          "CI/CD",
+          "AWS (EC2, S3, SNS, SQS)",
+          "observability"
+        ]
       }
     },
     {
-      "name": { "pt": "Testes e front-end", "en": "Testing and front-end" },
+      "name": {
+        "pt": "Testes e front-end",
+        "en": "Testing and front-end"
+      },
       "keywords": {
-        "pt": ["Jest", "Vitest", "Supertest", "Testcontainers", "TanStack Query", "Tailwind CSS", "Storybook", "Electron", "MCP (IA)"],
-        "en": ["Jest", "Vitest", "Supertest", "Testcontainers", "TanStack Query", "Tailwind CSS", "Storybook", "Electron", "MCP (AI)"]
+        "pt": [
+          "Jest",
+          "Vitest",
+          "Supertest",
+          "Testcontainers",
+          "TanStack Query",
+          "Tailwind CSS",
+          "Storybook",
+          "Electron",
+          "MCP (IA)"
+        ],
+        "en": [
+          "Jest",
+          "Vitest",
+          "Supertest",
+          "Testcontainers",
+          "TanStack Query",
+          "Tailwind CSS",
+          "Storybook",
+          "Electron",
+          "MCP (AI)"
+        ]
       }
     },
     {
-      "name": { "pt": "Domínio", "en": "Domain" },
+      "name": {
+        "pt": "Domínio",
+        "en": "Domain"
+      },
       "keywords": {
-        "pt": ["KYC", "AML", "gestão de risco", "iGaming regulado", "ERP fiscal (NF-e)"],
-        "en": ["KYC", "AML", "risk management", "regulated iGaming", "tax and electronic invoicing (NF-e)"]
+        "pt": [
+          "KYC",
+          "AML",
+          "gestão de risco",
+          "iGaming regulado",
+          "ERP fiscal (NF-e)"
+        ],
+        "en": [
+          "KYC",
+          "AML",
+          "risk management",
+          "regulated iGaming",
+          "tax and electronic invoicing (NF-e)"
+        ]
       }
     }
   ],
@@ -72,10 +205,16 @@
     {
       "id": "blaze",
       "name": "Blaze",
-      "position": { "pt": "Engenheiro de Software Sênior", "en": "Senior Software Engineer" },
+      "position": {
+        "pt": "Engenheiro de Software Sênior",
+        "en": "Senior Software Engineer"
+      },
       "startDate": "2026-02",
       "endDate": "2026-09",
-      "location": { "pt": "Remoto (PJ)", "en": "Remote (contractor)" },
+      "location": {
+        "pt": "Remoto (PJ)",
+        "en": "Remote (contractor)"
+      },
       "summary": {
         "pt": "Responsável pela arquitetura e implementação de serviços críticos de identidade, compliance e risco, da modelagem de domínio e dados até segurança, observabilidade e testes, além de code reviews frequentes do time.",
         "en": "Owned the architecture and implementation of critical identity, compliance and risk services, from domain and data modeling to security, observability and testing, and performed frequent code reviews for the team."
@@ -126,10 +265,16 @@
     {
       "id": "windel",
       "name": "Windel Sistemas",
-      "position": { "pt": "Desenvolvedor Full Stack Pleno", "en": "Full Stack Developer" },
+      "position": {
+        "pt": "Desenvolvedor Full Stack Pleno",
+        "en": "Full Stack Developer"
+      },
       "startDate": "2025-02",
       "endDate": "2026-01",
-      "location": { "pt": "Caxias do Sul, RS", "en": "Caxias do Sul, Brazil" },
+      "location": {
+        "pt": "Caxias do Sul, RS",
+        "en": "Caxias do Sul, Brazil"
+      },
       "highlights": [
         {
           "pt": "Participei da definição da arquitetura de microsserviços do ERP e integrei o sistema com Nuvemshop e APIs fiscais, ampliando a automação de vendas e emissão fiscal.",
@@ -144,10 +289,16 @@
     {
       "id": "cia-sistemas",
       "name": "Cia Sistemas",
-      "position": { "pt": "Desenvolvedor Full Stack", "en": "Full Stack Developer" },
+      "position": {
+        "pt": "Desenvolvedor Full Stack",
+        "en": "Full Stack Developer"
+      },
       "startDate": "2023-11",
       "endDate": "2024-12",
-      "location": { "pt": "Caxias do Sul, RS", "en": "Caxias do Sul, Brazil" },
+      "location": {
+        "pt": "Caxias do Sul, RS",
+        "en": "Caxias do Sul, Brazil"
+      },
       "highlights": [
         {
           "pt": "Desenvolvi ERP fiscal com Node.js, React, PostgreSQL e Sequelize, automatizando emissão de NF-e, cálculo de tributos e integrações com APIs fiscais, com testes automatizados em Jest.",
@@ -158,10 +309,16 @@
     {
       "id": "moderniza",
       "name": "Moderniza Group",
-      "position": { "pt": "Desenvolvedor Full Stack", "en": "Full Stack Developer" },
+      "position": {
+        "pt": "Desenvolvedor Full Stack",
+        "en": "Full Stack Developer"
+      },
       "startDate": "2022-10",
       "endDate": "2023-06",
-      "location": { "pt": "Caxias do Sul, RS", "en": "Caxias do Sul, Brazil" },
+      "location": {
+        "pt": "Caxias do Sul, RS",
+        "en": "Caxias do Sul, Brazil"
+      },
       "highlights": [
         {
           "pt": "Desenvolvi plataforma unificada de integração de sistemas internos com React, Node.js, Express e Redux Toolkit.",
@@ -172,10 +329,16 @@
     {
       "id": "central-it",
       "name": "Central IT",
-      "position": { "pt": "Estagiário de Desenvolvimento", "en": "Software Development Intern" },
+      "position": {
+        "pt": "Estagiário de Desenvolvimento",
+        "en": "Software Development Intern"
+      },
       "startDate": "2021-11",
       "endDate": "2022-10",
-      "location": { "pt": "Caxias do Sul, RS", "en": "Caxias do Sul, Brazil" },
+      "location": {
+        "pt": "Caxias do Sul, RS",
+        "en": "Caxias do Sul, Brazil"
+      },
       "highlights": [
         {
           "pt": "Desenvolvi plataforma de chatbots em tempo real com React, TypeScript, Socket.io e Docker.",
@@ -194,12 +357,45 @@
         "pt": "Tecnólogo em Análise e Desenvolvimento de Sistemas",
         "en": "Associate Degree in Systems Analysis and Development"
       },
-      "status": { "pt": "Em andamento", "en": "In progress" }
+      "status": {
+        "pt": "Em andamento",
+        "en": "In progress"
+      }
     }
   ],
   "languages": [
-    { "language": { "pt": "Português", "en": "Portuguese" }, "fluency": { "pt": "nativo", "en": "native" } },
-    { "language": { "pt": "Inglês", "en": "English" }, "fluency": { "pt": "fluente", "en": "fluent" } },
-    { "language": { "pt": "Espanhol", "en": "Spanish" }, "fluency": { "pt": "intermediário", "en": "intermediate" } }
+    {
+      "code": "pt",
+      "language": {
+        "pt": "Português",
+        "en": "Portuguese"
+      },
+      "fluency": {
+        "pt": "nativo",
+        "en": "native"
+      }
+    },
+    {
+      "code": "en",
+      "language": {
+        "pt": "Inglês",
+        "en": "English"
+      },
+      "fluency": {
+        "pt": "fluente",
+        "en": "fluent"
+      }
+    },
+    {
+      "code": "es",
+      "language": {
+        "pt": "Espanhol",
+        "en": "Spanish"
+      },
+      "fluency": {
+        "pt": "intermediário",
+        "en": "intermediate"
+      }
+    }
   ]
 }

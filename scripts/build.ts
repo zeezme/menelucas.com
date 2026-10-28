@@ -1,11 +1,13 @@
 import { execFileSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { resume, ui } from '../src/content'
 import { renderPage } from '../src/render'
+import { buildRobots, buildSitemap } from '../src/seo/head'
 import { LOCALES } from '../src/schema/resume'
-import { siteConfig } from '../src/site'
+import { isIndexable, OG_IMAGE, siteConfig } from '../src/site'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 export const distDir = join(root, 'dist')
@@ -25,7 +27,9 @@ function compileCss(base: string): string {
 
 /** Gera `dist/`: `/` (PT) e `/en/` (EN) como HTML estático, mais os arquivos de `public/`. */
 export function build(): void {
-  const site = siteConfig()
+  const base = siteConfig()
+  const ogVersion = createHash('sha1').update(readFileSync(join(root, 'public', OG_IMAGE.path))).digest('hex').slice(0, 8)
+  const site = { ...base, ogVersion }
   rmSync(distDir, { recursive: true, force: true })
   mkdirSync(join(distDir, 'assets'), { recursive: true })
   cpSync(join(root, 'public'), distDir, { recursive: true })
@@ -38,6 +42,10 @@ export function build(): void {
     const outDir = locale === 'pt' ? distDir : join(distDir, locale)
     mkdirSync(outDir, { recursive: true })
     writeFileSync(join(outDir, 'index.html'), html)
+  }
+  if (isIndexable(site)) {
+    writeFileSync(join(distDir, 'sitemap.xml'), buildSitemap(site))
+    writeFileSync(join(distDir, 'robots.txt'), buildRobots(site))
   }
   const size = (p: string) => (readFileSync(join(distDir, p)).length / 1024).toFixed(1)
   console.log(`dist/index.html ${size('index.html')} kB · dist/en/index.html ${size('en/index.html')} kB (base ${site.base})`)

@@ -1,34 +1,40 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import sharp, { type Color } from 'sharp'
+import sharp from 'sharp'
 
 /**
- * Gera avatar e favicons a partir da foto (recorte transparente).
- * Uso: npm run assets -- "C:\caminho\foto_sem_fundo.png"
+ * Gera avatar (busto) e favicons (rosto) recortando quadrados da foto.
+ * Uso: npm run assets -- <foto> --bust=esquerda,topo,lado --face=esquerda,topo,lado
+ * Ex.:  npm run assets -- IMG_9992.jpg --bust=1034,109,1960 --face=1387,163,1142
  * Os arquivos gerados ficam versionados em public/.
  */
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const src = process.argv[2]
-if (!src) throw new Error('Informe o caminho da foto: npm run assets -- <foto.png>')
+const [src, ...flags] = process.argv.slice(2)
+const region = (name: string) => {
+  const raw = flags.find((f) => f.startsWith(`--${name}=`))?.split('=')[1]
+  const [left, top, size] = (raw ?? '').split(',').map(Number)
+  if (left === undefined || top === undefined || !size) {
+    throw new Error(`Uso: npm run assets -- <foto> --bust=esq,topo,lado --face=esq,topo,lado (faltou --${name})`)
+  }
+  return { left, top, width: size, height: size }
+}
+if (!src) throw new Error('Informe a foto de origem.')
+const BUST = region('bust')
+const FACE = region('face')
 const out = join(root, 'public')
 mkdirSync(out, { recursive: true })
 
-const BG = { r: 20, g: 21, b: 22, alpha: 1 } // surface-2
-const photo = sharp(src).trim()
+const BG = { r: 20, g: 21, b: 22, alpha: 1 } // surface-2 (fundo sob fotos com transparência)
+const crop = (r: typeof BUST, size: number) =>
+  sharp(src).extract(r).resize(size, size, { fit: 'cover' }).flatten({ background: BG })
 
-const square = async (size: number, background: Color) =>
-  photo
-    .clone()
-    .resize(size, size, { fit: 'contain', position: 'bottom', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .flatten({ background })
-
-await (await square(160, BG)).webp({ quality: 88 }).toFile(join(out, 'avatar.webp'))
-await (await square(180, BG)).png().toFile(join(out, 'apple-touch-icon.png'))
-await (await square(48, BG)).png().toFile(join(out, 'favicon.png'))
+await crop(BUST, 192).webp({ quality: 88 }).toFile(join(out, 'avatar.webp'))
+await crop(FACE, 180).png().toFile(join(out, 'apple-touch-icon.png'))
+await crop(FACE, 48).png().toFile(join(out, 'favicon.png'))
 
 // favicon.ico (PNG embutido em contêiner ICO, 32x32)
-const png32 = await (await square(32, BG)).png().toBuffer()
+const png32 = await crop(FACE, 32).png().toBuffer()
 const header = Buffer.alloc(22)
 header.writeUInt16LE(0, 0)
 header.writeUInt16LE(1, 2)

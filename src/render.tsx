@@ -4,9 +4,8 @@ import type { Locale, Resume, UiStrings } from './schema/resume'
 import { localePath } from './i18n'
 import { buildHeadMeta, ogLocale } from './seo/head'
 import { redirectScript } from './seo/redirect-script'
-import { OG_IMAGE, type SiteConfig } from './site'
-
-export const THEME_COLOR = '#010102'
+import { THEME_COLORS, themeScript } from './seo/theme-script'
+import { isIndexable, OG_IMAGE, type SiteConfig } from './site'
 
 interface RenderInput {
   resume: Resume
@@ -33,8 +32,15 @@ function Document({ resume, ui, locale, site, css }: RenderInput) {
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
         <meta name="author" content={resume.basics.name} />
-        <meta name="theme-color" content={THEME_COLOR} />
-        <meta name="color-scheme" content="dark" />
+        <meta name="keywords" content={meta.keywords} />
+        <meta
+          name="robots"
+          content={isIndexable(site) ? 'index, follow, max-image-preview:large' : 'noindex, nofollow'}
+        />
+        <meta name="theme-color" content={THEME_COLORS.dark} media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content={THEME_COLORS.light} media="(prefers-color-scheme: light)" />
+        <meta name="color-scheme" content="dark light" />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="canonical" href={meta.canonical} />
         {meta.alternates.map((a) => (
           <link key={a.locale} rel="alternate" hrefLang={a.locale} href={a.href} />
@@ -43,6 +49,7 @@ function Document({ resume, ui, locale, site, css }: RenderInput) {
         <link rel="icon" href={`${site.base}favicon.png`} type="image/png" sizes="48x48" />
         <link rel="apple-touch-icon" href={`${site.base}apple-touch-icon.png`} />
         <meta property="og:type" content="profile" />
+        <meta property="profile:username" content="meneluca" />
         <meta property="og:site_name" content={resume.basics.name} />
         <meta property="og:title" content={meta.title} />
         <meta property="og:description" content={meta.description} />

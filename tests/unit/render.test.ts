@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { resume, ui } from '../../src/content'
 import { detectLocale, firstSentence, formatYearMonth, localePath } from '../../src/i18n'
 import { renderPage } from '../../src/render'
+import { buildHeadMeta, buildRobots, buildSitemap, skillKeywords } from '../../src/seo/head'
 import { siteConfig } from '../../src/site'
 
 const site = siteConfig({})
@@ -25,6 +26,44 @@ describe('i18n helpers', () => {
   })
 })
 
+describe('SEO para recrutadores', () => {
+  it.each(['pt', 'en'] as const)('%s: título, descrição e palavras-chave derivados dos dados', (locale) => {
+    const meta = buildHeadMeta(resume, locale, site)
+    expect(meta.title).toContain('Lucas Augusto Muniz Menezes')
+    expect(meta.title).toMatch(/TypeScript, Node\.js/)
+    expect(meta.description).toMatch(/TypeScript, Node\.js, NestJS e React|TypeScript, Node\.js, NestJS and React/)
+    for (const k of ['TypeScript', 'Node.js', 'NestJS', 'React', 'PostgreSQL', 'KYC', 'AML']) {
+      expect(meta.keywords).toContain(k)
+    }
+  })
+
+  it('JSON-LD: Person com tecnologias, idiomas e formação, ligado a um ProfilePage', () => {
+    const { jsonLd } = buildHeadMeta(resume, 'en', site)
+    const graph = (jsonLd as { '@graph': Record<string, unknown>[] })['@graph']
+    const person = graph.find((n) => n['@type'] === 'Person')
+    const profile = graph.find((n) => n['@type'] === 'ProfilePage')
+    expect(person?.['alternateName']).toContain('Lucas Menezes')
+    expect(person?.['knowsAbout']).toEqual(skillKeywords(resume, 'en'))
+    expect(person?.['knowsLanguage']).toEqual(['pt', 'en', 'es'])
+    expect(person?.['telephone']).toBeUndefined()
+    expect(profile?.['mainEntity']).toEqual({ '@id': person?.['@id'] })
+  })
+
+  it('sitemap lista PT e EN com hreflang; robots aponta para o sitemap', () => {
+    const xml = buildSitemap(site, new Date('2026-10-28T12:00:00Z'))
+    expect(xml).toContain('<loc>https://menelucas.com/</loc>')
+    expect(xml).toContain('<loc>https://menelucas.com/en/</loc>')
+    expect(xml).toContain('<lastmod>2026-10-28</lastmod>')
+    expect(buildRobots(site)).toContain('Sitemap: https://menelucas.com/sitemap.xml')
+  })
+
+  it('staging recebe noindex; produção é indexável', () => {
+    const staged = renderPage({ resume, ui, locale: 'pt', site: siteConfig({ BASE_PATH: '/staging/' }), css: '' })
+    expect(staged).toContain('content="noindex, nofollow"')
+    expect(html('pt')).toContain('content="index, follow, max-image-preview:large"')
+  })
+})
+
 describe('página renderizada', () => {
   it.each(['pt', 'en'] as const)('%s: semântica, SEO e links', (locale) => {
     const out = html(locale)
@@ -38,8 +77,12 @@ describe('página renderizada', () => {
     expect(out).toMatch(/hreflang="en"/i)
     expect(out).toMatch(/hreflang="x-default"/i)
     expect(out).toContain('content="https://menelucas.com/banner.jpg"')
+    const versioned = renderPage({ resume, ui, locale, site: { ...site, ogVersion: 'abc12345' }, css: '' })
+    expect(versioned).toContain('content="https://menelucas.com/banner.jpg?v=abc12345"')
     expect(out).toContain('name="twitter:card" content="summary_large_image"')
-    expect(out).toContain('name="theme-color" content="#010102"')
+    expect(out).toContain('name="theme-color" content="#010102" media="(prefers-color-scheme: dark)"')
+    expect(out).toContain('name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"')
+    expect(out).toContain('data-theme-toggle')
     expect(out).toContain('application/ld+json')
     expect(out).toContain(`href="${resume.meta.pdf[locale]}"`)
   })
