@@ -15,8 +15,8 @@ interface Props {
  * no texto `sr-only`, que também é o nome acessível (sem aria-label divergente do texto visível).
  */
 const contactLink =
-  'inline-flex min-h-touch items-center gap-2 rounded-btn border border-hairline bg-surface-1 px-3 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink ' +
-  'sm:min-w-touch sm:justify-center sm:border-transparent sm:bg-transparent sm:px-0 sm:text-ink-subtle'
+  'inline-flex min-h-touch w-full items-center justify-center gap-2 rounded-btn border border-hairline bg-surface-1 px-3 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink ' +
+  'sm:w-auto sm:min-w-touch sm:border-transparent sm:bg-transparent sm:px-0 sm:text-ink-subtle'
 
 function ContactLink({ href, label, rel, children }: { href: string; label: string; rel?: string; children: ReactNode }) {
   return (
@@ -97,7 +97,7 @@ export function Header({ resume, locale, base, t }: Props) {
       </div>
 
       <nav aria-label={t('contactNav')} className="sm:col-start-2 sm:row-start-1">
-        <ul className="flex flex-wrap gap-2 sm:-mr-2 sm:gap-0">
+        <ul className="grid grid-cols-2 gap-2 sm:-mr-2 sm:flex sm:gap-0">
           {linkedin ? (
             <ContactLink href={linkedin.url} label={linkedin.network} rel="me noopener">
               <LinkedInIcon />
