@@ -34,6 +34,20 @@ export const firstSentence = (text: string): string => {
 export const detectLocale = (languages: readonly string[]): Locale =>
   /^pt/i.test(languages[0] ?? '') ? 'pt' : 'en'
 
+export type PageId = 'resume' | 'projects'
+
+/** URL (com barras nas pontas) de cada página em cada idioma. */
+export const pagePath = (page: PageId, locale: Locale, base: string): string => {
+  if (page === 'resume') return localePath(locale, base)
+  return locale === 'pt' ? `${base}projetos/` : `${base}en/projects/`
+}
+
+/** Arquivo de saída em dist/ de cada página. */
+export const pageFile = (page: PageId, locale: Locale): string => {
+  if (page === 'resume') return locale === 'pt' ? 'index.html' : 'en/index.html'
+  return locale === 'pt' ? 'projetos/index.html' : 'en/projects/index.html'
+}
+
 export const otherLocale = (locale: Locale): Locale => (locale === 'pt' ? 'en' : 'pt')
 
 export const localePath = (locale: Locale, base: string): string =>

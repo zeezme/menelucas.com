@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url'
 import { resume, ui } from '../src/content'
 import { renderPage } from '../src/render'
 import { buildRobots, buildSitemap } from '../src/seo/head'
-import { LOCALES } from '../src/schema/resume'
+import { pageFile, type PageId } from '../src/i18n'
+import { LOCALES, showcaseProjects } from '../src/schema/resume'
 import { isIndexable, ogImagePath, ogImageSource, siteConfig } from '../src/site'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -41,14 +42,17 @@ export function build(): void {
   }
 
   const css = compileCss(site.base)
-  for (const locale of LOCALES) {
-    const html = renderPage({ resume, ui, locale, site, css })
-    const outDir = locale === 'pt' ? distDir : join(distDir, locale)
-    mkdirSync(outDir, { recursive: true })
-    writeFileSync(join(outDir, 'index.html'), html)
+  // A página Projetos só existe se algum projeto tiver galeria no resume.json.
+  const pages: PageId[] = showcaseProjects(resume).length > 0 ? ['resume', 'projects'] : ['resume']
+  for (const page of pages) {
+    for (const locale of LOCALES) {
+      const file = join(distDir, pageFile(page, locale))
+      mkdirSync(dirname(file), { recursive: true })
+      writeFileSync(file, renderPage({ resume, ui, locale, site, css, page }))
+    }
   }
   if (isIndexable(site)) {
-    writeFileSync(join(distDir, 'sitemap.xml'), buildSitemap(site))
+    writeFileSync(join(distDir, 'sitemap.xml'), buildSitemap(site, pages))
     writeFileSync(join(distDir, 'robots.txt'), buildRobots(site))
   }
   const size = (p: string) => (readFileSync(join(distDir, p)).length / 1024).toFixed(1)

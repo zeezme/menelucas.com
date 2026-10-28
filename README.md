@@ -48,6 +48,8 @@ O schema fica em [`src/schema/resume.ts`](src/schema/resume.ts); campos desconhe
 
 **Projetos:** a seção `projects` é opcional (campos `name`, `roles`, `startDate`, `endDate?`, `description`, `highlights`, `url?`; sem `endDate` mostra "atual"/"present"). Sem o campo, ou com a lista vazia, a seção não aparece: para tirá-la basta remover o item do `resume.json`. Projetos não entram no JSON-LD.
 
+**Aba Projetos:** se algum projeto tiver `gallery`, o site ganha as abas "Currículo | Projetos" e as páginas `/projetos/` e `/en/projects/` (detalhes em `detailSections`, nota em `notice`, telas em `gallery`, com imagens em `public/projetos/`). Sem projeto com galeria, a aba e as páginas não são geradas. A página de projetos não tem JSON-LD.
+
 Extensões ao JSON Resume: `work[].sections[]` (subtítulos de projeto), `skills[].keywords` por idioma e `meta.pdf` (PDF de cada idioma).
 Os PDFs (`public/cv.pdf`, `public/cv-en.pdf`) são mantidos como estão e usados só para download.
 

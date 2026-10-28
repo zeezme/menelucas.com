@@ -376,6 +376,244 @@
           "pt": "Ambiente local completo em Docker com LocalStack (S3, SES), deploy automático na AWS a cada push e fluxo de anonimização de dados para a LGPD.",
           "en": "Full local environment in Docker with LocalStack (S3, SES), automatic AWS deploy on every push, and an LGPD data-anonymization flow."
         }
+      ],
+      "detailSections": [
+        {
+          "title": {
+            "pt": "Qualidade e entrega",
+            "en": "Quality and delivery"
+          },
+          "items": [
+            {
+              "pt": "Mais de 500 testes automatizados, integração contínua a cada push e deploy automático na AWS.",
+              "en": "Over 500 automated tests, continuous integration on every push and automatic AWS deploys."
+            },
+            {
+              "pt": "Cerca de 48 mil linhas de TypeScript, 36 migrações de banco e 240 commits em três semanas.",
+              "en": "About 48 thousand lines of TypeScript, 36 database migrations and 240 commits in three weeks."
+            },
+            {
+              "pt": "O isolamento entre profissionais (nenhum acessa dados de outro, nem pela API) é provado por testes de integração no CI.",
+              "en": "Isolation between professionals (none can reach another's data, not even through the API) is proven by integration tests in CI."
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Segurança e controle de acesso",
+            "en": "Security and access control"
+          },
+          "items": [
+            {
+              "pt": "Acesso fechado por padrão: toda rota declara quem pode chamá-la, e os papéis são conjuntos de permissões, com permissões extras por pessoa, sempre com motivo e histórico.",
+              "en": "Closed by default: every route declares who may call it, and roles are sets of permissions, with per-person extra permissions, always with a reason and history."
+            },
+            {
+              "pt": "Perfil somente leitura que mostra o paciente só pelo código e oculta nome, e-mail, telefone e CPF, com um teste que percorre todas as rotas.",
+              "en": "A read-only profile that shows the patient only by code and hides name, e-mail, phone and ID number, with a test that walks every route."
+            },
+            {
+              "pt": "Sessão com token de renovação em cookie HttpOnly, bloqueio de tentativas de login, limites de reservas por IP e por paciente e chaves de terceiros criptografadas.",
+              "en": "Sessions with a refresh token in an HttpOnly cookie, login-attempt lockout, booking limits per IP and per patient, and third-party keys encrypted."
+            },
+            {
+              "pt": "Auditoria de tudo o que muda no sistema, gravada na mesma transação, com filtros por período, pessoa, médico e código do paciente.",
+              "en": "Audit of everything that changes in the system, written in the same transaction, filterable by period, person, doctor and patient code."
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Privacidade e LGPD",
+            "en": "Privacy and LGPD"
+          },
+          "items": [
+            {
+              "pt": "Minimização de dados: nada de paciente em logs, URLs ou eventos de anúncio, e o CPF completo não é guardado, apenas mascarado e em hash com chave para busca.",
+              "en": "Data minimization: no patient data in logs, URLs or ad events, and the full ID number is not stored, only masked and as a keyed hash for lookups."
+            },
+            {
+              "pt": "Dados para receita coletados só depois do pagamento, criptografados e com cada acesso do médico auditado; a plataforma não emite receitas.",
+              "en": "Prescription data is collected only after payment, encrypted, with each doctor access audited; the platform does not issue prescriptions."
+            },
+            {
+              "pt": "Direitos do titular: anonimização de paciente sob demanda, origem de anúncio apagada depois de 180 dias e backup do banco criptografado, com retenção limitada.",
+              "en": "Data subject rights: on-demand patient anonymization, ad source erased after 180 days, and an encrypted database backup with limited retention."
+            },
+            {
+              "pt": "Cookies: nenhum pixel antes do aceite, escolha por categoria e consentimento registrado; e-mail e telefone em hash não vão para as plataformas de anúncio.",
+              "en": "Cookies: no pixel before consent, choice by category and recorded consent; hashed e-mail and phone are not sent to ad platforms."
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Regras do CFM e dos conselhos (CRM)",
+            "en": "CFM and professional-council rules (CRM)"
+          },
+          "items": [
+            {
+              "pt": "Cada profissional aparece com o registro do seu conselho (CRM, CRP ou CRN); psicólogos e nutricionistas não aparecem como médicos nem com especialidade médica.",
+              "en": "Each professional is shown with their council registration (CRM, CRP or CRN); psychologists and nutritionists are not shown as doctors or with a medical specialty."
+            },
+            {
+              "pt": "A especialidade médica só é exibida com RQE, conforme as regras do CFM; sem RQE o profissional aparece apenas como \"Médico\".",
+              "en": "A medical specialty is only displayed with an RQE, following CFM rules; without an RQE the professional appears simply as \"Doctor\"."
+            },
+            {
+              "pt": "O rótulo público de cada perfil segue a Resolução CFM 2.336/2023, sobre publicidade médica.",
+              "en": "Each public profile's label follows CFM Resolution 2,336/2023, on medical advertising."
+            },
+            {
+              "pt": "Um profissional só vai para o site depois de completar o checklist de ativação e de a equipe ativá-lo.",
+              "en": "A professional only goes live on the site after completing the activation checklist and being activated by the team."
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Infraestrutura na AWS",
+            "en": "AWS infrastructure"
+          },
+          "items": [
+            {
+              "pt": "Segredos no SSM Parameter Store, e-mails transacionais no SES e fotos no S3 com URLs assinadas.",
+              "en": "Secrets in SSM Parameter Store, transactional e-mails in SES and photos in S3 with signed URLs."
+            },
+            {
+              "pt": "Backup diário do banco para o S3, criptografado e com retenção de 30 dias, e deploy automático a cada push na branch principal.",
+              "en": "Daily database backup to S3, encrypted with 30-day retention, and automatic deploys on every push to the main branch."
+            }
+          ]
+        }
+      ],
+      "notice": {
+        "pt": "Projetado de acordo com os princípios da LGPD (Lei 13.709/2018) e com as regras do CFM aplicáveis a perfis e publicidade. A política de privacidade do produto ainda está em revisão jurídica: esta página descreve decisões técnicas e não substitui parecer jurídico.",
+        "en": "Designed in line with the principles of the LGPD (Brazil's data protection law, Law 13,709/2018) and with the CFM rules that apply to professional profiles and advertising. The product's privacy policy is still under legal review: this page describes technical decisions and is not legal advice."
+      },
+      "galleryNote": {
+        "pt": "Capturas de tela de um ambiente de desenvolvimento, com dados fictícios.",
+        "en": "Screenshots from a development environment, with fictitious data."
+      },
+      "gallery": [
+        {
+          "src": "projetos/ipsiq/01-home.webp",
+          "width": 1600,
+          "height": 522,
+          "alt": {
+            "pt": "Página inicial pública do iPsiq com a proposta de valor e o próximo horário livre",
+            "en": "iPsiq public home page with the value proposition and the next available slot"
+          },
+          "caption": {
+            "pt": "Página inicial pública: proposta de valor e próximo horário livre.",
+            "en": "Public home page: value proposition and next available slot."
+          }
+        },
+        {
+          "src": "projetos/ipsiq/02-agendamento.webp",
+          "width": 772,
+          "height": 880,
+          "maxWidth": 386,
+          "alt": {
+            "pt": "Seletor de dia e horário da página de um médico, com o botão de agendar",
+            "en": "Day and time picker on a doctor's page, with the booking button"
+          },
+          "caption": {
+            "pt": "Agendamento: escolha do dia e do horário, e confirmação no mesmo fluxo.",
+            "en": "Booking: pick the day and time, and confirm in the same flow."
+          }
+        },
+        {
+          "src": "projetos/ipsiq/03-agenda.webp",
+          "width": 1600,
+          "height": 1000,
+          "alt": {
+            "pt": "Agenda do dia no backoffice, com a situação de cada consulta e ações rápidas",
+            "en": "Back-office day agenda, showing each appointment's status and quick actions"
+          },
+          "caption": {
+            "pt": "Backoffice: agenda do dia com a situação de cada consulta e ações rápidas (concluir, falta, remarcar, cancelar).",
+            "en": "Back-office: day agenda with each appointment's status and quick actions (complete, no-show, reschedule, cancel)."
+          }
+        },
+        {
+          "src": "projetos/ipsiq/04-consultas.webp",
+          "width": 1600,
+          "height": 1000,
+          "alt": {
+            "pt": "Lista de consultas do backoffice filtrada por situação",
+            "en": "Back-office appointment list filtered by status"
+          },
+          "caption": {
+            "pt": "Backoffice: consultas com busca, filtros por situação e médico, e paginação.",
+            "en": "Back-office: appointments with search, status and doctor filters, and pagination."
+          }
+        },
+        {
+          "src": "projetos/ipsiq/05-roles.webp",
+          "width": 1600,
+          "height": 1000,
+          "alt": {
+            "pt": "Lista de roles do sistema com tipo, público, permissões e usuários",
+            "en": "List of system roles with type, audience, permissions and users"
+          },
+          "caption": {
+            "pt": "Acessos: roles do sistema (administrador, médico e product manager) como conjuntos de permissões.",
+            "en": "Access: system roles (administrator, doctor and product manager) as sets of permissions."
+          }
+        },
+        {
+          "src": "projetos/ipsiq/06-role-detalhe.webp",
+          "width": 1600,
+          "height": 1000,
+          "alt": {
+            "pt": "Matriz de permissões por recurso e ação de uma role",
+            "en": "Permission matrix by resource and action for a role"
+          },
+          "caption": {
+            "pt": "Matriz de permissões por recurso e ação; roles customizadas são montadas aqui.",
+            "en": "Permission matrix by resource and action; custom roles are built here."
+          }
+        },
+        {
+          "src": "projetos/ipsiq/07-auditoria.webp",
+          "width": 1600,
+          "height": 1000,
+          "alt": {
+            "pt": "Tela de auditoria com filtros por período, origem, entidade e operação",
+            "en": "Audit screen with filters by period, source, entity and operation"
+          },
+          "caption": {
+            "pt": "Auditoria: tudo o que acontece no sistema, com filtros de quando, o quê e quem; pacientes só pelo código.",
+            "en": "Audit: everything that happens in the system, with when, what and who filters; patients only by code."
+          }
+        },
+        {
+          "src": "projetos/ipsiq/08-horarios.webp",
+          "width": 1600,
+          "height": 1000,
+          "alt": {
+            "pt": "Horários de atendimento por dia da semana e formulário de bloqueios",
+            "en": "Weekly availability by weekday and a blocked-time form"
+          },
+          "caption": {
+            "pt": "Horários de atendimento por dia da semana, com cópia entre dias, e bloqueios de férias e compromissos.",
+            "en": "Weekly availability, with copy between days, and blocks for vacations and appointments."
+          }
+        },
+        {
+          "src": "projetos/ipsiq/09-paleta.webp",
+          "width": 1600,
+          "height": 1000,
+          "alt": {
+            "pt": "Paleta de comandos aberta sobre a lista de roles",
+            "en": "Command palette open over the roles list"
+          },
+          "caption": {
+            "pt": "Paleta de comandos (Ctrl K) para ir direto a qualquer tela ou configuração.",
+            "en": "Command palette (Ctrl K) to jump straight to any screen or setting."
+          }
+        }
       ]
     }
   ],

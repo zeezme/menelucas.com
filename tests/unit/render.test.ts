@@ -50,9 +50,12 @@ describe('SEO para recrutadores', () => {
   })
 
   it('sitemap lista PT e EN com hreflang; robots aponta para o sitemap', () => {
-    const xml = buildSitemap(site, new Date('2026-10-28T12:00:00Z'))
+    const xml = buildSitemap(site, ['resume', 'projects'], new Date('2026-10-28T12:00:00Z'))
     expect(xml).toContain('<loc>https://menelucas.com/</loc>')
     expect(xml).toContain('<loc>https://menelucas.com/en/</loc>')
+    expect(xml).toContain('<loc>https://menelucas.com/projetos/</loc>')
+    expect(xml).toContain('<loc>https://menelucas.com/en/projects/</loc>')
+    expect(buildSitemap(site, ['resume']).match(/<loc>/g)).toHaveLength(2)
     expect(xml).toContain('<lastmod>2026-10-28</lastmod>')
     expect(buildRobots(site)).toContain('Sitemap: https://menelucas.com/sitemap.xml')
   })
@@ -122,7 +125,8 @@ describe('seção Projetos', () => {
     expect(section).toContain('iPsiq')
     expect(section).toContain(role)
     expect(section).toContain('<time datetime="2026-10">10/2026</time> – ' + present)
-    expect(section).not.toContain('href=')
+    expect(section).not.toContain('href="http')
+    expect(section).toContain(locale === 'pt' ? 'href="/projetos/"' : 'href="/en/projects/"')
     const order = ['experience-title', 'projects-title', 'education-title'].map((id) => out.indexOf(`id="${id}"`))
     expect(order).toEqual([...order].sort((a, b) => a - b))
     expect(order.every((i) => i > 0)).toBe(true)
@@ -143,5 +147,82 @@ describe('seção Projetos', () => {
     expect(ld).not.toBe('')
     expect(ld.toLowerCase()).not.toContain('ipsiq')
     expect(out.toLowerCase()).not.toContain('ipsiq.com')
+  })
+})
+
+describe('página Projetos', () => {
+  const projectsHtml = (locale: 'pt' | 'en', r = resume) => renderPage({ resume: r, ui, locale, site, css: '', page: 'projects' })
+
+  it.each([
+    ['pt', 'Projetos', 'Currículo', 'Telas'],
+    ['en', 'Projects', 'Resume', 'Screens'],
+  ] as const)('%s: h1, abas, detalhes e galeria com imagens acessíveis', (locale, title, tab, screens) => {
+    const out = projectsHtml(locale)
+    expect(out.match(/<h1[ >]/g)).toHaveLength(1)
+    expect(out).toContain(`>${title}</h1>`)
+    expect(out).toContain(`aria-current="page"`)
+    expect(out).toContain(`>${tab}</a>`)
+    expect(out).toContain(`>${screens}</h3>`)
+    const imgs = out.match(/<img [^>]*>/g) ?? []
+    expect(imgs).toHaveLength(9)
+    for (const img of imgs) {
+      expect(img).toMatch(/ alt="[^"]{10,}"/)
+      expect(img).toMatch(/ width="\d+"/)
+      expect(img).toMatch(/ height="\d+"/)
+      expect(img).toContain('loading="lazy"')
+      expect(img).toMatch(/src="\/projetos\/ipsiq\/\d\d-[a-z-]+\.webp"/)
+    }
+    expect((out.match(/<figcaption/g) ?? []).length).toBe(9)
+  })
+
+  it.each([
+    ['pt', ['Qualidade e entrega', 'Segurança e controle de acesso', 'Privacidade e LGPD', 'Regras do CFM e dos conselhos (CRM)', 'Infraestrutura na AWS', 'Telas']],
+    ['en', ['Quality and delivery', 'Security and access control', 'Privacy and LGPD', 'CFM and professional-council rules (CRM)', 'AWS infrastructure', 'Screens']],
+  ] as const)('%s: seções temáticas na ordem, com índice e nota de conformidade', (locale, headings) => {
+    const out = projectsHtml(locale)
+    const h3 = [...out.matchAll(/<h3[^>]*>(.*?)<\/h3>/g)].map((m) => m[1])
+    expect(h3).toEqual([...headings])
+    const links = [...out.matchAll(/<a href="#(ipsiq-[a-z0-9-]+)"/g)].map((m) => m[1] ?? '')
+    expect(links).toHaveLength(6)
+    for (const id of links) expect(out).toContain(`id="${id}"`)
+    const aside = /<aside[^>]*>.*?<\/aside>/s.exec(out)?.[0] ?? ''
+    expect(aside).toContain('LGPD')
+    expect(aside).toContain('CFM')
+    expect(aside).toMatch(locale === 'pt' ? /revisão jurídica/ : /legal review/)
+  })
+
+  it('tem hreflang, canonical próprio e redireciona PT→EN só na versão PT', () => {
+    const pt = projectsHtml('pt')
+    expect(pt).toContain('<link rel="canonical" href="https://menelucas.com/projetos/"/>')
+    expect(pt).toContain('hreflang="en" href="https://menelucas.com/en/projects/"')
+    expect(pt).toMatch(/<html[^>]*data-en-url="\/en\/projects\/"/)
+    expect(projectsHtml('en')).not.toMatch(/<html[^>]*data-en-url/)
+  })
+
+  it('não tem JSON-LD nem menciona o endereço do iPsiq, e a galeria avisa que os dados são fictícios', () => {
+    for (const locale of ['pt', 'en'] as const) {
+      const out = projectsHtml(locale)
+      expect(out).not.toContain('application/ld+json')
+      expect(out.toLowerCase()).not.toContain('ipsiq.com')
+      expect(out).toContain(locale === 'pt' ? 'dados fictícios' : 'fictitious data')
+    }
+  })
+
+  it('sem projeto com galeria, a aba some do currículo', () => {
+    const without = structuredClone(resume)
+    delete without.projects
+    for (const locale of ['pt', 'en'] as const) {
+      expect(renderPage({ resume: without, ui, locale, site, css: '' })).not.toContain('aria-label="' + (locale === 'pt' ? 'Seções do site' : 'Site sections') + '"')
+    }
+    const noGallery = structuredClone(resume)
+    delete noGallery.projects?.[0]?.gallery
+    expect(renderPage({ resume: noGallery, ui, locale: 'pt', site, css: '' })).not.toContain('href="/projetos/"')
+  })
+
+  it('páginas e imagens de public/ existem', async () => {
+    const { existsSync } = await import('node:fs')
+    for (const item of resume.projects?.[0]?.gallery ?? []) {
+      expect(existsSync(`public/${item.src}`), item.src).toBe(true)
+    }
   })
 })

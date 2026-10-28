@@ -49,6 +49,17 @@ const work = z
     message: 'endDate anterior a startDate',
   })
 
+/** Captura de tela da página de projeto; `src` é relativo à raiz do site (arquivo em public/). */
+const galleryItem = z.strictObject({
+  src: z.string().regex(/^[\w/.-]+\.(webp|png|jpe?g)$/, 'caminho relativo de imagem'),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  /** Largura máxima de exibição em px (para capturas estreitas). */
+  maxWidth: z.number().int().positive().optional(),
+  alt: localized,
+  caption: localized,
+})
+
 /** Projeto pessoal/atual (JSON Resume `projects`). Sem `endDate` = em andamento. */
 const project = z
   .strictObject({
@@ -58,6 +69,13 @@ const project = z
     endDate: yearMonth.optional(),
     description: localized,
     highlights: z.array(highlight).min(1),
+    /** Seções temáticas, só na página do projeto (o card do currículo mostra apenas `highlights`). */
+    detailSections: z.array(z.strictObject({ title: localized, items: z.array(highlight).min(1) })).optional(),
+    /** Nota em destaque na página do projeto (ex.: o alcance do que foi descrito). */
+    notice: localized.optional(),
+    /** Telas do projeto, na página própria. Sem galeria, o projeto não tem página de detalhes. */
+    gallery: z.array(galleryItem).min(1).optional(),
+    galleryNote: localized.optional(),
     url: z.url().optional(),
   })
   .refine((p) => p.endDate === undefined || p.endDate >= p.startDate, {
@@ -107,6 +125,10 @@ export const resumeSchema = z.strictObject({
 export type Resume = z.infer<typeof resumeSchema>
 export type Work = Resume['work'][number]
 export type Project = NonNullable<Resume['projects']>[number]
+export type GalleryItem = NonNullable<Project['gallery']>[number]
+
+/** A aba/página Projetos só existe se algum projeto tiver galeria (tirar o item do JSON remove tudo). */
+export const showcaseProjects = (resume: Resume): Project[] => (resume.projects ?? []).filter((p) => (p.gallery?.length ?? 0) > 0)
 
 export function parseResume(data: unknown): Resume {
   const result = resumeSchema.safeParse(data)

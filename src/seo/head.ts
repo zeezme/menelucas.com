@@ -1,5 +1,6 @@
 import type { Locale, Resume } from '../schema/resume'
-import { firstSentence, labelTags, localePath, pick, roleOf } from '../i18n'
+import { firstSentence, labelTags, localePath, pagePath, pick, roleOf, type PageId } from '../i18n'
+import { showcaseProjects } from '../schema/resume'
 import { ogImagePath, type SiteConfig } from '../site'
 
 const OG_LOCALE: Record<Locale, string> = { pt: 'pt_BR', en: 'en_US' }
@@ -11,7 +12,8 @@ export interface HeadMeta {
   canonical: string
   alternates: { locale: Locale | 'x-default'; href: string }[]
   image: string
-  jsonLd: Record<string, unknown>
+  /** Nulo nas páginas que não devem ter dados estruturados (ex.: Projetos). */
+  jsonLd: Record<string, unknown> | null
 }
 
 const unique = (items: string[]): string[] => [...new Set(items)]
@@ -21,17 +23,24 @@ export const skillKeywords = (resume: Resume, locale: Locale): string[] =>
   unique(resume.skills.flatMap((group) => group.keywords[locale]))
 
 /** Metadados de SEO de uma página, todos derivados do resume.json (nada é escrito à mão aqui). */
-export function buildHeadMeta(resume: Resume, locale: Locale, site: SiteConfig): HeadMeta {
+export function buildHeadMeta(
+  resume: Resume,
+  locale: Locale,
+  site: SiteConfig,
+  page: PageId = 'resume',
+  pageLabel = '',
+): HeadMeta {
   const { basics } = resume
   const abs = (path: string) => `${site.origin}${path}`
   const ogImage = abs(`/${ogImagePath(site, locale)}`)
   const label = pick(basics.label, locale)
   const role = roleOf(label)
   const techs = labelTags(label).split(' | ')[0] ?? ''
-  const url = (l: Locale) => abs(localePath(l, site.base))
+  const url = (l: Locale) => abs(pagePath(page, l, site.base))
+  const resumeUrl = (l: Locale) => abs(localePath(l, site.base))
   const description = firstSentence(pick(basics.summary, locale))
   const keywords = skillKeywords(resume, locale)
-  const personId = `${url('pt')}#person`
+  const personId = `${resumeUrl('pt')}#person`
   const latest = resume.work[0]
   const alumni = resume.education[0]
 
@@ -69,6 +78,23 @@ export function buildHeadMeta(resume: Resume, locale: Locale, site: SiteConfig):
       : {}),
   }
 
+  if (page === 'projects') {
+    const first = showcaseProjects(resume)[0]
+    return {
+      title: `${pageLabel} — ${basics.name}`,
+      description: first ? pick(first.description, locale) : description,
+      keywords: '',
+      canonical: url(locale),
+      alternates: [
+        { locale: 'pt', href: url('pt') },
+        { locale: 'en', href: url('en') },
+        { locale: 'x-default', href: url('pt') },
+      ],
+      image: ogImage,
+      jsonLd: null,
+    }
+  }
+
   return {
     title: `${basics.name} — ${role}${techs ? ` | ${techs}` : ''}`,
     description,
@@ -103,16 +129,18 @@ export const ogLocale = (locale: Locale): string => OG_LOCALE[locale]
 
 const lastmod = (date: Date) => date.toISOString().slice(0, 10)
 
-/** sitemap.xml com as duas versões e as alternativas de idioma (hreflang). */
-export function buildSitemap(site: SiteConfig, now = new Date()): string {
-  const urls = (['pt', 'en'] as const).map((l) => `${site.origin}${localePath(l, site.base)}`)
-  const links = [
-    `    <xhtml:link rel="alternate" hreflang="pt" href="${urls[0]}"/>`,
-    `    <xhtml:link rel="alternate" hreflang="en" href="${urls[1]}"/>`,
-    `    <xhtml:link rel="alternate" hreflang="x-default" href="${urls[0]}"/>`,
-  ].join('\n')
-  const entries = urls
-    .map((loc) => `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod(now)}</lastmod>\n${links}\n  </url>`)
+/** sitemap.xml com as páginas (PT e EN) e as alternativas de idioma (hreflang). */
+export function buildSitemap(site: SiteConfig, pages: PageId[] = ['resume'], now = new Date()): string {
+  const entries = pages
+    .flatMap((page) => {
+      const urls = (['pt', 'en'] as const).map((l) => `${site.origin}${pagePath(page, l, site.base)}`)
+      const links = [
+        `    <xhtml:link rel="alternate" hreflang="pt" href="${urls[0]}"/>`,
+        `    <xhtml:link rel="alternate" hreflang="en" href="${urls[1]}"/>`,
+        `    <xhtml:link rel="alternate" hreflang="x-default" href="${urls[0]}"/>`,
+      ].join('\n')
+      return urls.map((loc) => `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod(now)}</lastmod>\n${links}\n  </url>`)
+    })
     .join('\n')
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries}\n</urlset>\n`
 }

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Locale, Project, Resume, Work } from '../schema/resume'
-import { formatYearMonth, pick, type T } from '../i18n'
+import { formatYearMonth, pagePath, pick, type T } from '../i18n'
 
 export function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
@@ -116,7 +116,7 @@ export function Experience({ resume, locale, t }: { resume: Resume; locale: Loca
   )
 }
 
-function ProjectItem({ project, locale, t }: { project: Project; locale: Locale; t: T }) {
+function ProjectItem({ project, locale, base, t }: { project: Project; locale: Locale; base: string; t: T }) {
   return (
     <article className="flex flex-col gap-3 rounded-xl border border-hairline bg-surface-1 p-5">
       <header>
@@ -133,19 +133,28 @@ function ProjectItem({ project, locale, t }: { project: Project; locale: Locale;
       </header>
       <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">{pick(project.description, locale)}</p>
       <Bullets items={project.highlights} locale={locale} />
+      {(project.gallery?.length ?? 0) > 0 ? (
+        <a
+          href={pagePath('projects', locale, base)}
+          className="inline-flex min-h-touch items-center gap-1 self-start text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"
+        >
+          {t('projectDetails')}
+          <span aria-hidden="true">→</span>
+        </a>
+      ) : null}
     </article>
   )
 }
 
 /** Seção opcional: some quando `projects` está ausente ou vazio (tirar o item do JSON basta). */
-export function Projects({ resume, locale, t }: { resume: Resume; locale: Locale; t: T }) {
+export function Projects({ resume, locale, base, t }: { resume: Resume; locale: Locale; base: string; t: T }) {
   const projects = resume.projects ?? []
   if (projects.length === 0) return null
   return (
     <Section id="projects" title={t('projects')}>
       <div className="flex flex-col gap-4">
         {projects.map((project) => (
-          <ProjectItem key={project.name} project={project} locale={locale} t={t} />
+          <ProjectItem key={project.name} project={project} locale={locale} base={base} t={t} />
         ))}
       </div>
     </Section>

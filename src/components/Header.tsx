@@ -29,7 +29,15 @@ function ContactLink({ href, label, rel, children }: { href: string; label: stri
   )
 }
 
-function LangToggle({ locale, base, t }: Pick<Props, 'locale' | 'base' | 't'>) {
+export function LangToggle({
+  locale,
+  hrefFor,
+  t,
+}: {
+  locale: Locale
+  hrefFor: (locale: Locale) => string
+  t: T
+}) {
   const options: { locale: Locale; label: string }[] = [
     { locale: 'pt', label: 'PT' },
     { locale: 'en', label: 'EN' },
@@ -42,7 +50,7 @@ function LangToggle({ locale, base, t }: Pick<Props, 'locale' | 'base' | 't'>) {
           return (
             <li key={o.locale}>
               <a
-                href={localePath(o.locale, base)}
+                href={hrefFor(o.locale)}
                 hrefLang={o.locale}
                 lang={o.locale}
                 data-lang={o.locale}
@@ -60,6 +68,21 @@ function LangToggle({ locale, base, t }: Pick<Props, 'locale' | 'base' | 't'>) {
         })}
       </ul>
     </nav>
+  )
+}
+
+/** Sem display utilitário: a visibilidade (só com JS) vem de [data-theme-toggle] em main.css. */
+export function ThemeToggle({ t }: { t: T }) {
+  return (
+    <button
+      type="button"
+      data-theme-toggle
+      aria-label={t('themeToggle')}
+      className="min-h-touch min-w-touch items-center justify-center rounded-btn border border-hairline bg-surface-1 text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+    >
+      <SunIcon />
+      <MoonIcon />
+    </button>
   )
 }
 
@@ -127,17 +150,8 @@ export function Header({ resume, locale, base, t }: Props) {
       </nav>
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-3 sm:col-span-2 sm:gap-x-4">
-        <LangToggle locale={locale} base={base} t={t} />
-        {/* Sem display utilitário: a visibilidade (só com JS) vem de [data-theme-toggle] em main.css. */}
-        <button
-          type="button"
-          data-theme-toggle
-          aria-label={t('themeToggle')}
-          className="min-h-touch min-w-touch items-center justify-center rounded-btn border border-hairline bg-surface-1 text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
-        >
-          <SunIcon />
-          <MoonIcon />
-        </button>
+        <LangToggle locale={locale} hrefFor={(l) => localePath(l, base)} t={t} />
+        <ThemeToggle t={t} />
         <a
           href={`${base}${meta.pdf[locale].slice(1)}`}
           download

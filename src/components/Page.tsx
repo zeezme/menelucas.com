@@ -1,6 +1,7 @@
 import type { Locale, Resume, UiStrings } from '../schema/resume'
 import { createT } from '../i18n'
 import { Header } from './Header'
+import { TabNav } from './TabNav'
 import { Education, Experience, Languages, Projects, Skills, Summary } from './Sections'
 
 interface Props {
@@ -21,12 +22,13 @@ export function Page({ resume, ui, locale, base }: Props) {
         {t('skipLink')}
       </a>
       <div className="mx-auto flex w-full max-w-prose flex-col gap-10 px-[max(1rem,env(safe-area-inset-left))] pb-[max(4rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))] sm:pt-16">
+        <TabNav resume={resume} current="resume" locale={locale} base={base} t={t} />
         <Header resume={resume} locale={locale} base={base} t={t} />
         <main id="content" tabIndex={-1} className="flex flex-col gap-10 outline-none">
           <Summary resume={resume} locale={locale} t={t} />
           <Skills resume={resume} locale={locale} t={t} />
           <Experience resume={resume} locale={locale} t={t} />
-          <Projects resume={resume} locale={locale} t={t} />
+          <Projects resume={resume} locale={locale} base={base} t={t} />
           <Education resume={resume} locale={locale} t={t} />
           <Languages resume={resume} locale={locale} t={t} />
         </main>

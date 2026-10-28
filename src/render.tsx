@@ -1,7 +1,8 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { Page } from './components/Page'
+import { ProjectsPage } from './components/ProjectsPage'
 import type { Locale, Resume, UiStrings } from './schema/resume'
-import { localePath } from './i18n'
+import { createT, pagePath, type PageId } from './i18n'
 import { buildHeadMeta, ogLocale } from './seo/head'
 import { redirectScript } from './seo/redirect-script'
 import { THEME_COLORS, themeScript } from './seo/theme-script'
@@ -12,18 +13,20 @@ interface RenderInput {
   ui: UiStrings
   locale: Locale
   site: SiteConfig
+  /** Qual página renderizar (padrão: currículo). */
+  page?: PageId
   /** CSS já compilado, embutido na página (sem requisição extra). */
   css: string
 }
 
-function Document({ resume, ui, locale, site, css }: RenderInput) {
-  const meta = buildHeadMeta(resume, locale, site)
+function Document({ resume, ui, locale, site, css, page = 'resume' }: RenderInput) {
+  const meta = buildHeadMeta(resume, locale, site, page, createT(ui, locale)('projects'))
   const other: Locale = locale === 'pt' ? 'en' : 'pt'
   return (
     <html
       lang={locale === 'pt' ? 'pt-BR' : 'en'}
       // Só a página PT tenta redirecionar visitantes EN (ver redirect-script.ts).
-      {...(locale === 'pt' ? { 'data-en-url': localePath('en', site.base) } : {})}
+      {...(locale === 'pt' ? { 'data-en-url': pagePath(page, 'en', site.base) } : {})}
     >
       <head>
         <meta charSet="utf-8" />
@@ -32,7 +35,7 @@ function Document({ resume, ui, locale, site, css }: RenderInput) {
         <title>{meta.title}</title>
         <meta name="description" content={meta.description} />
         <meta name="author" content={resume.basics.name} />
-        <meta name="keywords" content={meta.keywords} />
+        {meta.keywords ? <meta name="keywords" content={meta.keywords} /> : null}
         <meta
           name="robots"
           content={isIndexable(site) ? 'index, follow, max-image-preview:large' : 'noindex, nofollow'}
@@ -48,8 +51,8 @@ function Document({ resume, ui, locale, site, css }: RenderInput) {
         <link rel="icon" href={`${site.base}favicon.ico`} sizes="32x32" />
         <link rel="icon" href={`${site.base}favicon.png`} type="image/png" sizes="48x48" />
         <link rel="apple-touch-icon" href={`${site.base}apple-touch-icon.png`} />
-        <meta property="og:type" content="profile" />
-        <meta property="profile:username" content="meneluca" />
+        <meta property="og:type" content={page === 'resume' ? 'profile' : 'website'} />
+        {page === 'resume' ? <meta property="profile:username" content="meneluca" /> : null}
         <meta property="og:site_name" content={resume.basics.name} />
         <meta property="og:title" content={meta.title} />
         <meta property="og:description" content={meta.description} />
@@ -74,13 +77,19 @@ function Document({ resume, ui, locale, site, css }: RenderInput) {
           crossOrigin="anonymous"
         />
         <style dangerouslySetInnerHTML={{ __html: css }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(meta.jsonLd).replace(/</g, '\\u003c') }}
-        />
+        {meta.jsonLd ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(meta.jsonLd).replace(/</g, '\u003c') }}
+          />
+        ) : null}
       </head>
       <body>
-        <Page resume={resume} ui={ui} locale={locale} base={site.base} />
+        {page === 'resume' ? (
+          <Page resume={resume} ui={ui} locale={locale} base={site.base} />
+        ) : (
+          <ProjectsPage resume={resume} ui={ui} locale={locale} base={site.base} />
+        )}
       </body>
     </html>
   )

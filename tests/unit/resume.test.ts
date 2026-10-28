@@ -52,7 +52,9 @@ describe('resume.json', () => {
 
   it('não expõe dados sensíveis (CPF, endereço)', () => {
     expect(everyText).not.toMatch(/\d{3}\.\d{3}\.\d{3}-\d{2}/)
-    expect(everyText.toLowerCase()).not.toMatch(/\b(cpf|rua|avenida|cep)\b/)
+    // A palavra "CPF" aparece só ao descrever o projeto (ex.: "oculta CPF"); o que não pode haver é número ou endereço.
+    expect(everyText).not.toMatch(/\d{3}\.\d{3}\.\d{3}/)
+    expect(everyText.toLowerCase()).not.toMatch(/\b(rua|avenida|cep)\b/)
     expect(resume.basics.location).not.toHaveProperty('address')
   })
 
@@ -108,5 +110,44 @@ describe('projects (seção opcional)', () => {
     expect(text).not.toMatch(/ipsiq\.com/i)
     expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss/i)
     expect(ipsiq?.highlights).toHaveLength(4)
+  })
+})
+
+describe('galeria e seções do projeto', () => {
+  type Raw = { projects: { gallery: Record<string, unknown>[] }[] }
+  const clone = () => structuredClone(resumeJson) as unknown as Raw
+
+  it('valida os itens e dimensões', () => {
+    const ipsiq = resume.projects?.[0]
+    expect(ipsiq?.gallery).toHaveLength(9)
+    for (const item of ipsiq?.gallery ?? []) {
+      expect(item.width).toBeGreaterThan(0)
+      expect(item.height).toBeGreaterThan(0)
+      expect(item.alt.pt.length).toBeGreaterThan(10)
+      expect(item.alt.en.length).toBeGreaterThan(10)
+    }
+  })
+
+  it('rejeita galeria com caminho absoluto, sem alt ou vazia', () => {
+    const abs = clone()
+    const first = abs.projects[0]?.gallery[0]
+    if (first) first['src'] = 'https://exemplo.com/x.webp'
+    expect(() => parseResume(abs)).toThrow()
+
+    const noAlt = clone()
+    const alt = noAlt.projects[0]?.gallery[0]?.['alt'] as Record<string, string> | undefined
+    if (alt) delete alt['en']
+    expect(() => parseResume(noAlt)).toThrow()
+
+    const empty = clone()
+    if (empty.projects[0]) empty.projects[0].gallery = []
+    expect(() => parseResume(empty)).toThrow()
+  })
+
+  it('o texto do projeto não revela preços, taxas, nomes de pessoas nem o endereço', () => {
+    const text = JSON.stringify(resume.projects?.[0])
+    expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss|Kullak|Felipe/i)
+    expect(text).not.toMatch(/ipsiq\.com/i)
+    expect(text).not.toMatch(/CNPJ|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}|Ltda/i)
   })
 })
