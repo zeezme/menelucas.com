@@ -1645,8 +1645,8 @@
           },
           "points": [
             {
-              "pt": "Cada clínica é um tenant, com os dados isolados por `tenant_id` e verificação em guards na entrada de cada requisição.",
-              "en": "Each clinic is a tenant, with data isolated by `tenant_id` and enforced by guards at the start of every request."
+              "pt": "Cada clínica é um tenant, com os dados isolados por tenant_id e verificação em guards na entrada de cada requisição.",
+              "en": "Each clinic is a tenant, with data isolated by tenant_id and enforced by guards at the start of every request."
             },
             {
               "pt": "Uma suíte de testes de integração passa pela pilha HTTP real (guards, pipes e filtros) sobre Postgres e Redis reais e prova que uma clínica nunca lê nem altera dados de outra.",
@@ -1673,12 +1673,12 @@
               "en": "Transactional outbox: the message is written in the same transaction as the business operation, so nothing is published if it fails."
             },
             {
-              "pt": "Um relay leva as mensagens para o BullMQ, acordado por `LISTEN/NOTIFY` do Postgres e com polling de segurança a cada segundo.",
-              "en": "A relay moves messages to BullMQ, woken by Postgres `LISTEN/NOTIFY`, with a one-second safety poll."
+              "pt": "Um relay leva as mensagens para o BullMQ, acordado por LISTEN/NOTIFY do Postgres e com polling de segurança a cada segundo.",
+              "en": "A relay moves messages to BullMQ, woken by Postgres LISTEN/NOTIFY, with a one-second safety poll."
             },
             {
-              "pt": "Lotes travados com `FOR UPDATE SKIP LOCKED`: várias instâncias podem rodar o relay ao mesmo tempo sem publicar a mesma mensagem duas vezes.",
-              "en": "Batches locked with `FOR UPDATE SKIP LOCKED`, so several instances can relay at once without double-publishing."
+              "pt": "Lotes travados com FOR UPDATE SKIP LOCKED: várias instâncias podem rodar o relay ao mesmo tempo sem publicar a mesma mensagem duas vezes.",
+              "en": "Batches locked with FOR UPDATE SKIP LOCKED, so several instances can relay at once without double-publishing."
             },
             {
               "pt": "Publicação idempotente (o id do job é o id da mensagem), ordem preservada e retentativa automática em caso de falha.",
