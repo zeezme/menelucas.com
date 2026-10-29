@@ -1412,8 +1412,8 @@
           },
           "points": [
             {
-              "pt": "Exemplo: a tolerância para iniciar a consulta, depois da qual a consulta não iniciada é estornada automaticamente.",
-              "en": "Example: the tolerance for starting an appointment, after which an unstarted appointment is refunded automatically."
+              "pt": "Exemplo de tela: Atendimento, com a tolerância para iniciar a consulta, depois da qual a consulta não iniciada é estornada automaticamente.",
+              "en": "Example screen: Service, with the tolerance for starting an appointment, after which an unstarted appointment is refunded automatically."
             },
             {
               "pt": "As telas de regras comerciais e fiscais não são mostradas aqui.",
@@ -1422,16 +1422,16 @@
           ],
           "gallery": [
             {
-              "src": "projetos/ipsiq/13-config-atendimento.webp",
+              "src": "projetos/ipsiq/13-config-menu.webp",
               "width": 1600,
               "height": 1000,
               "alt": {
-                "pt": "Configuração de atendimento com os minutos de tolerância para iniciar a consulta",
-                "en": "Service setting with the tolerance minutes for starting an appointment"
+                "pt": "Menu inicial das configurações, com as telas agrupadas em Consultas, Financeiro e Integrações e uma busca por tela ou campo",
+                "en": "Settings home, with the screens grouped into Appointments, Finance and Integrations and a search by screen or field"
               },
               "caption": {
-                "pt": "Configurações: a regra de tolerância para iniciar a consulta.",
-                "en": "Settings: the tolerance rule for starting an appointment."
+                "pt": "Configurações: o menu inicial, com as telas por grupo e a busca por tela ou campo. As descrições das telas comerciais e fiscais foram ocultadas.",
+                "en": "Settings: the home menu, with screens by group and the search by screen or field. The descriptions of the commercial and tax screens were hidden."
               }
             }
           ]
