@@ -126,14 +126,14 @@ function AreaPanel({ area, id, project, locale, base }: { area: Area; id: string
   )
 }
 
-function ProjectDetail({ project, locale, base, t }: { project: Project; locale: Locale; base: string; t: T }) {
+function ProjectDetail({ project, tabbed, locale, base, t }: { project: Project; tabbed: boolean; locale: Locale; base: string; t: T }) {
   const slug = projectSlug(project)
   const panels = [
     { id: `${slug}-overview`, label: t('overview') },
     ...(project.areas ?? []).map((area) => ({ id: `${slug}-${slugOf(area.title.en)}`, label: pick(area.title, locale) })),
   ]
   return (
-    <article aria-labelledby={`${slug}-title`} data-project={slug} className="flex flex-col gap-8 border-t border-hairline pt-8">
+    <article aria-labelledby={`${slug}-title`} data-project={slug} className={`flex flex-col gap-8 ${tabbed ? 'pt-2' : 'border-t border-hairline pt-8'}`}>
       <header>
         <h2 id={`${slug}-title`} translate={project.title ? undefined : 'no'} className="text-2xl font-semibold leading-tight tracking-title sm:text-[1.75rem]">
           {projectTitle(project, locale)}
@@ -229,14 +229,14 @@ export function ProjectsPage({ resume, ui, locale, base }: Props) {
             </p>
           </div>
           {projects.length > 1 ? (
-            <nav aria-label={t('projectsNav')} data-projects-nav className="-mt-4 print:hidden">
-              <ul className="flex flex-wrap gap-2">
+            <nav aria-label={t('projectsNav')} data-projects-nav className="-mb-6 print:hidden">
+              <ul className="flex flex-wrap items-end gap-1 border-b border-hairline">
                 {projects.map((project) => (
                   <li key={projectSlug(project)}>
                     <a
                       href={`#${projectSlug(project)}-overview`}
                       data-project-link={projectSlug(project)}
-                      className="inline-flex min-h-touch items-center rounded-btn border border-hairline bg-surface-1 px-4 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink aria-[current=true]:border-hairline-strong aria-[current=true]:bg-surface-3 aria-[current=true]:text-ink"
+                      className="relative inline-flex min-h-touch items-center rounded-t-xl border border-b-0 border-transparent px-4 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink aria-[current=true]:-mb-px aria-[current=true]:border-hairline aria-[current=true]:bg-surface-1 aria-[current=true]:pb-[calc(0.5rem+1px)] aria-[current=true]:text-ink"
                     >
                       {projectTitle(project, locale)}
                     </a>
@@ -246,7 +246,7 @@ export function ProjectsPage({ resume, ui, locale, base }: Props) {
             </nav>
           ) : null}
           {projects.map((project) => (
-            <ProjectDetail key={projectSlug(project)} project={project} locale={locale} base={base} t={t} />
+            <ProjectDetail key={projectSlug(project)} tabbed={projects.length > 1} project={project} locale={locale} base={base} t={t} />
           ))}
         </main>
       </div>
