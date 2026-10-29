@@ -18,7 +18,7 @@ if (!source) throw new Error('Informe a foto de origem: npm run google-images --
 /** Rosto com o cabelo e a barba inteiros, para o ícone pequeno ainda ser reconhecível. */
 const FACE = { left: 275, top: 15, width: 370, height: 370 }
 
-/** A foto inteira (rosto e notebook). As proporções mais largas estendem as laterais com o cinza liso do fundo. */
+/** A foto inteira (rosto e notebook). As proporções mais largas completam as laterais com o fundo desfocado da própria foto. */
 const PHOTO = { left: 0, top: 0, width: 794, height: 794 }
 
 const FRAMES = {
@@ -56,13 +56,46 @@ images.forEach((image, index) => {
 writeFileSync(join(publicDirectory, 'favicon.ico'), Buffer.concat([header, ...images]))
 
 const photo = await sharp(source).rotate().extract(PHOTO).toBuffer()
+
+/**
+ * Proporções mais largas que a foto: cada lateral vem da faixa de fundo liso da borda correspondente da foto,
+ * esticada e desfocada (sem listras nem manchas), e a foto inteira fica no centro com as bordas esmaecidas.
+ */
+const widen = async ({ width, height }: { width: number; height: number }): Promise<Buffer> => {
+  const half = Math.ceil(width / 2)
+  const strip = (left: number) =>
+    sharp(photo).extract({ left, top: 0, width: 8, height: PHOTO.height }).resize(half, height, { fit: 'fill' }).blur(24).toBuffer()
+  const background = await sharp({ create: { width, height, channels: 3, background: { r: 120, g: 120, b: 120 } } })
+    .composite([
+      { input: await strip(0), left: 0, top: 0 },
+      { input: await strip(PHOTO.width - 8), left: width - half, top: 0 },
+    ])
+    .png()
+    .toBuffer()
+  const foregroundWidth = Math.round(height * (PHOTO.width / PHOTO.height))
+  const feather = (foregroundWidth * 0.14) / foregroundWidth
+  const mask = Buffer.from(
+    `<svg width="${foregroundWidth}" height="${height}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">` +
+      `<stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="${feather}" stop-color="#fff" stop-opacity="1"/>` +
+      `<stop offset="${1 - feather}" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>` +
+      `<rect width="100%" height="100%" fill="url(#fade)"/></svg>`,
+  )
+  const foreground = await sharp(photo)
+    .resize(foregroundWidth, height)
+    .composite([{ input: mask, blend: 'dest-in' }])
+    .png()
+    .toBuffer()
+  return sharp(background)
+    .composite([{ input: foreground, left: Math.round((width - foregroundWidth) / 2), top: 0 }])
+    .jpeg({ quality: 88, mozjpeg: true })
+    .toBuffer()
+}
+
 for (const [file, { aspect, output }] of Object.entries(FRAMES)) {
-  const extra = Math.max(0, Math.round((PHOTO.height * aspect - PHOTO.width) / 2))
-  // O sharp aplica `extend` depois de `resize`; por isso a foto estendida vira um buffer antes de ser redimensionada.
-  const widened = await sharp(photo).extend({ left: extra, right: extra, extendWith: 'copy' }).toBuffer()
-  await sharp(widened)
-    .resize(output.width, output.height, { fit: 'cover' })
-    .jpeg({ quality: 86, mozjpeg: true })
-    .toFile(join(publicDirectory, file))
+  const image =
+    aspect === 1
+      ? await sharp(photo).resize(output.width, output.height).jpeg({ quality: 88, mozjpeg: true }).toBuffer()
+      : await widen(output)
+  writeFileSync(join(publicDirectory, file), image)
 }
 console.log('favicon.ico, favicon.png, favicon-96.png, favicon-192.png, apple-touch-icon.png e google-*.jpg gerados em public/')
