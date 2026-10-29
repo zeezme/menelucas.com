@@ -55,6 +55,11 @@
     }
   }
 
+  /* `hidden` precisa vencer utilitários de display (flex, grid…). */
+  [hidden] {
+    display: none !important;
+  }
+
   /* O botão de tema só aparece com JS. */
   [data-theme-toggle] {
     display: none;
@@ -119,6 +124,9 @@
 }
 
 @media print {
+  section[hidden] {
+    display: flex !important;
+  }
   :root {
     color-scheme: light;
   }

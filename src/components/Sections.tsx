@@ -133,7 +133,7 @@ function ProjectItem({ project, locale, base, t }: { project: Project; locale: L
       </header>
       <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">{pick(project.description, locale)}</p>
       <Bullets items={project.highlights} locale={locale} />
-      {(project.gallery?.length ?? 0) > 0 ? (
+      {(project.areas?.length ?? 0) > 0 ? (
         <a
           href={pagePath('projects', locale, base)}
           className="inline-flex min-h-touch items-center gap-1 self-start text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"

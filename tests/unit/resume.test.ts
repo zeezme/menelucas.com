@@ -113,14 +113,16 @@ describe('projects (seção opcional)', () => {
   })
 })
 
-describe('galeria e seções do projeto', () => {
-  type Raw = { projects: { gallery: Record<string, unknown>[] }[] }
+describe('partes do sistema e galeria do projeto', () => {
+  type Raw = { projects: { areas: { gallery?: Record<string, unknown>[] }[] }[] }
   const clone = () => structuredClone(resumeJson) as unknown as Raw
 
-  it('valida os itens e dimensões', () => {
-    const ipsiq = resume.projects?.[0]
-    expect(ipsiq?.gallery).toHaveLength(9)
-    for (const item of ipsiq?.gallery ?? []) {
+  it('tem 9 partes além da visão geral e 17 capturas com dimensões e alt nos dois idiomas', () => {
+    const areas = resume.projects?.[0]?.areas ?? []
+    expect(areas).toHaveLength(9)
+    const items = areas.flatMap((a) => a.gallery ?? [])
+    expect(items).toHaveLength(17)
+    for (const item of items) {
       expect(item.width).toBeGreaterThan(0)
       expect(item.height).toBeGreaterThan(0)
       expect(item.alt.pt.length).toBeGreaterThan(10)
@@ -130,21 +132,22 @@ describe('galeria e seções do projeto', () => {
 
   it('rejeita galeria com caminho absoluto, sem alt ou vazia', () => {
     const abs = clone()
-    const first = abs.projects[0]?.gallery[0]
+    const first = abs.projects[0]?.areas[0]?.gallery?.[0]
     if (first) first['src'] = 'https://exemplo.com/x.webp'
     expect(() => parseResume(abs)).toThrow()
 
     const noAlt = clone()
-    const alt = noAlt.projects[0]?.gallery[0]?.['alt'] as Record<string, string> | undefined
+    const alt = noAlt.projects[0]?.areas[0]?.gallery?.[0]?.['alt'] as Record<string, string> | undefined
     if (alt) delete alt['en']
     expect(() => parseResume(noAlt)).toThrow()
 
     const empty = clone()
-    if (empty.projects[0]) empty.projects[0].gallery = []
+    const area = empty.projects[0]?.areas[0]
+    if (area) area.gallery = []
     expect(() => parseResume(empty)).toThrow()
   })
 
-  it('o texto do projeto não revela preços, taxas, nomes de pessoas nem o endereço', () => {
+  it('o texto do projeto não revela preços, taxas, nomes de pessoas, CNPJ nem o endereço', () => {
     const text = JSON.stringify(resume.projects?.[0])
     expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss|Kullak|Felipe/i)
     expect(text).not.toMatch(/ipsiq\.com/i)

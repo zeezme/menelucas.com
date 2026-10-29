@@ -60,6 +60,21 @@ const galleryItem = z.strictObject({
   caption: localized,
 })
 
+/** Uma parte do sistema na página do projeto: resumo, tópicos e capturas de tela. */
+const snippet = z.strictObject({
+  caption: localized,
+  language: z.string().min(1),
+  code: z.string().min(1),
+})
+
+const area = z.strictObject({
+  title: localized,
+  summary: localized,
+  points: z.array(highlight).optional(),
+  snippets: z.array(snippet).optional(),
+  gallery: z.array(galleryItem).min(1).optional(),
+})
+
 /** Projeto pessoal/atual (JSON Resume `projects`). Sem `endDate` = em andamento. */
 const project = z
   .strictObject({
@@ -73,8 +88,9 @@ const project = z
     detailSections: z.array(z.strictObject({ title: localized, items: z.array(highlight).min(1) })).optional(),
     /** Nota em destaque na página do projeto (ex.: o alcance do que foi descrito). */
     notice: localized.optional(),
-    /** Telas do projeto, na página própria. Sem galeria, o projeto não tem página de detalhes. */
-    gallery: z.array(galleryItem).min(1).optional(),
+    /** Partes do sistema (barra lateral da página do projeto), cada uma com explicação e telas. */
+    areas: z.array(area).min(1).optional(),
+    /** Aviso exibido junto às telas (ex.: dados fictícios). */
     galleryNote: localized.optional(),
     url: z.url().optional(),
   })
@@ -125,10 +141,12 @@ export const resumeSchema = z.strictObject({
 export type Resume = z.infer<typeof resumeSchema>
 export type Work = Resume['work'][number]
 export type Project = NonNullable<Resume['projects']>[number]
-export type GalleryItem = NonNullable<Project['gallery']>[number]
+export type Area = NonNullable<Project['areas']>[number]
+export type GalleryItem = NonNullable<Area['gallery']>[number]
+export type Snippet = NonNullable<Area['snippets']>[number]
 
-/** A aba/página Projetos só existe se algum projeto tiver galeria (tirar o item do JSON remove tudo). */
-export const showcaseProjects = (resume: Resume): Project[] => (resume.projects ?? []).filter((p) => (p.gallery?.length ?? 0) > 0)
+/** A aba/página Projetos só existe se algum projeto tiver partes do sistema (tirar o item do JSON remove tudo). */
+export const showcaseProjects = (resume: Resume): Project[] => (resume.projects ?? []).filter((p) => (p.areas?.length ?? 0) > 0)
 
 export function parseResume(data: unknown): Resume {
   const result = resumeSchema.safeParse(data)

@@ -153,18 +153,22 @@ describe('seção Projetos', () => {
 describe('página Projetos', () => {
   const projectsHtml = (locale: 'pt' | 'en', r = resume) => renderPage({ resume: r, ui, locale, site, css: '', page: 'projects' })
 
+  const PARTS = {
+    pt: ['Visão geral', 'Site público', 'Área do médico', 'Backoffice', 'Acessos e permissões', 'Código e decorators', 'Auditoria e histórico', 'Mascaramento de dados', 'Integração com o Asaas', 'Configurações'],
+    en: ['Overview', 'Public site', 'Doctor area', 'Back-office', 'Access and permissions', 'Code and decorators', 'Audit and history', 'Data redaction', 'Asaas integration', 'Settings'],
+  } as const
+
   it.each([
-    ['pt', 'Projetos', 'Currículo', 'Telas'],
-    ['en', 'Projects', 'Resume', 'Screens'],
-  ] as const)('%s: h1, abas, detalhes e galeria com imagens acessíveis', (locale, title, tab, screens) => {
+    ['pt', 'Projetos', 'Currículo'],
+    ['en', 'Projects', 'Resume'],
+  ] as const)('%s: h1, abas e 17 imagens acessíveis', (locale, title, tab) => {
     const out = projectsHtml(locale)
     expect(out.match(/<h1[ >]/g)).toHaveLength(1)
     expect(out).toContain(`>${title}</h1>`)
-    expect(out).toContain(`aria-current="page"`)
+    expect(out).toContain('aria-current="page"')
     expect(out).toContain(`>${tab}</a>`)
-    expect(out).toContain(`>${screens}</h3>`)
     const imgs = out.match(/<img [^>]*>/g) ?? []
-    expect(imgs).toHaveLength(9)
+    expect(imgs).toHaveLength(17)
     for (const img of imgs) {
       expect(img).toMatch(/ alt="[^"]{10,}"/)
       expect(img).toMatch(/ width="\d+"/)
@@ -172,23 +176,35 @@ describe('página Projetos', () => {
       expect(img).toContain('loading="lazy"')
       expect(img).toMatch(/src="\/projetos\/ipsiq\/\d\d-[a-z-]+\.webp"/)
     }
-    expect((out.match(/<figcaption/g) ?? []).length).toBe(9)
   })
 
-  it.each([
-    ['pt', ['Qualidade e entrega', 'Segurança e controle de acesso', 'Privacidade e LGPD', 'Regras do CFM e dos conselhos (CRM)', 'Infraestrutura na AWS', 'Telas']],
-    ['en', ['Quality and delivery', 'Security and access control', 'Privacy and LGPD', 'CFM and professional-council rules (CRM)', 'AWS infrastructure', 'Screens']],
-  ] as const)('%s: seções temáticas na ordem, com índice e nota de conformidade', (locale, headings) => {
+  it.each(['pt', 'en'] as const)('%s: barra lateral com as partes do sistema, cada uma com seu painel', (locale) => {
     const out = projectsHtml(locale)
     const h3 = [...out.matchAll(/<h3[^>]*>(.*?)<\/h3>/g)].map((m) => m[1])
-    expect(h3).toEqual([...headings])
-    const links = [...out.matchAll(/<a href="#(ipsiq-[a-z0-9-]+)"/g)].map((m) => m[1] ?? '')
-    expect(links).toHaveLength(6)
-    for (const id of links) expect(out).toContain(`id="${id}"`)
+    expect(h3).toEqual([...PARTS[locale]])
+    const nav = /<nav[^>]*data-areas-nav[^>]*>.*?<\/nav>/s.exec(out)?.[0] ?? ''
+    const links = [...nav.matchAll(/<a href="#(ipsiq-[a-z0-9-]+)"[^>]*>(.*?)<\/a>/g)]
+    expect(links.map((m) => m[2])).toEqual([...PARTS[locale]])
+    for (const m of links) expect(out).toContain(`<section id="${m[1]}"`)
+  })
+
+  it.each(['pt', 'en'] as const)('%s: visão geral com seções temáticas e nota de conformidade', (locale) => {
+    const out = projectsHtml(locale)
+    const h4 = [...out.matchAll(/<h4[^>]*>(.*?)<\/h4>/g)].map((m) => m[1])
+    expect(h4).toHaveLength(5)
     const aside = /<aside[^>]*>.*?<\/aside>/s.exec(out)?.[0] ?? ''
     expect(aside).toContain('LGPD')
     expect(aside).toContain('CFM')
     expect(aside).toMatch(locale === 'pt' ? /revisão jurídica/ : /legal review/)
+  })
+
+  it.each(['pt', 'en'] as const)('%s: explica auditoria, BaseRepository, RBAC, decorators e a integração com o Asaas', (locale) => {
+    const out = projectsHtml(locale)
+    for (const term of ['BaseRepository', 'writeAuditEvent', 'append-only|só aceita inclusão', '@Permissions', '@CurrentDoctorId', 'RBAC', 'ZodValidationPipe', 'webhook', 'split']) {
+      expect(out, term).toMatch(new RegExp(term, 'i'))
+    }
+    expect((out.match(/<pre[ >]/g) ?? []).length).toBe(3)
+    expect(out).toContain('tabindex="0"')
   })
 
   it('tem hreflang, canonical próprio e redireciona PT→EN só na versão PT', () => {
@@ -199,30 +215,34 @@ describe('página Projetos', () => {
     expect(projectsHtml('en')).not.toMatch(/<html[^>]*data-en-url/)
   })
 
-  it('não tem JSON-LD nem menciona o endereço do iPsiq, e a galeria avisa que os dados são fictícios', () => {
+  it('não tem JSON-LD, preço, taxa, nome de pessoa nem o endereço do iPsiq, e avisa que os dados são fictícios', () => {
     for (const locale of ['pt', 'en'] as const) {
       const out = projectsHtml(locale)
       expect(out).not.toContain('application/ld+json')
       expect(out.toLowerCase()).not.toContain('ipsiq.com')
+      expect(out).not.toMatch(/R\$\s?\d/)
+      expect(out).not.toMatch(/Kullak|Felipe|CNPJ/i)
       expect(out).toContain(locale === 'pt' ? 'dados fictícios' : 'fictitious data')
     }
   })
 
-  it('sem projeto com galeria, a aba some do currículo', () => {
+  it('sem projeto com partes do sistema, a aba some do currículo', () => {
     const without = structuredClone(resume)
     delete without.projects
     for (const locale of ['pt', 'en'] as const) {
-      expect(renderPage({ resume: without, ui, locale, site, css: '' })).not.toContain('aria-label="' + (locale === 'pt' ? 'Seções do site' : 'Site sections') + '"')
+      expect(renderPage({ resume: without, ui, locale, site, css: '' })).not.toContain(
+        'aria-label="' + (locale === 'pt' ? 'Seções do site' : 'Site sections') + '"',
+      )
     }
-    const noGallery = structuredClone(resume)
-    delete noGallery.projects?.[0]?.gallery
-    expect(renderPage({ resume: noGallery, ui, locale: 'pt', site, css: '' })).not.toContain('href="/projetos/"')
+    const noAreas = structuredClone(resume)
+    delete noAreas.projects?.[0]?.areas
+    expect(renderPage({ resume: noAreas, ui, locale: 'pt', site, css: '' })).not.toContain('href="/projetos/"')
   })
 
-  it('páginas e imagens de public/ existem', async () => {
+  it('imagens de public/ existem', async () => {
     const { existsSync } = await import('node:fs')
-    for (const item of resume.projects?.[0]?.gallery ?? []) {
-      expect(existsSync(`public/${item.src}`), item.src).toBe(true)
-    }
+    const items = (resume.projects?.[0]?.areas ?? []).flatMap((a) => a.gallery ?? [])
+    expect(items).toHaveLength(17)
+    for (const item of items) expect(existsSync(`public/${item.src}`), item.src).toBe(true)
   })
 })
