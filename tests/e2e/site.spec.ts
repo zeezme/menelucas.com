@@ -205,9 +205,24 @@ test.describe('tema claro/escuro', () => {
   })
 })
 
-test('impressão usa fundo branco', async ({ page }) => {
-  await page.goto('/')
-  await page.emulateMedia({ media: 'print' })
-  const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor)
-  expect(bg).toMatch(/rgb\(255, 255, 255\)|rgba\(0, 0, 0, 0\)/)
+test.describe('impressão usa fundo branco e texto escuro, mesmo com o tema escuro', () => {
+  test.use({ colorScheme: 'dark' })
+
+  for (const choice of ['sistema', 'botão'] as const) {
+    test(`tema escuro vindo do ${choice}`, async ({ page }) => {
+      await page.goto('/')
+      if (choice === 'botão') {
+        await page.emulateMedia({ colorScheme: 'light' })
+        await page.getByRole('button', { name: /tema|theme/i }).click() // claro → escuro, escolha salva
+        await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+      }
+      await page.emulateMedia({ media: 'print' })
+      const colors = await page.evaluate(() => ({
+        bg: getComputedStyle(document.body).backgroundColor,
+        text: getComputedStyle(document.querySelector('h1') as Element).color,
+      }))
+      expect(colors.bg).toMatch(/rgb\(255, 255, 255\)|rgba\(0, 0, 0, 0\)/)
+      expect(colors.text).toBe('rgb(0, 0, 0)')
+    })
+  }
 })
