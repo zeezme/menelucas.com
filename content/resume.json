@@ -1053,8 +1053,8 @@
                         "en": "BaseRepository"
                       },
                       "detail": {
-                        "pt": "todo repositório herda dele; quem chama informa os campos alterados",
-                        "en": "every repository inherits from it; the caller states the changed fields"
+                        "pt": "todo repositório herda dele; ao criar audita a linha salva, ao alterar os campos que quem chama informa e ao excluir o registro apagado",
+                        "en": "every repository inherits from it; on create it audits the saved row, on update the fields the caller states, and on delete the removed record"
                       },
                       "tone": "accent"
                     }
