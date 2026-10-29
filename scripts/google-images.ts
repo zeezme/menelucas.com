@@ -21,6 +21,9 @@ const FACE = { left: 1300, top: 120, width: 1300, height: 1300 }
 /** Da cabeça ao notebook e às mãos (coordenadas da foto original). As proporções mais largas completam as laterais com o fundo liso. */
 const PHOTO = { left: 60, top: 130, width: 3100, height: 3100 }
 
+/** Mesma altura, mas com a largura toda da foto: o notebook fica longe da borda e não some no esmaecimento das proporções largas. */
+const WIDE_PHOTO = { left: 0, top: 130, width: 3265, height: 3100 }
+
 const FRAMES = {
   'google-1x1.jpg': { aspect: 1, output: { width: 1200, height: 1200 } },
   'google-4x3.jpg': { aspect: 4 / 3, output: { width: 1600, height: 1200 } },
@@ -56,6 +59,7 @@ images.forEach((image, index) => {
 writeFileSync(join(publicDirectory, 'favicon.ico'), Buffer.concat([header, ...images]))
 
 const photo = await sharp(source).rotate().extract(PHOTO).toBuffer()
+const widePhoto = await sharp(source).rotate().extract(WIDE_PHOTO).toBuffer()
 
 /**
  * Proporções mais largas que a foto: cada lateral vem da faixa de fundo liso da borda correspondente da foto,
@@ -64,23 +68,23 @@ const photo = await sharp(source).rotate().extract(PHOTO).toBuffer()
 const widen = async ({ width, height }: { width: number; height: number }): Promise<Buffer> => {
   const half = Math.ceil(width / 2)
   const strip = (left: number) =>
-    sharp(photo).extract({ left, top: 0, width: 24, height: PHOTO.height }).resize(half, height, { fit: 'fill' }).blur(24).toBuffer()
+    sharp(widePhoto).extract({ left, top: 0, width: 24, height: WIDE_PHOTO.height }).resize(half, height, { fit: 'fill' }).blur(24).toBuffer()
   const background = await sharp({ create: { width, height, channels: 3, background: { r: 120, g: 120, b: 120 } } })
     .composite([
       { input: await strip(0), left: 0, top: 0 },
-      { input: await strip(PHOTO.width - 24), left: width - half, top: 0 },
+      { input: await strip(WIDE_PHOTO.width - 24), left: width - half, top: 0 },
     ])
     .png()
     .toBuffer()
-  const foregroundWidth = Math.round(height * (PHOTO.width / PHOTO.height))
-  const feather = (foregroundWidth * 0.14) / foregroundWidth
+  const foregroundWidth = Math.round(height * (WIDE_PHOTO.width / WIDE_PHOTO.height))
+  const feather = 0.025
   const mask = Buffer.from(
     `<svg width="${foregroundWidth}" height="${height}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">` +
       `<stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="${feather}" stop-color="#fff" stop-opacity="1"/>` +
       `<stop offset="${1 - feather}" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>` +
       `<rect width="100%" height="100%" fill="url(#fade)"/></svg>`,
   )
-  const foreground = await sharp(photo)
+  const foreground = await sharp(widePhoto)
     .resize(foregroundWidth, height)
     .composite([{ input: mask, blend: 'dest-in' }])
     .png()
