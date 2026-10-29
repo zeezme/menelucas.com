@@ -131,3 +131,31 @@ test.describe('botão de voltar ao topo', () => {
     await expect(page.getByRole('link', { name: 'Currículo' }).first()).toBeFocused()
   })
 })
+
+test.describe('contorno do foco', () => {
+  test.use({ locale: 'pt-BR', viewport: { width: 1280, height: 900 } })
+
+  for (const path of ['/', '/projetos/']) {
+    test(`o contorno do foco nunca é cortado por um contêiner em ${path}`, async ({ page }) => {
+      await page.goto(path)
+      const clipped = await page.evaluate(() => {
+        const margin = 4
+        const problems: string[] = []
+        for (const element of document.querySelectorAll<HTMLElement>('a[href], button, [tabindex="0"]')) {
+          if (element.getClientRects().length === 0 || element.closest('.sr-only')) continue
+          const box = element.getBoundingClientRect()
+          for (let ancestor = element.parentElement; ancestor && ancestor !== document.body; ancestor = ancestor.parentElement) {
+            const style = getComputedStyle(ancestor)
+            if (style.overflowX === 'visible' && style.overflowY === 'visible') continue
+            const limit = ancestor.getBoundingClientRect()
+            const clips =
+              box.left - margin < limit.left || box.right + margin > limit.right || box.top - margin < limit.top || box.bottom + margin > limit.bottom
+            if (clips) problems.push(`${(element.textContent ?? '').trim().slice(0, 30)} dentro de ${ancestor.className.toString().slice(0, 50)}`)
+          }
+        }
+        return problems
+      })
+      expect(clipped).toEqual([])
+    })
+  }
+})
