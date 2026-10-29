@@ -32,9 +32,9 @@ describe('i18n helpers', () => {
 describe('SEO para recrutadores', () => {
   it.each(['pt', 'en'] as const)('%s: título, descrição e palavras-chave vêm dos dados', (locale) => {
     const meta = buildHeadMeta(resume, locale, site)
-    expect(meta.title.replaceAll(' ', ' ')).toBe(`${resume.basics.name} ${resume.basics.label[locale].split(' | ')[0]}`)
+    expect(meta.title.replaceAll(' ', ' ')).toBe(`${resume.basics.name} | ${resume.basics.label[locale].split(' | ')[0]}`)
     expect(meta.title).toContain(' ')
-    expect(meta.description.startsWith(`${resume.basics.name}:`)).toBe(true)
+    expect(meta.description.startsWith(resume.basics.name)).toBe(false)
     expect(meta.description.length).toBeGreaterThan(50)
     for (const k of skillKeywords(resume, locale).slice(0, 5)) expect(meta.keywords).toContain(k)
   })

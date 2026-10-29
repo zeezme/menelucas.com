@@ -119,8 +119,8 @@ export const buildHeadMeta = (
   }
 
   return {
-    title: `${basics.name} ${role.replaceAll(' ', NO_BREAK_SPACE)}`,
-    description: `${basics.name}: ${description}`,
+    title: `${basics.name} | ${role.replaceAll(' ', NO_BREAK_SPACE)}`,
+    description,
     keywords: keywords.join(', '),
     canonical: pageUrl(locale),
     alternates,
@@ -134,7 +134,7 @@ export const buildHeadMeta = (
           '@type': 'ProfilePage',
           '@id': `${pageUrl(locale)}#profile`,
           url: pageUrl(locale),
-          name: `${basics.name} ${role}`,
+          name: `${basics.name} | ${role}`,
           description,
           inLanguage: locale === 'pt' ? 'pt-BR' : 'en',
           mainEntity: { '@id': personId },
