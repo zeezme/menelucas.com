@@ -236,7 +236,7 @@ export function ProjectsPage({ resume, ui, locale, base }: Props) {
                     <a
                       href={`#${projectSlug(project)}-overview`}
                       data-project-link={projectSlug(project)}
-                      className="inline-flex min-h-touch items-center rounded-btn border border-hairline bg-surface-1 px-4 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink aria-[current=true]:border-hairline-strong aria-[current=true]:bg-surface-3 aria-[current=true]:text-ink"
+                      className="inline-flex min-h-touch items-center rounded-btn border border-hairline bg-surface-1 px-4 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink aria-[current=true]:border-hairline-strong aria-[current=true]:bg-surface-3 aria-[current=true]:text-ink"
                     >
                       {projectTitle(project, locale)}
                     </a>
