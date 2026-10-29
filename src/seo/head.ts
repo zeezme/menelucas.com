@@ -6,6 +6,13 @@ import { openGraphImagePath, type SiteConfig } from '../site'
 /** Espaço que não quebra linha: mantém o cargo inteiro numa linha só quando o navegador quebra o título (ex.: na dica da aba). */
 const NO_BREAK_SPACE = ' '
 
+/** Imagens da pessoa para a busca, sem texto, nas três proporções que o Google recomenda (arquivos em `public/`). */
+const GOOGLE_IMAGES = [
+  { file: 'google-1x1.jpg', width: 900, height: 900 },
+  { file: 'google-4x3.jpg', width: 1200, height: 900 },
+  { file: 'google-16x9.jpg', width: 1200, height: 675 },
+] as const
+
 const OPEN_GRAPH_LOCALES: Record<Locale, string> = { pt: 'pt_BR', en: 'en_US' }
 
 /** Metadados de uma página para o `<head>`. */
@@ -70,6 +77,13 @@ export const buildHeadMeta = (
   const profileLinks = publicProfiles.map((profile) => profile.url)
   const alternateNames = [...new Set([...(basics.alternateNames ?? []), ...publicProfiles.map((profile) => handleOf(profile.url))])]
 
+  const personImages = GOOGLE_IMAGES.map(({ file, width, height }) => ({
+    '@type': 'ImageObject',
+    url: absoluteUrl(`${site.base}${file}`),
+    width,
+    height,
+  }))
+
   const person = {
     '@type': 'Person',
     '@id': personId,
@@ -79,7 +93,7 @@ export const buildHeadMeta = (
     description,
     url: resumeUrl(locale),
     email: `mailto:${basics.email}`,
-    image: absoluteUrl(`${site.base}avatar.webp`),
+    image: personImages,
     sameAs: profileLinks,
     address: {
       '@type': 'PostalAddress',
@@ -138,7 +152,7 @@ export const buildHeadMeta = (
           description,
           inLanguage: locale === 'pt' ? 'pt-BR' : 'en',
           mainEntity: { '@id': personId },
-          primaryImageOfPage: image,
+          primaryImageOfPage: personImages[0],
         },
       ],
     },

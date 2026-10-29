@@ -52,8 +52,10 @@ const HtmlDocument = ({ resume, interfaceTexts, locale, site, css, page = 'resum
         {meta.alternates.map((alternate) => (
           <link key={alternate.locale} rel="alternate" hrefLang={alternate.locale} href={alternate.href} />
         ))}
-        <link rel="icon" href={`${site.base}favicon.ico`} sizes="32x32" />
+        <link rel="icon" href={`${site.base}favicon.ico`} sizes="16x16 32x32 48x48" />
         <link rel="icon" href={`${site.base}favicon.png`} type="image/png" sizes="48x48" />
+        <link rel="icon" href={`${site.base}favicon-96.png`} type="image/png" sizes="96x96" />
+        <link rel="icon" href={`${site.base}favicon-192.png`} type="image/png" sizes="192x192" />
         <link rel="apple-touch-icon" href={`${site.base}apple-touch-icon.png`} />
         <meta property="og:type" content={page === 'resume' ? 'profile' : 'website'} />
         {page === 'resume' ? <meta property="profile:username" content="meneluca" /> : null}
