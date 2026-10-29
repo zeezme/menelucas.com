@@ -271,3 +271,34 @@ test.describe('celular (375px)', () => {
     for (const width of widths) expect(width).toBeGreaterThanOrEqual(column - 2)
   })
 })
+
+test.describe('imagens da busca do Google', () => {
+  test('o ícone existe em tamanhos múltiplos de 48 px e as imagens da pessoa têm as três proporções, sem texto no recorte quadrado', async ({ page, request }) => {
+    await page.goto('/')
+    const sharp = (await import('sharp')).default
+    const icons = await page.locator('link[rel="icon"][type="image/png"]').evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''))
+    expect(icons.length).toBeGreaterThanOrEqual(3)
+    for (const href of icons) {
+      const response = await request.get(href)
+      expect(response.status(), href).toBe(200)
+      const { width, height } = await sharp(await response.body()).metadata()
+      expect(width, href).toBe(height)
+      expect((width ?? 0) % 48, href).toBe(0)
+    }
+
+    const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').first().textContent()) ?? '{}') as {
+      '@graph': { '@type': string; image?: { url: string; width: number; height: number }[] }[]
+    }
+    const images = ld['@graph'].find((node) => node['@type'] === 'Person')?.image ?? []
+    const ratios = []
+    for (const image of images) {
+      const response = await request.get(new URL(image.url).pathname)
+      expect(response.status(), image.url).toBe(200)
+      const { width, height } = await sharp(await response.body()).metadata()
+      expect([width, height], image.url).toEqual([image.width, image.height])
+      expect((width ?? 0) * (height ?? 0), image.url).toBeGreaterThanOrEqual(50_000)
+      ratios.push(Math.round(((width ?? 0) / (height ?? 1)) * 100) / 100)
+    }
+    expect(ratios).toEqual([1, 1.33, 1.78])
+  })
+})

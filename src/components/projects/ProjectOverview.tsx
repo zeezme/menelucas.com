@@ -1,6 +1,7 @@
 import { pick, type Translator } from '../../internationalization'
 import { projectTitle, type Locale, type Project } from '../../schema/resume'
 import { BulletList } from '../BulletList'
+import { Heading, type HeadingLevel } from '../Heading'
 import { FlowDiagram } from './FlowDiagram'
 import { TopicList } from './TopicList'
 
@@ -8,6 +9,9 @@ interface ProjectOverviewProps {
   project: Project
   /** Id do painel, usado como âncora da barra lateral. */
   id: string
+  /** Nível do título do painel e dos títulos das seções dentro dele. */
+  panelLevel: HeadingLevel
+  sectionLevel: HeadingLevel
   locale: Locale
   translate: Translator
 }
@@ -15,12 +19,12 @@ interface ProjectOverviewProps {
 const HEADING_CLASS = 'text-xl font-semibold leading-snug tracking-title'
 
 /** Painel "Visão geral" do projeto: descrição, destaques, diagramas, seções temáticas e nota. */
-export const ProjectOverview = ({ project, id, locale, translate }: ProjectOverviewProps) => (
+export const ProjectOverview = ({ project, id, panelLevel, sectionLevel, locale, translate }: ProjectOverviewProps) => (
   <section id={id} aria-label={`${translate('overview')}: ${projectTitle(project, locale)}`} className="flex flex-col gap-8 scroll-mt-6">
     <div className="flex flex-col gap-4">
-      <h3 tabIndex={-1} className={`${HEADING_CLASS} outline-none`}>
+      <Heading level={panelLevel} tabIndex={-1} className={`${HEADING_CLASS} outline-none`}>
         {translate('overview')}
-      </h3>
+      </Heading>
       <p className="text-pretty text-base leading-relaxed text-ink-muted">{pick(project.description, locale)}</p>
       <BulletList items={project.highlights} locale={locale} />
     </div>
@@ -29,7 +33,9 @@ export const ProjectOverview = ({ project, id, locale, translate }: ProjectOverv
     ))}
     {(project.detailSections ?? []).map((section) => (
       <div key={section.title.en} className="flex flex-col gap-3">
-        <h4 className="text-lg font-semibold leading-snug tracking-title">{pick(section.title, locale)}</h4>
+        <Heading level={sectionLevel} className="text-lg font-semibold leading-snug tracking-title">
+          {pick(section.title, locale)}
+        </Heading>
         <TopicList topics={section.topics} locale={locale} />
       </div>
     ))}

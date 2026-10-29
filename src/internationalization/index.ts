@@ -78,3 +78,11 @@ export const pageFile = (page: PageId, locale: Locale): string => {
 
 /** O outro idioma do site. */
 export const otherLocale = (locale: Locale): Locale => (locale === 'pt' ? 'en' : 'pt')
+
+/** Endereço da página de um projeto, com barras nas pontas: `/projetos/<slug>/` ou `/en/projects/<slug>/`. */
+export const projectPath = (slug: string, locale: Locale, base: string): string =>
+  locale === 'pt' ? `${base}projetos/${slug}/` : `${base}en/projects/${slug}/`
+
+/** Caminho do arquivo gerado em `dist/` para a página de um projeto. */
+export const projectFile = (slug: string, locale: Locale): string =>
+  locale === 'pt' ? `projetos/${slug}/index.html` : `en/projects/${slug}/index.html`

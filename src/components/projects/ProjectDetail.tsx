@@ -1,6 +1,7 @@
 import { pick, type Translator } from '../../internationalization'
 import { projectSlug, projectTitle, toSlug, type Locale, type Project } from '../../schema/resume'
 import { DateRange } from '../DateRange'
+import { Heading, type HeadingLevel } from '../Heading'
 import { AreaPanel } from './AreaPanel'
 import { ProjectOverview } from './ProjectOverview'
 
@@ -8,6 +9,8 @@ interface ProjectDetailProps {
   project: Project
   /** Se há mais de um projeto, as abas ficam acima e o filete do topo sai. */
   hasTabs: boolean
+  /** Na página própria do projeto o título é o h1 e as partes são h2; na página com todos os projetos, h2 e h3. */
+  standalone?: boolean
   locale: Locale
   base: string
   translate: Translator
@@ -19,7 +22,10 @@ const PAGER_DIRECTIONS = ['prev', 'next'] as const
  * Projeto completo: cabeçalho, aviso, barra lateral com as partes do sistema e os painéis.
  * Os botões Anterior e Próxima ficam no fim de cada painel e só aparecem no celular, onde a barra lateral fica no topo.
  */
-export const ProjectDetail = ({ project, hasTabs, locale, base, translate }: ProjectDetailProps) => {
+export const ProjectDetail = ({ project, hasTabs, standalone = false, locale, base, translate }: ProjectDetailProps) => {
+  const levels: { project: HeadingLevel; panel: HeadingLevel; section: HeadingLevel } = standalone
+    ? { project: 1, panel: 2, section: 3 }
+    : { project: 2, panel: 3, section: 4 }
   const slug = projectSlug(project)
   const title = projectTitle(project, locale)
   const panels = [
@@ -33,13 +39,14 @@ export const ProjectDetail = ({ project, hasTabs, locale, base, translate }: Pro
       className={`flex flex-col gap-8 ${hasTabs ? 'pt-2' : 'border-t border-hairline pt-8'}`}
     >
       <header>
-        <h2
+        <Heading
+          level={levels.project}
           id={`${slug}-title`}
           translate={project.title ? undefined : 'no'}
           className="text-2xl font-semibold leading-tight tracking-title sm:text-[1.75rem]"
         >
           {title}
-        </h2>
+        </Heading>
         <p className="mt-2 text-sm text-ink-muted">
           <span className="font-medium text-ink">{pick(project.roles, locale)}</span>
           <span aria-hidden="true"> · </span>
@@ -70,9 +77,16 @@ export const ProjectDetail = ({ project, hasTabs, locale, base, translate }: Pro
         </nav>
 
         <div className="flex min-w-0 flex-col gap-12">
-          <ProjectOverview project={project} id={panels[0]?.id ?? `${slug}-overview`} locale={locale} translate={translate} />
+          <ProjectOverview
+            project={project}
+            id={panels[0]?.id ?? `${slug}-overview`}
+            panelLevel={levels.panel}
+            sectionLevel={levels.section}
+            locale={locale}
+            translate={translate}
+          />
           {(project.areas ?? []).map((area, areaIndex) => (
-            <AreaPanel key={area.title.en} area={area} id={panels[areaIndex + 1]?.id ?? ''} project={project} locale={locale} base={base} translate={translate} />
+            <AreaPanel key={area.title.en} area={area} id={panels[areaIndex + 1]?.id ?? ''} project={project} panelLevel={levels.panel} locale={locale} base={base} translate={translate} />
           ))}
           <nav
             aria-label={`${translate('pagerNav')}: ${title}`}

@@ -12,6 +12,7 @@
     "build": "tsx scripts/build.ts",
     "assets": "tsx scripts/assets.ts",
     "banner": "tsx scripts/banner.ts",
+    "google-images": "tsx scripts/google-images.ts",
     "serve": "tsx scripts/serve.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
