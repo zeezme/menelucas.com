@@ -14,6 +14,7 @@
   "tabResume": { "pt": "Currículo", "en": "Resume" },
   "tabProjects": { "pt": "Projetos", "en": "Projects" },
   "projectDetails": { "pt": "Ver detalhes e telas", "en": "See details and screens" },
+  "projectsNav": { "pt": "Projetos", "en": "Projects" },
   "partsNav": { "pt": "Partes do sistema", "en": "System parts" },
   "pagerNav": { "pt": "Parte anterior e próxima", "en": "Previous and next part" },
   "prevPart": { "pt": "Anterior", "en": "Previous" },

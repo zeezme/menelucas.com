@@ -1,6 +1,7 @@
 /**
  * Script inline da página de projetos: transforma a lista de partes do sistema em uma barra lateral
  * que abre uma parte por vez (melhoria progressiva: sem JS, todas as partes ficam visíveis em sequência).
+ *  - com mais de um projeto, o menu de projetos mostra um por vez (sem JS, ficam todos em sequência);
  *  - cada projeto tem a sua barra lateral e a sua parte aberta; o `#id` da URL escolhe a parte (e o projeto) (link direto, voltar/avançar funcionam via hashchange);
  *  - no fim de cada parte, botões Anterior/Próxima (a barra lateral fica no topo, longe no celular);
  *  - a parte aberta recebe `aria-current` no link e as demais ganham o atributo `hidden`.
@@ -41,6 +42,8 @@ if(on){p.links[i].setAttribute('aria-current','true')}else{p.links[i].removeAttr
 setPager(p,idx);
 return p.panels[idx];
 }
+var active=0;
+var projectLinks=[].slice.call(document.querySelectorAll('[data-project-link]'));
 function show(id,scroll){
 var target=null,owner=-1;
 projects.forEach(function(p,n){
@@ -49,12 +52,23 @@ var keep=p.links.filter(function(a){return a.getAttribute('aria-current')})[0];
 var panel=open(p,has?id:keep?keep.getAttribute('href').slice(1):'');
 if(has){target=panel;owner=n}
 });
-var h='#'+(target?target.id:projects[0].panels[0].id);
+if(owner>-1)active=owner;
+projects.forEach(function(p,n){
+p.article.hidden=projectLinks.length>0&&n!==active;
+var pl=projectLinks[n];
+if(pl){
+var cur=p.links.filter(function(a){return a.getAttribute('aria-current')})[0]||p.links[0];
+pl.setAttribute('href',cur.getAttribute('href'));
+if(n===active){pl.setAttribute('aria-current','true')}else{pl.removeAttribute('aria-current')}
+}
+});
+var shown=projects[active].links.filter(function(a){return a.getAttribute('aria-current')})[0]||projects[active].links[0];
+var h=shown.getAttribute('href');
 [].slice.call(document.querySelectorAll('a[data-lang]')).forEach(function(a){
 var b=a.getAttribute('href').split('#')[0];a.setAttribute('href',b+h)});
 if(target&&scroll){
 var top=target.getBoundingClientRect().top+window.pageYOffset-24;
-if(window.pageYOffset>top||owner>0)window.scrollTo(0,top);
+if(window.pageYOffset>top)window.scrollTo(0,top);
 }
 }
 window.addEventListener('hashchange',function(){show(current(),true)});
