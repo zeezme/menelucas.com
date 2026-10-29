@@ -5,7 +5,7 @@
   "description": "Currículo em HTML semântico (PT/EN) gerado a partir de um único resume.json",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.23.4 <23 || >=24.22.1"
   },
   "scripts": {
     "dev": "tsx scripts/dev.ts",
