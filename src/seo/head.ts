@@ -3,6 +3,9 @@ import { showcaseProjects } from '../schema/resume'
 import { firstSentence, localePath, pagePath, pick, roleOf, type PageId } from '../internationalization'
 import { openGraphImagePath, type SiteConfig } from '../site'
 
+/** Espaço que não quebra linha: mantém o cargo inteiro numa linha só quando o navegador quebra o título (ex.: na dica da aba). */
+const NO_BREAK_SPACE = ' '
+
 const OPEN_GRAPH_LOCALES: Record<Locale, string> = { pt: 'pt_BR', en: 'en_US' }
 
 /** Metadados de uma página para o `<head>`. */
@@ -116,7 +119,7 @@ export const buildHeadMeta = (
   }
 
   return {
-    title: `${basics.name} ${role}`,
+    title: `${basics.name} ${role.replaceAll(' ', NO_BREAK_SPACE)}`,
     description: `${basics.name}: ${description}`,
     keywords: keywords.join(', '),
     canonical: pageUrl(locale),
