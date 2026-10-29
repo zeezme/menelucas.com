@@ -8,9 +8,9 @@ const NO_BREAK_SPACE = ' '
 
 /** Imagens da pessoa para a busca, sem texto, nas três proporções que o Google recomenda (arquivos em `public/`). */
 const GOOGLE_IMAGES = [
-  { file: 'google-1x1.jpg', width: 900, height: 900 },
-  { file: 'google-4x3.jpg', width: 1200, height: 900 },
-  { file: 'google-16x9.jpg', width: 1200, height: 675 },
+  { file: 'google-1x1.jpg', width: 1200, height: 1200 },
+  { file: 'google-4x3.jpg', width: 1600, height: 1200 },
+  { file: 'google-16x9.jpg', width: 1920, height: 1080 },
 ] as const
 
 const OPEN_GRAPH_LOCALES: Record<Locale, string> = { pt: 'pt_BR', en: 'en_US' }

@@ -8,23 +8,23 @@ import sharp from 'sharp'
  * pessoa nas proporções 1:1, 4:3 e 16:9, sem texto, para o recorte quadrado da miniatura mostrar o rosto e o notebook.
  * O banner de compartilhamento (`npm run banner`) continua sendo o `og:image` de WhatsApp e LinkedIn.
  *
- * Uso: npm run google-images -- <foto.jpg>
+ * Use a foto original, em alta resolução (a de 794 px fica borrada): npm run google-images -- <foto.jpg>
  */
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const publicDirectory = join(root, 'public')
 const source = process.argv[2]
 if (!source) throw new Error('Informe a foto de origem: npm run google-images -- <foto.jpg>')
 
-/** Rosto com o cabelo e a barba inteiros, para o ícone pequeno ainda ser reconhecível. */
-const FACE = { left: 275, top: 15, width: 370, height: 370 }
+/** Rosto com o cabelo e a barba inteiros, para o ícone pequeno ainda ser reconhecível (coordenadas da foto original, 3265 × 4898). */
+const FACE = { left: 1300, top: 120, width: 1300, height: 1300 }
 
-/** A foto inteira (rosto e notebook). As proporções mais largas completam as laterais com o fundo desfocado da própria foto. */
-const PHOTO = { left: 0, top: 0, width: 794, height: 794 }
+/** Da cabeça ao notebook e às mãos (coordenadas da foto original). As proporções mais largas completam as laterais com o fundo liso. */
+const PHOTO = { left: 60, top: 130, width: 3100, height: 3100 }
 
 const FRAMES = {
-  'google-1x1.jpg': { aspect: 1, output: { width: 900, height: 900 } },
-  'google-4x3.jpg': { aspect: 4 / 3, output: { width: 1200, height: 900 } },
-  'google-16x9.jpg': { aspect: 16 / 9, output: { width: 1200, height: 675 } },
+  'google-1x1.jpg': { aspect: 1, output: { width: 1200, height: 1200 } },
+  'google-4x3.jpg': { aspect: 4 / 3, output: { width: 1600, height: 1200 } },
+  'google-16x9.jpg': { aspect: 16 / 9, output: { width: 1920, height: 1080 } },
 } as const
 
 const background = { r: 20, g: 21, b: 22, alpha: 1 }
@@ -64,11 +64,11 @@ const photo = await sharp(source).rotate().extract(PHOTO).toBuffer()
 const widen = async ({ width, height }: { width: number; height: number }): Promise<Buffer> => {
   const half = Math.ceil(width / 2)
   const strip = (left: number) =>
-    sharp(photo).extract({ left, top: 0, width: 8, height: PHOTO.height }).resize(half, height, { fit: 'fill' }).blur(24).toBuffer()
+    sharp(photo).extract({ left, top: 0, width: 24, height: PHOTO.height }).resize(half, height, { fit: 'fill' }).blur(24).toBuffer()
   const background = await sharp({ create: { width, height, channels: 3, background: { r: 120, g: 120, b: 120 } } })
     .composite([
       { input: await strip(0), left: 0, top: 0 },
-      { input: await strip(PHOTO.width - 8), left: width - half, top: 0 },
+      { input: await strip(PHOTO.width - 24), left: width - half, top: 0 },
     ])
     .png()
     .toBuffer()
