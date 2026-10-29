@@ -39,6 +39,8 @@ const work = z
     endDate: yearMonth.optional(),
     location: localized,
     summary: localized.optional(),
+    /** Tecnologias da experiência (linha "Stack" do card). */
+    keywords: z.array(z.string().min(1)).min(1).optional(),
     sections: z.array(workSection).optional(),
     highlights: z.array(highlight).optional(),
   })

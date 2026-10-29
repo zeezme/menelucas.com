@@ -75,7 +75,7 @@ function Period({ range, locale, present }: { range: DateRange; locale: Locale; 
   )
 }
 
-function Job({ job, locale }: { job: Work; locale: Locale }) {
+function Job({ job, locale, t }: { job: Work; locale: Locale; t: T }) {
   return (
     <article className="flex flex-col gap-3 rounded-xl border border-hairline bg-surface-1 p-5">
       <header>
@@ -93,6 +93,11 @@ function Job({ job, locale }: { job: Work; locale: Locale }) {
       {job.summary ? (
         <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">{pick(job.summary, locale)}</p>
       ) : null}
+      {job.keywords ? (
+        <p className="text-sm text-ink-muted">
+          <span className="font-medium text-ink">{t('stack')}:</span> <span translate="no">{job.keywords.join(', ')}</span>
+        </p>
+      ) : null}
       {job.sections?.map((section) => (
         <div key={section.title.en} className="flex flex-col gap-2">
           <h4 className="text-pretty text-sm font-medium text-ink">{pick(section.title, locale)}</h4>
@@ -109,7 +114,7 @@ export function Experience({ resume, locale, t }: { resume: Resume; locale: Loca
     <Section id="experience" title={t('experience')}>
       <div className="flex flex-col gap-4">
         {resume.work.map((job) => (
-          <Job key={job.id} job={job} locale={locale} />
+          <Job key={job.id} job={job} locale={locale} t={t} />
         ))}
       </div>
     </Section>
