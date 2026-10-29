@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { pagePath, type PageId, type Translator } from '../internationalization'
 import type { Locale, Resume } from '../schema/resume'
 import { LanguageToggle } from './LanguageToggle'
+import { GitHubIcon } from './icons'
 import { SkipLink } from './SkipLink'
 import { TabNavigation } from './TabNavigation'
 import { ThemeToggle } from './ThemeToggle'
@@ -35,6 +36,18 @@ export const PageShell = ({ resume, currentPage, locale, base, translate, childr
         </div>
       </header>
       {children}
+      {resume.meta.repository ? (
+        <footer className="border-t border-hairline pt-6 print:hidden">
+          <a
+            href={resume.meta.repository}
+            rel="noopener"
+            className="inline-flex min-h-touch items-center gap-2 text-sm text-ink-muted underline decoration-hairline-strong underline-offset-4 transition-colors hover:text-ink hover:decoration-accent"
+          >
+            <GitHubIcon />
+            {translate('sourceCode')}
+          </a>
+        </footer>
+      ) : null}
     </div>
   </>
 )

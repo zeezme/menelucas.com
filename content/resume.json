@@ -8,7 +8,8 @@
     "pdf": {
       "pt": "/cv.pdf",
       "en": "/cv-en.pdf"
-    }
+    },
+    "repository": "https://github.com/zeezme/menelucas.com"
   },
   "basics": {
     "name": "Lucas Augusto Muniz Menezes",

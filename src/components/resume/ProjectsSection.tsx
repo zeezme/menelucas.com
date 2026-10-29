@@ -24,37 +24,39 @@ const ProjectCard = ({ project, isFirstShowcase, locale, base, translate }: Proj
   const hasScreens = project.areas?.some((area) => area.gallery) ?? false
   const detailsAnchor = isFirstShowcase ? '' : `#${projectSlug(project)}-overview`
   return (
-    <article className="flex flex-col gap-3 rounded-xl border border-hairline bg-surface-1 p-5">
-      <header>
-        <h3 translate={project.title ? undefined : 'no'} className="text-lg font-semibold leading-snug tracking-title">
-          {projectTitle(project, locale)}
-        </h3>
-        <p className="mt-1 text-sm text-ink-muted">
-          <span className="font-medium text-ink">{pick(project.roles, locale)}</span>
-          <span aria-hidden="true"> · </span>
-          <span className="tabular-nums">
-            <DateRange
-              startDate={project.startDate}
-              endDate={project.endDate}
-              locale={locale}
-              presentLabel={translate('present')}
-            />
-          </span>
+    <article className="grid gap-5 rounded-xl border border-hairline bg-surface-1 p-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-10">
+      <div className="flex flex-col gap-3">
+        <header>
+          <h3 translate={project.title ? undefined : 'no'} className="text-lg font-semibold leading-snug tracking-title">
+            {projectTitle(project, locale)}
+          </h3>
+          <p className="mt-1 text-sm text-ink-muted">
+            <span className="font-medium text-ink">{pick(project.roles, locale)}</span>
+            <span aria-hidden="true"> · </span>
+            <span className="tabular-nums">
+              <DateRange
+                startDate={project.startDate}
+                endDate={project.endDate}
+                locale={locale}
+                presentLabel={translate('present')}
+              />
+            </span>
+          </p>
+        </header>
+        <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">
+          {pick(project.cardText ?? project.description, locale)}
         </p>
-      </header>
-      <p className="max-w-[75ch] text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">
-        {pick(project.cardText ?? project.description, locale)}
-      </p>
-      {project.cardText ? null : <BulletList items={project.highlights} locale={locale} className="max-w-[75ch]" />}
-      {(project.areas?.length ?? 0) > 0 ? (
-        <a
-          href={`${pagePath('projects', locale, base)}${detailsAnchor}`}
-          className="inline-flex min-h-touch items-center gap-1 self-start text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"
-        >
-          {translate(hasScreens ? 'projectDetails' : 'projectDetailsEngineering')}
-          <span aria-hidden="true">→</span>
-        </a>
-      ) : null}
+        {(project.areas?.length ?? 0) > 0 ? (
+          <a
+            href={`${pagePath('projects', locale, base)}${detailsAnchor}`}
+            className="inline-flex min-h-touch items-center gap-1 self-start text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"
+          >
+            {translate(hasScreens ? 'projectDetails' : 'projectDetailsEngineering')}
+            <span aria-hidden="true">→</span>
+          </a>
+        ) : null}
+      </div>
+      {project.cardText ? null : <BulletList items={project.highlights} locale={locale} />}
     </article>
   )
 }

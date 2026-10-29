@@ -138,6 +138,8 @@ export const resumeSchema = z.strictObject({
     locales: z.tuple([z.literal('pt'), z.literal('en')]),
     defaultLocale: z.enum(LOCALES),
     pdf: z.strictObject({ pt: z.string().startsWith('/'), en: z.string().startsWith('/') }),
+    /** Repositório público do código deste site. */
+    repository: z.url().optional(),
   }),
   basics: z.strictObject({
     name: z.string().min(1),

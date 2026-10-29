@@ -8,6 +8,7 @@
   "skills": { "pt": "Competências", "en": "Skills" },
   "experience": { "pt": "Experiência", "en": "Experience" },
   "projects": { "pt": "Projetos", "en": "Projects" },
+  "sourceCode": { "pt": "Código-fonte deste site", "en": "Source code of this site" },
   "stack": { "pt": "Stack", "en": "Stack" },
   "present": { "pt": "atual", "en": "present" },
   "tabsNav": { "pt": "Seções do site", "en": "Site sections" },
