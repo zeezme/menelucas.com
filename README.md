@@ -56,6 +56,10 @@ Os PDFs (`public/cv.pdf`, `public/cv-en.pdf`) são mantidos como estão e usados
 Para gerar de novo avatar e favicons: `npm run assets -- <foto> --bust=… --face=…` (ver `scripts/assets.ts`).
 Para regerar os banners de compartilhamento (um por idioma, `public/banner-pt.jpg` e `banner-en.jpg`): `npm run banner -- <foto.jpg>`.
 
+## Acessibilidade
+
+O site segue a WCAG 2.2 AA, com testes de axe em todas as partes, de teclado, de nomes e de preferências do usuário. Veja [docs/acessibilidade.md](docs/acessibilidade.md).
+
 ## Deploy
 
 Push na `main` → CI (lint, tipos, testes, e2e) → build → `aws s3 sync --delete` → invalidação do CloudFront.
