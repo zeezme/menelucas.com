@@ -18,7 +18,7 @@ Tudo já existe na conta; este diretório documenta o que o deploy precisa e o q
 2. **Provedor OIDC do GitHub** (se ainda não existir): `token.actions.githubusercontent.com`, audience `sts.amazonaws.com`.
 3. **Role de deploy** (ex.: `menelucas-site-deploy`):
    - trust policy: [`iam-oidc-trust-policy.json`](iam-oidc-trust-policy.json) (só a branch `main` do repositório);
-   - permissões: [`iam-deploy-policy.json`](iam-deploy-policy.json) (listar/escrever no bucket e invalidar a distribuição; nada além disso).
+   - permissões: [`iam-deploy-policy.json`](iam-deploy-policy.json) (listar, escrever e apagar objetos do bucket, e invalidar a distribuição; nada além disso. O apagar serve ao `s3 sync --delete`, que tira do bucket o que saiu do site).
 4. No GitHub, em *Settings → Secrets and variables → Actions → Variables*, criar `AWS_ROLE_ARN` com o ARN da role.
    É uma variável, não um segredo: não há chaves de acesso no repositório.
 

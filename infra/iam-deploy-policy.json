@@ -10,7 +10,7 @@
     {
       "Sid": "WriteObjects",
       "Effect": "Allow",
-      "Action": ["s3:PutObject"],
+      "Action": ["s3:PutObject", "s3:DeleteObject"],
       "Resource": "arn:aws:s3:::lucas-menezes-cv-861601215563-sa-east-1/*"
     },
     {

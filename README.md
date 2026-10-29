@@ -58,7 +58,7 @@ Para regerar os banners de compartilhamento (um por idioma, `public/banner-pt.jp
 
 ## Deploy
 
-Push na `main` → CI (lint, tipos, testes, e2e) → build → `aws s3 sync` → invalidação do CloudFront.
+Push na `main` → CI (lint, tipos, testes, e2e) → build → `aws s3 sync --delete` → invalidação do CloudFront.
 Também dá para rodar manualmente (*Actions → Deploy → Run workflow*) com destino **staging** (`/staging/` no mesmo bucket, com `BASE_PATH=/staging/`) antes de ir para produção.
 
 A infraestrutura já existe na conta AWS; o que falta configurar uma vez está em [`infra/README.md`](infra/README.md):
