@@ -2352,6 +2352,16 @@
                 "en": "The invoice worker uses the document id as the idempotency key at the provider, so a job retry never issues twice; the provider is injectable, with a fake one for tests."
               }
             }
+          ],
+          "snippets": [
+            {
+              "language": "ts",
+              "code": "private async publishBatch(): Promise<number> {\n  return this.dataSource.transaction(async (manager) => {\n    const rows: PendingRow[] = await manager.query(\n      `SELECT id, queue, job_name, payload FROM infra.outbox\n        WHERE published_at IS NULL\n        ORDER BY seq\n        LIMIT $1\n        FOR UPDATE SKIP LOCKED`,\n      [OUTBOX_BATCH_SIZE],\n    );\n    const published: string[] = [];\n    for (const row of rows) {\n      try {\n        await withTimeout(\n          this.queues.publish(row.queue, row.job_name, row.payload, { jobId: row.id }),\n          PUBLISH_TIMEOUT_MS,\n        );\n        published.push(row.id);\n      } catch (error) {\n        await manager.query(\n          'UPDATE infra.outbox SET attempts = attempts + 1, last_error = $2 WHERE id = $1',\n          [row.id, (error as Error).message],\n        );\n        break;\n      }\n    }\n    if (published.length > 0) {\n      await manager.query('UPDATE infra.outbox SET published_at = now() WHERE id = ANY($1)', [\n        published,\n      ]);\n    }\n    return published.length === rows.length ? rows.length : 0;\n  });\n}",
+              "caption": {
+                "pt": "O relay do outbox: lê o lote com FOR UPDATE SKIP LOCKED, publica com o id da mensagem como jobId e, se uma publicação falha, para o lote para manter a ordem e tenta de novo na próxima passada.",
+                "en": "The outbox relay: reads the batch with FOR UPDATE SKIP LOCKED, publishes with the message id as jobId and, if a publish fails, stops the batch to keep the order and retries on the next pass."
+              }
+            }
           ]
         },
         {
@@ -2719,6 +2729,20 @@
               }
             },
             {
+              "src": "projetos/clinica/historico-filtro.webp",
+              "width": 767,
+              "height": 420,
+              "maxWidth": 440,
+              "alt": {
+                "pt": "Painel de histórico filtrado por exclusões, mostrando que o administrador removeu o acesso de um usuário.",
+                "en": "History panel filtered by deletions, showing that the administrator removed a user access."
+              },
+              "caption": {
+                "pt": "Os filtros de período, de tipo de mudança e de autor: aqui só as exclusões, que também deixam rastro.",
+                "en": "The period, change-type and author filters: here only the deletions, which also leave a trace."
+              }
+            },
+            {
               "src": "projetos/clinica/historico-registro.webp",
               "width": 767,
               "height": 760,
@@ -2730,6 +2754,32 @@
               "caption": {
                 "pt": "O histórico de um registro: cada mudança traz o valor anterior riscado ao lado do novo, e o id do papel aparece como o nome do papel.",
                 "en": "The history of one record: each change shows the previous value struck through next to the new one, and the role id appears as the role name."
+              }
+            }
+          ],
+          "snippets": [
+            {
+              "language": "ts",
+              "code": "export async function writeAuditEvent(\n  manager: EntityManager,\n  event: AuditEventInput,\n): Promise<void> {\n  await manager.query(\n    `INSERT INTO infra.audit_events\n       (id, tenant_id, entity, entity_id, operation, changes, actor_id, version, success, correlation_id, occurred_at)\n     SELECT $1::uuid, $2::uuid, $3::varchar, $4::varchar, $5::infra.audit_events_operation_enum, $6::jsonb,\n            $7::varchar, COALESCE(MAX(version), 0) + 1, $8::boolean, $9::varchar, $10::timestamptz\n       FROM infra.audit_events\n      WHERE entity = $3::varchar AND entity_id = $4::varchar\n     ON CONFLICT (id, occurred_at) DO NOTHING`,\n    [/* id, tenantId, entity, entityId, operation, changes, actorId, success, correlationId, occurredAt */],\n  );\n}",
+              "caption": {
+                "pt": "O único ponto que grava a auditoria: a versão é MAX + 1 por registro e o INSERT é idempotente por (id, occurred_at), então uma reentrega da fila não duplica nada.",
+                "en": "The only place that writes the audit trail: the version is MAX + 1 per record and the INSERT is idempotent on (id, occurred_at), so a queue redelivery duplicates nothing."
+              }
+            },
+            {
+              "language": "ts",
+              "code": "const SENSITIVE_KEY = /password|secret|token|hash|pfx|certificate|credential|credenciais/i;\n\nexport function redactSensitive(value: Record<string, unknown>): Record<string, unknown> {\n  const walk = (node: unknown): unknown => {\n    if (Array.isArray(node)) return node.map(walk);\n    if (node === null || typeof node !== 'object') return node;\n    return Object.fromEntries(\n      Object.entries(node as Record<string, unknown>).map(([key, child]) => [\n        key,\n        SENSITIVE_KEY.test(key) && child !== null && child !== undefined ? REDACTED : walk(child),\n      ]),\n    );\n  };\n  return walk(value) as Record<string, unknown>;\n}",
+              "caption": {
+                "pt": "O mascaramento, aplicado na gravação e de novo na leitura: percorre o JSON em qualquer profundidade e troca o valor das chaves que parecem segredo.",
+                "en": "Masking, applied on write and again on read: it walks the JSON at any depth and replaces the value of keys that look like secrets."
+              }
+            },
+            {
+              "language": "ts",
+              "code": "await this.dataSource.transaction(async (manager) => {\n  await manager.query(`SELECT pg_advisory_xact_lock(hashtext('audit_events_partitions'))`);\n  for (let offset = 0; offset <= AUDIT_PARTITION_MONTHS_AHEAD; offset++) {\n    const from = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + offset, 1));\n    const to = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth() + 1, 1));\n    const name = `audit_events_${from.toISOString().slice(0, 7).replace('-', '_')}`;\n    await manager.query(\n      `CREATE TABLE IF NOT EXISTS \"infra\".\"${name}\" PARTITION OF \"infra\".\"audit_events\" FOR VALUES FROM ('${from.toISOString()}') TO ('${to.toISOString()}')`,\n    );\n  }\n});",
+              "caption": {
+                "pt": "A rotina de partições: sob um advisory lock, cria de forma idempotente o mês atual e os três seguintes, sem que réplicas concorram.",
+                "en": "The partition job: under an advisory lock, it idempotently creates the current month and the next three, with no race between replicas."
               }
             }
           ]
@@ -3098,6 +3148,22 @@
                 "en": "Token state lives outside React, in a subscribable store read through useSyncExternalStore, so the axios interceptor does not depend on hooks. In-house hooks standardize paginated lists, debounce, form loading and edit-loss protection."
               }
             }
+          ],
+          "gallery": [
+            {
+              "src": "projetos/clinica/paleta-de-comandos.webp",
+              "width": 864,
+              "height": 515,
+              "maxWidth": 600,
+              "alt": {
+                "pt": "Paleta de comandos aberta com a busca \"usu\", listando a tela de usuários e os campos da tela.",
+                "en": "Command palette open with the search \"usu\", listing the users screen and the fields on it."
+              },
+              "caption": {
+                "pt": "A paleta de comandos (Ctrl K): busca telas e também campos das configurações.",
+                "en": "The command palette (Ctrl K): it searches screens and also settings fields."
+              }
+            }
           ]
         },
         {
@@ -3194,6 +3260,32 @@
               "text": {
                 "pt": "Operação: encerramento limpo (shutdown hooks), variáveis de ambiente validadas na subida, migrations e seed idempotentes antes de a API iniciar, e um comando para remover e restaurar uma clínica com confirmação explícita.",
                 "en": "Operations: graceful shutdown hooks, environment variables validated at startup, idempotent migrations and seeds before the API starts, and a command to remove and restore a clinic with explicit confirmation."
+              }
+            }
+          ],
+          "snippets": [
+            {
+              "language": "ts",
+              "code": "it('every endpoint declares a permission or opts out explicitly', () => {\n  expect(endpoints.filter((e) => e.access === 'MISSING').map(label)).toEqual([]);\n});\n\nit.each(endpoints.map((e) => [label(e), e]))('%s', (_name, endpoint) => {\n  const e = endpoint as EndpointInfo;\n  const operation = doc.paths[e.path]?.[e.method];\n  expect(operation).toBeDefined();\n  const expected = e.access === 'public' || e.access === 'authenticated' ? undefined : e.access;\n  expect(operation!['x-required-permission']).toBe(expected);\n});",
+              "caption": {
+                "pt": "O teste que cruza a documentação com o código: toda rota declara uma permissão (ou uma exceção explícita) e a permissão documentada tem de ser a do handler.",
+                "en": "The test that cross-checks the docs against the code: every route declares a permission (or an explicit opt-out) and the documented permission must be the handler one."
+              }
+            }
+          ],
+          "gallery": [
+            {
+              "src": "projetos/clinica/openapi-docs.webp",
+              "width": 725,
+              "height": 810,
+              "maxWidth": 440,
+              "alt": {
+                "pt": "Documentação OpenAPI publicada com o Scalar, mostrando a rota de histórico de auditoria, um exemplo de chamada e a resposta.",
+                "en": "OpenAPI docs published with Scalar, showing the audit history route, a sample call and the response."
+              },
+              "caption": {
+                "pt": "A documentação da API, publicada com o Scalar a partir dos arquivos OpenAPI que o teste acima mantém fiéis ao código.",
+                "en": "The API docs, published with Scalar from the OpenAPI files that the test above keeps faithful to the code."
               }
             }
           ]

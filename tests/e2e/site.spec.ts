@@ -247,3 +247,27 @@ test('o site final não expõe dados do projeto confidencial além do nome do pr
     expect(text.replaceAll('Luhmera', ''), path).not.toMatch(/luhmera|LM Solutions/i)
   }
 })
+
+test.describe('celular (375px)', () => {
+  test.use({ locale: 'pt-BR', viewport: { width: 375, height: 812 } })
+
+  for (const path of ['/', '/projetos/']) {
+    test(`a barra superior fica numa linha só em ${path}`, async ({ page }) => {
+      await page.goto(path)
+      const tops = await page.evaluate(() =>
+        [...document.querySelectorAll('header nav a, header button')].map((element) => Math.round(element.getBoundingClientRect().top)),
+      )
+      expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(8)
+    })
+  }
+
+  test('os botões de contato ocupam a largura toda de cada coluna', async ({ page }) => {
+    await page.goto('/')
+    const widths = await page.locator('nav[aria-label="Contato"] a').evaluateAll((links) =>
+      links.map((link) => Math.round(link.getBoundingClientRect().width)),
+    )
+    expect(widths).toHaveLength(4)
+    const column = Math.round((375 - 32 - 8) / 2)
+    for (const width of widths) expect(width).toBeGreaterThanOrEqual(column - 2)
+  })
+})

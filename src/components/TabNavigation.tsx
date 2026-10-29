@@ -30,7 +30,7 @@ export const TabNavigation = ({ resume, currentPage, locale, base, translate }: 
               <a
                 href={pagePath(tab.page, locale, base)}
                 aria-current={isCurrent ? 'page' : undefined}
-                className={`inline-flex min-h-[42px] items-center justify-center px-4 text-sm font-medium transition-colors ${cornerClass} ${
+                className={`inline-flex min-h-[42px] items-center justify-center px-3 text-sm sm:px-4 font-medium transition-colors ${cornerClass} ${
                   isCurrent ? 'bg-surface-3 text-ink' : 'text-ink-subtle hover:text-ink'
                 }`}
               >

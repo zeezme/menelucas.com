@@ -29,7 +29,7 @@ const CONTACT_LINK_CLASS =
 
 const ContactLink = ({ href, label, rel, children }: ContactLinkProps) => (
   <li>
-    <Tooltip label={label} desktopOnly>
+    <Tooltip label={label} desktopOnly className="flex w-full sm:inline-flex sm:w-auto">
       <a href={href} className={CONTACT_LINK_CLASS} {...(rel ? { rel } : {})}>
         {children}
         <span className="sm:sr-only">{label}</span>
