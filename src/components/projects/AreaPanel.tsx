@@ -4,7 +4,7 @@ import { BulletList } from '../BulletList'
 import { CodeBlock } from './CodeBlock'
 import { FlowDiagram } from './FlowDiagram'
 import { ScreenshotFigure } from './ScreenshotFigure'
-import { TopicGrid } from './TopicGrid'
+import { TopicList } from './TopicList'
 
 interface AreaPanelProps {
   area: Area
@@ -27,7 +27,7 @@ export const AreaPanel = ({ area, id, project, locale, base }: AreaPanelProps) =
       ) : null}
       {area.points ? <BulletList items={area.points} locale={locale} /> : null}
     </div>
-    {area.topics ? <TopicGrid topics={area.topics} locale={locale} /> : null}
+    {area.topics ? <TopicList topics={area.topics} locale={locale} /> : null}
     {(area.diagrams ?? []).map((diagram) => (
       <FlowDiagram key={diagram.title.en} diagram={diagram} locale={locale} />
     ))}

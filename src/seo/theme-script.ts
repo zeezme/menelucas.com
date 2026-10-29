@@ -6,7 +6,8 @@ export const THEME_COLORS = { dark: '#010102', light: '#ffffff' } as const
  * - usa a escolha salva em `localStorage.theme` ou, sem ela, o tema do sistema;
  * - acompanha as mudanças do sistema enquanto a pessoa não escolheu um tema manualmente;
  * - o botão `[data-theme-toggle]` alterna o tema e salva a escolha (em `try/catch`, para o armazenamento bloqueado);
- * - mantém a `<meta name="theme-color">` igual ao fundo do tema ativo.
+ * - mantém a `<meta name="theme-color">` igual ao fundo do tema ativo;
+ * - desliga as transições durante a troca (`data-theme-switching`), para que os itens selecionados não pisquem.
  */
 export const themeScript = `(() => {
   const root = document.documentElement;
@@ -22,12 +23,15 @@ export const themeScript = `(() => {
   };
   const systemTheme = () => (systemPrefersLight.matches ? 'light' : 'dark');
   const applyTheme = (theme) => {
+    root.setAttribute('data-theme-switching', '');
     root.setAttribute('data-theme', theme);
     const color = theme === 'light' ? '${THEME_COLORS.light}' : '${THEME_COLORS.dark}';
     document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
       meta.setAttribute('content', color);
       meta.removeAttribute('media');
     });
+    getComputedStyle(root).color;
+    requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
   };
   applyTheme(savedTheme() || systemTheme());
   try {

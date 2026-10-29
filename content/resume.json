@@ -1520,16 +1520,16 @@
       },
       "highlights": [
         {
-          "pt": "Cerca de 1.200 commits em back-end e front-end desde setembro de 2026.",
-          "en": "About 1,200 commits across back-end and front-end since September 2026."
-        },
-        {
           "pt": "Isolamento entre clientes provado por testes de integração contra Postgres e Redis reais.",
           "en": "Tenant isolation proven by integration tests against real Postgres and Redis."
         },
         {
           "pt": "Eventos entregues de forma confiável com outbox transacional e filas BullMQ.",
           "en": "Reliable event delivery with a transactional outbox and BullMQ queues."
+        },
+        {
+          "pt": "No back-end: 37 módulos, cerca de 315 endpoints HTTP, 62 migrations versionadas e cerca de 730 casos de teste, além de um front-end com mais de 100 rotas.",
+          "en": "On the back end: 37 modules, about 315 HTTP endpoints, 62 versioned migrations and about 730 test cases, plus a front end with over 100 routes."
         }
       ],
       "diagrams": [
@@ -2669,36 +2669,6 @@
               }
             }
           ]
-        }
-      ],
-      "facts": [
-        {
-          "value": "~1.200",
-          "label": {
-            "pt": "commits desde setembro de 2026",
-            "en": "commits since September 2026"
-          }
-        },
-        {
-          "value": "~315",
-          "label": {
-            "pt": "endpoints HTTP em 37 módulos",
-            "en": "HTTP endpoints in 37 modules"
-          }
-        },
-        {
-          "value": "62",
-          "label": {
-            "pt": "migrations versionadas",
-            "en": "versioned migrations"
-          }
-        },
-        {
-          "value": "~730",
-          "label": {
-            "pt": "casos de teste no back-end",
-            "en": "back-end test cases"
-          }
         }
       ]
     }

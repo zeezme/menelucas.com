@@ -1,9 +1,7 @@
 import type { ReactNode } from 'react'
-import { labelTags, localePath, pick, roleOf, type Translator } from '../internationalization'
+import { labelTags, pick, roleOf, type Translator } from '../internationalization'
 import type { Locale, Resume } from '../schema/resume'
-import { LanguageToggle } from './LanguageToggle'
 import { DownloadIcon, GitHubIcon, LinkedInIcon, MailIcon, WhatsAppIcon } from './icons'
-import { ThemeToggle } from './ThemeToggle'
 
 interface ProfileHeaderProps {
   resume: Resume
@@ -37,7 +35,7 @@ const ContactLink = ({ href, label, rel, children }: ContactLinkProps) => (
   </li>
 )
 
-/** Topo do currículo: foto, nome, cargo, contatos, troca de idioma e tema e botão de download do PDF. */
+/** Topo do currículo: foto, nome, cargo, contatos e botão de download do PDF. */
 export const ProfileHeader = ({ resume, locale, base, translate }: ProfileHeaderProps) => {
   const { basics, meta } = resume
   const label = pick(basics.label, locale)
@@ -48,7 +46,7 @@ export const ProfileHeader = ({ resume, locale, base, translate }: ProfileHeader
   const tags = labelTags(label)
 
   return (
-    <header className="grid grid-cols-1 gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-6">
+    <div id="profile" className="grid grid-cols-1 gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-6">
       <div className="flex items-center gap-4 sm:col-start-1 sm:row-start-1 sm:gap-5">
         <img
           src={`${base}avatar.webp`}
@@ -100,18 +98,14 @@ export const ProfileHeader = ({ resume, locale, base, translate }: ProfileHeader
         </ul>
       </nav>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-3 sm:col-span-2 sm:gap-x-4">
-        <LanguageToggle locale={locale} hrefForLocale={(targetLocale) => localePath(targetLocale, base)} translate={translate} />
-        <ThemeToggle translate={translate} />
-        <a
-          href={`${base}${meta.pdf[locale].slice(1)}`}
-          download
-          className="inline-flex min-h-touch flex-1 items-center justify-center gap-2 rounded-btn bg-accent-solid px-4 text-sm font-medium text-white transition-colors hover:bg-accent-hover sm:ml-auto sm:flex-none"
-        >
-          <DownloadIcon />
-          {translate('downloadPdf')}
-        </a>
-      </div>
-    </header>
+      <a
+        href={`${base}${meta.pdf[locale].slice(1)}`}
+        download
+        className="inline-flex min-h-touch items-center justify-center gap-2 rounded-btn bg-accent-solid px-4 text-sm font-medium text-white transition-colors hover:bg-accent-hover sm:col-span-2 sm:justify-self-start"
+      >
+        <DownloadIcon />
+        {translate('downloadPdf')}
+      </a>
+    </div>
   )
 }

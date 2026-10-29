@@ -116,8 +116,6 @@ const project = z
     cardText: localized.optional(),
     /** Aviso fixo no topo do projeto (ex.: confidencialidade). */
     banner: localized.optional(),
-    /** Números em destaque na visão geral. */
-    facts: z.array(z.strictObject({ value: z.string().min(1), label: localized })).min(1).optional(),
     /** Diagramas da visão geral. */
     diagrams: z.array(diagram).optional(),
     highlights: z.array(highlight).min(1),

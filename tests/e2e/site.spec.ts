@@ -75,7 +75,7 @@ for (const p of PAGES) {
     test('alvos de toque do cabeçalho têm tamanho mínimo no mobile', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 812 })
       await page.goto(p.path)
-      const targets = page.locator('header a')
+      const targets = page.locator('header a, #profile a')
       const count = await targets.count()
       for (let i = 0; i < count; i++) {
         const box = await targets.nth(i).boundingBox()
@@ -185,6 +185,14 @@ test.describe('tema claro/escuro', () => {
     await toggle.click()
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
     expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark')
+  })
+
+  test('ao trocar de tema as transições ficam desligadas, para o item selecionado não piscar', async ({ page }) => {
+    await page.goto('/projetos/')
+    const selected = page.locator('[aria-current="page"]').first()
+    await page.getByRole('button', { name: /tema|theme/i }).click()
+    expect(await selected.evaluate((element) => getComputedStyle(element).transitionDuration)).toBe('0s')
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme-switching', '')
   })
 
   test('funciona com localStorage indisponível', async ({ browser }) => {

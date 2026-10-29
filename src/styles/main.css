@@ -55,6 +55,13 @@
     }
   }
 
+  /* Ao trocar de tema, as cores mudam de uma vez: sem transição, os itens selecionados não piscam. */
+  html[data-theme-switching] *,
+  html[data-theme-switching] *::before,
+  html[data-theme-switching] *::after {
+    transition: none !important;
+  }
+
   /* `hidden` precisa vencer utilitários de display (flex, grid…). */
   [hidden] {
     display: none !important;
