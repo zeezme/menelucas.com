@@ -22,9 +22,9 @@ export const ResumePage = ({ resume, interfaceTexts, locale, base }: ResumePageP
   const translate = createTranslator(interfaceTexts, locale)
   return (
     <PageShell resume={resume} currentPage="resume" locale={locale} base={base} translate={translate}>
-      <main id="content" tabIndex={-1} className="flex flex-col gap-10 outline-none">
+      <main id="content" tabIndex={-1} className="mx-auto flex w-full max-w-3xl flex-col gap-10 outline-none">
         <ProfileHeader resume={resume} locale={locale} base={base} translate={translate} />
-        <div className="flex max-w-3xl flex-col gap-10">
+        <div className="flex flex-col gap-10">
           <SummarySection resume={resume} locale={locale} translate={translate} />
           <SkillsSection resume={resume} locale={locale} translate={translate} />
           <ExperienceSection resume={resume} locale={locale} translate={translate} />
