@@ -7,8 +7,8 @@ import { ProjectOverview } from './ProjectOverview'
 
 interface ProjectDetailProps {
   project: Project
-  /** Se há mais de um projeto, as abas ficam acima e o filete do topo sai. */
-  hasTabs: boolean
+  /** Se há mais de um projeto, o menu de escolha fica acima e o filete do topo sai. */
+  hasMenu: boolean
   /** Na página própria do projeto o título é o h1 e as partes são h2; na página com todos os projetos, h2 e h3. */
   standalone?: boolean
   locale: Locale
@@ -22,7 +22,7 @@ const PAGER_DIRECTIONS = ['prev', 'next'] as const
  * Projeto completo: cabeçalho, aviso, barra lateral com as partes do sistema e os painéis.
  * Os botões Anterior e Próxima ficam no fim de cada painel e só aparecem no celular, onde a barra lateral fica no topo.
  */
-export const ProjectDetail = ({ project, hasTabs, standalone = false, locale, base, translate }: ProjectDetailProps) => {
+export const ProjectDetail = ({ project, hasMenu, standalone = false, locale, base, translate }: ProjectDetailProps) => {
   const levels: { project: HeadingLevel; panel: HeadingLevel; section: HeadingLevel } = standalone
     ? { project: 1, panel: 2, section: 3 }
     : { project: 2, panel: 3, section: 4 }
@@ -36,7 +36,7 @@ export const ProjectDetail = ({ project, hasTabs, standalone = false, locale, ba
     <article
       aria-labelledby={`${slug}-title`}
       data-project={slug}
-      className={`flex flex-col gap-8 ${hasTabs ? 'pt-2' : 'border-t border-hairline pt-8'}`}
+      className={`flex flex-col gap-8 ${hasMenu ? '' : 'border-t border-hairline pt-8'}`}
     >
       <header>
         <Heading

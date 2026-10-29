@@ -168,27 +168,48 @@ for (const pp of PROJECT_PAGES) {
       }
     })
 
-    test('o menu de projetos mostra um por vez e lembra a parte aberta de cada um', async ({ page }) => {
+    test('o menu de projetos é uma lista de escolha, mostra um por vez e lembra a parte aberta de cada um', async ({ page }) => {
       await page.goto(pp.path)
-      const menu = page.getByRole('navigation', { name: /^(Projetos|Projects)$/ })
-      const links = menu.getByRole('link')
-      await expect(links).toHaveCount(2)
+      const select = page.getByRole('combobox', { name: /^(Projeto|Project)$/ })
+      await expect(select).toBeVisible()
+      await expect(select.locator('option')).toHaveText(['iPsiq', 'Luhmera'])
+      await expect(page.locator('[data-projects-nav]')).toHaveCount(0)
       const first = await panelIds(page, 0)
       const second = await panelIds(page, 1)
-      await expect(links.first()).toHaveAttribute('aria-current', 'true')
+      await expect(select).toHaveValue('ipsiq')
       await expect(page.locator('article').nth(1)).toBeHidden()
 
       await page.goto(`${pp.path}#${first[2]}`)
-      await links.nth(1).click()
+      await select.selectOption('clinica')
       await expect(page).toHaveURL(new RegExp(`#${second[0]}$`))
       await expect(page.locator('article').nth(0)).toBeHidden()
       await expect(page.locator(`#${second[0]}`)).toBeVisible()
-      await expect(links.nth(1)).toHaveAttribute('aria-current', 'true')
+      await expect(select).toBeFocused()
 
-      await links.first().click()
+      await select.selectOption('ipsiq')
       await expect(page).toHaveURL(new RegExp(`#${first[2]}$`))
       await expect(page.locator(`#${first[2]}`)).toBeVisible()
       await expect(page.locator('article').nth(1)).toBeHidden()
+    })
+
+    test('o menu de projetos funciona só com o teclado', async ({ page }) => {
+      await page.goto(pp.path)
+      const select = page.getByRole('combobox', { name: /^(Projeto|Project)$/ })
+      await select.focus()
+      await page.keyboard.press('ArrowDown')
+      await expect(page).toHaveURL(/#clinica-overview$/)
+      await expect(page.locator('#clinica-overview')).toBeVisible()
+      await expect(page.getByRole('status')).toContainText('Luhmera')
+    })
+
+    test('sem JavaScript o menu some e os dois projetos ficam em sequência', async ({ browser }) => {
+      const context = await browser.newContext({ locale: pp.locale, javaScriptEnabled: false })
+      const page = await context.newPage()
+      await page.goto(pp.path)
+      await expect(page.locator('[data-projects-menu]')).toBeHidden()
+      await expect(page.locator('article')).toHaveCount(2)
+      await expect(page.locator('article').nth(1)).toBeVisible()
+      await context.close()
     })
   })
 }

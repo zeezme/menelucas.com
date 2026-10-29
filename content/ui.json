@@ -18,7 +18,7 @@
   "tabResume": { "pt": "Currículo", "en": "Resume" },
   "tabProjects": { "pt": "Projetos", "en": "Projects" },
   "projectDetails": { "pt": "Ver detalhes e telas", "en": "See details and screens" },
-  "projectsNav": { "pt": "Projetos", "en": "Projects" },
+  "projectSelectLabel": { "pt": "Projeto", "en": "Project" },
   "partsNav": { "pt": "Partes do sistema", "en": "System parts" },
   "breadcrumbNav": { "pt": "Você está em", "en": "You are here" },
   "backToTop": { "pt": "Voltar ao topo", "en": "Back to top" },

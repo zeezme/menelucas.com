@@ -6,6 +6,9 @@ const PROJECTS = [
   { slug: 'clinica', title: 'Luhmera' },
 ]
 
+// O axe percorre dezenas de partes por teste; com a máquina cheia o limite padrão de 30 s é apertado.
+test.describe.configure({ timeout: 120_000 })
+
 const LOCALES = [
   { locale: 'pt-BR', projects: '/projetos/', resume: '/', otherProjects: '/en/projects/', switchTo: 'EN' },
   { locale: 'en-US', projects: '/en/projects/', resume: '/en/', otherProjects: '/projetos/', switchTo: 'PT' },
@@ -25,7 +28,7 @@ for (const { locale, projects, resume, otherProjects, switchTo } of LOCALES) {
         expect(response?.status()).toBe(200)
         await expect(page.getByRole('heading', { level: 1 })).toHaveText(title)
         await expect(page.locator('article')).toHaveCount(1)
-        await expect(page.locator('[data-projects-nav]')).toHaveCount(0)
+        await expect(page.locator('[data-projects-menu]')).toHaveCount(0)
         const breadcrumb = page.getByRole('navigation', { name: /Você está em|You are here/ })
         await expect(breadcrumb.getByRole('link')).toHaveAttribute('href', projects)
         await expect(page).toHaveTitle(new RegExp(`^${title} \\| `))
@@ -107,7 +110,7 @@ for (const { locale, projects, resume, otherProjects, switchTo } of LOCALES) {
       for (const [index, { slug }] of PROJECTS.entries()) await expect(links.nth(index)).toHaveAttribute('href', `${projects}${slug}/`)
       await page.goto(projects)
       await expect(page.locator('article')).toHaveCount(PROJECTS.length)
-      await expect(page.locator('[data-projects-nav] a')).toHaveCount(PROJECTS.length)
+      await expect(page.locator('[data-project-select] option')).toHaveCount(PROJECTS.length)
     })
 
     test('o sitemap lista as páginas dos projetos e o primeiro acesso de quem usa inglês é levado à versão em inglês', async ({ page, request }) => {

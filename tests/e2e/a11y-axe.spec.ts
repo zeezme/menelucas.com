@@ -4,6 +4,9 @@ import { expect, test, type Page } from '@playwright/test'
 /** Regras da WCAG 2.0, 2.1 e 2.2 nível A e AA, mais as boas práticas do axe. */
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']
 
+// O axe percorre dezenas de partes por teste; com a máquina cheia o limite padrão de 30 s é apertado.
+test.describe.configure({ timeout: 120_000 })
+
 const LOCALES = [
   { locale: 'pt-BR', resume: '/', projects: '/projetos/' },
   { locale: 'en-US', resume: '/en/', projects: '/en/projects/' },

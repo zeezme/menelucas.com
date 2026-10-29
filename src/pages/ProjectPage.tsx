@@ -48,7 +48,7 @@ export const ProjectPage = ({ resume, interfaceTexts, project, locale, base }: P
             </li>
           </ol>
         </nav>
-        <ProjectDetail project={project} hasTabs={false} standalone locale={locale} base={base} translate={translate} />
+        <ProjectDetail project={project} hasMenu={false} standalone locale={locale} base={base} translate={translate} />
       </main>
       <div role="status" aria-live="polite" className="sr-only" data-areas-status data-opened-label={translate('partOpened')} />
       <script dangerouslySetInnerHTML={{ __html: areasScript }} />

@@ -1,6 +1,6 @@
 import { PageShell } from '../components/PageShell'
 import { ProjectDetail } from '../components/projects/ProjectDetail'
-import { ProjectTabs } from '../components/projects/ProjectTabs'
+import { ProjectMenu } from '../components/projects/ProjectMenu'
 import { createTranslator, pagePath } from '../internationalization'
 import { projectSlug, showcaseProjects, type InterfaceTexts, type Locale, type Resume } from '../schema/resume'
 import { areasScript } from '../seo/areas-script'
@@ -17,7 +17,7 @@ interface ProjectsPageProps {
 export const ProjectsPage = ({ resume, interfaceTexts, locale, base }: ProjectsPageProps) => {
   const translate = createTranslator(interfaceTexts, locale)
   const projects = showcaseProjects(resume)
-  const hasTabs = projects.length > 1
+  const hasMenu = projects.length > 1
   return (
     <PageShell
       resume={resume}
@@ -31,12 +31,12 @@ export const ProjectsPage = ({ resume, interfaceTexts, locale, base }: ProjectsP
         <h1 className="text-balance text-[1.75rem] font-semibold leading-[1.1] tracking-display sm:text-[2.25rem]">
           {translate('projects')}
         </h1>
-        {hasTabs ? <ProjectTabs projects={projects} locale={locale} translate={translate} /> : null}
+        {hasMenu ? <ProjectMenu projects={projects} locale={locale} translate={translate} /> : null}
         {projects.map((project) => (
           <ProjectDetail
             key={projectSlug(project)}
             project={project}
-            hasTabs={hasTabs}
+            hasMenu={hasMenu}
             locale={locale}
             base={base}
             translate={translate}
