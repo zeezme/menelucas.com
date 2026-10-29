@@ -26,7 +26,7 @@
       "region": "SP",
       "countryCode": "BR",
       "note": {
-        "pt": "Osasco, SP",
+        "pt": "Osasco, SP · aberto a remoto",
         "en": "Osasco, SP, Brazil (open to remote)"
       }
     },
@@ -365,8 +365,8 @@
           "en": "Designed and built the back-end (NestJS, TypeORM, PostgreSQL, Zod) and front-end (React, Vite, TanStack Query, Tailwind)."
         },
         {
-          "pt": "Agendamento com reserva temporária e proteção contra reserva dupla, preço em cascata por especialidade e por médico, e auditoria gravada na mesma transação.",
-          "en": "Booking with temporary holds and double-booking protection, cascading prices by specialty and doctor, and audit logs written in the same transaction."
+          "pt": "Agendamento com reserva temporária e proteção contra reserva dupla, e auditoria gravada na mesma transação.",
+          "en": "Booking with temporary holds and double-booking protection, and audit logs written in the same transaction."
         },
         {
           "pt": "Pagamento com split no ato do agendamento via Asaas (subcontas, notas fiscais e assinaturas), em andamento.",
@@ -389,8 +389,8 @@
               "en": "Over 500 automated tests, continuous integration on every push and automatic AWS deploys."
             },
             {
-              "pt": "Cerca de 48 mil linhas de TypeScript, 36 migrações de banco e 240 commits em três semanas.",
-              "en": "About 48 thousand lines of TypeScript, 36 database migrations and 240 commits in three weeks."
+              "pt": "36 migrações de banco, versionadas e com reversão.",
+              "en": "36 database migrations, versioned and reversible."
             },
             {
               "pt": "O isolamento entre profissionais (nenhum acessa dados de outro, nem pela API) é provado por testes de integração no CI.",
@@ -513,10 +513,6 @@
             {
               "pt": "O pagamento é feito no Pix na hora do agendamento, e a consulta é confirmada na hora.",
               "en": "Payment is made via Pix at booking time, and the appointment is confirmed right away."
-            },
-            {
-              "pt": "A remarcação é sem custo, com 24 horas de antecedência.",
-              "en": "Rescheduling is free, with 24 hours' notice."
             }
           ],
           "gallery": [
@@ -564,8 +560,8 @@
               "en": "No professional can reach another's data, not even through the API: this is proven by integration tests in CI."
             },
             {
-              "pt": "A consulta é iniciada pelo botão Iniciar, liberado 10 minutos antes; consultas não iniciadas até 15 minutos depois do horário são estornadas automaticamente.",
-              "en": "The appointment is started with the Start button, enabled 10 minutes before; appointments not started within 15 minutes after the scheduled time are refunded automatically."
+              "pt": "A consulta é iniciada pelo botão Iniciar, que só é liberado perto do horário marcado.",
+              "en": "The appointment is started with the Start button, which is only enabled close to the scheduled time."
             },
             {
               "pt": "Com a Google Agenda conectada, cada consulta ganha uma sala exclusiva do Meet, criada na agenda do próprio profissional; o evento leva só \"Consulta iPsiq\" e o primeiro nome do paciente.",
@@ -1239,41 +1235,61 @@
             "en": "Asaas integration"
           },
           "summary": {
-            "pt": "O pagamento do paciente é no Pix, com repasse automático ao profissional (split) e uma conta própria para cada um.",
-            "en": "The patient pays via Pix, with automatic transfer to the professional (split) and a dedicated account for each one."
+            "pt": "O iPsiq integra a API do Asaas para receber no Pix com repasse automático ao profissional (split): uma subconta por profissional, checkout Pix, webhooks, notas fiscais e assinaturas.",
+            "en": "iPsiq integrates the Asaas API to take Pix payments with an automatic transfer to the professional (split): one sub-account per professional, Pix checkout, webhooks, invoices and subscriptions."
           },
           "points": [
             {
-              "pt": "Cada profissional tem uma subconta: a cobrança de cada consulta nasce nela, com o split para a carteira do iPsiq.",
-              "en": "Each professional has a sub-account: each appointment's charge is created in it, with the split going to iPsiq's wallet."
+              "pt": "Subcontas: cada profissional tem uma, aberta pela equipe. O cadastro e os dados bancários são preenchidos direto no Asaas, por um link com validade, e o iPsiq não os guarda; o profissional só fica ativo depois que o Asaas aprova a conta, e o status chega por webhook.",
+              "en": "Sub-accounts: each professional has one, opened by the team. The registration and bank details are filled in directly at Asaas, through a link with an expiry, and iPsiq does not store them; the professional only becomes active once Asaas approves the account, and the status arrives by webhook."
             },
             {
-              "pt": "O cliente da API é fino e cada chamada informa em qual conta age (a principal ou a subconta); as chaves nunca vão para logs.",
-              "en": "The API client is thin and each call states which account it acts on (the main one or the sub-account); keys never go to logs."
+              "pt": "Checkout Pix: a cobrança de cada consulta é um checkout criado na subconta do profissional, com o split para a carteira do iPsiq e a consulta como referência externa; o prazo do checkout acompanha o da reserva temporária do horário.",
+              "en": "Pix checkout: each appointment's charge is a checkout created in the professional's sub-account, with the split going to iPsiq's wallet and the appointment as the external reference; the checkout expiry follows the time slot's temporary hold."
             },
             {
-              "pt": "A chave fica como segredo na AWS, é lida em tempo de execução e nunca aparece na tela; o ambiente (testes ou produção) é uma configuração.",
-              "en": "The key is kept as a secret on AWS, read at run time and never shown on screen; the environment (sandbox or production) is a setting."
+              "pt": "Webhooks por duas portas: a da conta principal (assinaturas e notas do iPsiq) e uma para cada subconta (consultas, notas e aprovação daquele profissional). Cada uma tem o seu token, comparado em tempo constante; o de cada subconta é derivado (HMAC) do segredo mestre.",
+              "en": "Webhooks through two doors: the main account's (iPsiq's subscriptions and invoices) and one for each sub-account (that professional's appointments, invoices and approval). Each has its own token, compared in constant time; each sub-account's is derived (HMAC) from the master secret."
             },
             {
-              "pt": "Os webhooks são autenticados por token com comparação em tempo constante, processados uma única vez por id de evento e registrados automaticamente no deploy e na criação de cada subconta.",
-              "en": "Webhooks are authenticated by token with a constant-time comparison, processed once per event id, and registered automatically on deploy and when each sub-account is created."
+              "pt": "O corpo do webhook é só um aviso: o pagamento, a nota ou o status da conta é lido de novo no Asaas, com a chave da conta certa, antes de qualquer mudança. Um corpo forjado não confirma pagamento.",
+              "en": "The webhook body is only a notice: the payment, invoice or account status is read again at Asaas, with the right account's key, before anything changes. A forged body cannot confirm a payment."
             },
             {
-              "pt": "A cobrança carrega a consulta como referência para conciliar os pagamentos, e o estorno integral desfaz o split.",
-              "en": "The charge carries the appointment as a reference to reconcile payments, and a full refund reverses the split."
+              "pt": "Idempotência: cada evento é reivindicado de forma atômica pelo id do Asaas antes de ser tratado, então entregas repetidas ou simultâneas não repetem efeitos (e-mails, sala de vídeo, conversões). Se o tratamento falha, a reivindicação é devolvida e o Asaas reenvia.",
+              "en": "Idempotency: each event is claimed atomically by its Asaas id before it is handled, so repeated or simultaneous deliveries do not repeat side effects (e-mails, video room, conversions). If handling fails, the claim is released and Asaas retries."
             },
             {
-              "pt": "Os dados do titular da subconta vão direto ao Asaas, por um link de uso único, e o iPsiq não os guarda.",
-              "en": "The sub-account holder's data goes straight to Asaas, through a single-use link, and iPsiq does not store it."
+              "pt": "Conciliação de status: o estado do pagamento é aplicado à consulta de forma idempotente. Um pagamento só atualiza consultas do médico da própria subconta, e um pagamento pago nunca volta a falho por causa de um evento atrasado. O \"Já paguei\" do paciente consulta o Asaas direto (por checkout e por referência), com limite de frequência por consulta para não gastar a cota da API.",
+              "en": "Status reconciliation: the payment state is applied to the appointment idempotently. A payment only updates appointments of its own sub-account's doctor, and a paid payment never goes back to failed because of a late event. The patient's \"I already paid\" asks Asaas directly (by checkout and by reference), rate-limited per appointment so it does not burn the API quota."
             },
             {
-              "pt": "O que o paciente pode corrigir aparece no formulário; erro de configuração mostra uma mensagem genérica e avisa a equipe com o motivo exato, e a mensagem técnica do provedor nunca vai ao paciente.",
-              "en": "What the patient can fix appears in the form; a configuration error shows a generic message and alerts the team with the exact reason, and the provider's technical message never reaches the patient."
+              "pt": "Registro dos webhooks: o da conta principal é criado ou atualizado a cada deploy, por um comando idempotente, e o de cada subconta é registrado quando ela é criada. Os eventos assinados cobrem pagamento, checkout, notas fiscais e status da conta.",
+              "en": "Webhook registration: the main account's is created or updated on every deploy, by an idempotent command, and each sub-account's is registered when it is created. The subscribed events cover payment, checkout, invoices and account status."
             },
             {
-              "pt": "Os testes não dependem de rede: um Asaas falso local simula o provedor.",
-              "en": "Tests do not depend on the network: a local fake Asaas simulates the provider."
+              "pt": "Notas fiscais: as NFS-e aplicáveis são emitidas pelo Asaas de forma automática depois do pagamento confirmado, com o status sincronizado por webhook. Cada nota só é atualizada pela conta que a emitiu, e os arquivos baixados têm limite de tamanho.",
+              "en": "Invoices: the applicable NFS-e are issued through Asaas automatically once the payment is confirmed, with the status synchronized by webhook. Each invoice is only updated by the account that issued it, and downloaded files have a size limit."
+            },
+            {
+              "pt": "Assinaturas: as assinaturas e as cobranças recorrentes dos profissionais correm pela conta principal e são atualizadas pelos webhooks dela.",
+              "en": "Subscriptions: the professionals' subscriptions and recurring charges run through the main account and are updated by its webhooks."
+            },
+            {
+              "pt": "Cliente da API: fino, cada chamada informa em qual conta age (a principal ou a subconta), tem timeout de 15 s para que um Asaas lento não prenda requisições e nunca registra as chaves em log.",
+              "en": "API client: thin, each call states which account it acts on (the main one or a sub-account), has a 15 s timeout so a slow Asaas cannot hold requests, and never logs the keys."
+            },
+            {
+              "pt": "Segredos: a chave fica como segredo na AWS, é lida em tempo de execução e nunca aparece na tela; o ambiente (testes ou produção) é uma configuração.",
+              "en": "Secrets: the key is kept as a secret on AWS, read at run time and never shown on screen; the environment (sandbox or production) is a setting."
+            },
+            {
+              "pt": "Erros: o que o paciente pode corrigir aparece no formulário; um erro de configuração mostra uma mensagem genérica e avisa a equipe com o motivo exato, e a mensagem técnica do provedor nunca vai ao paciente.",
+              "en": "Errors: what the patient can fix appears in the form; a configuration error shows a generic message and alerts the team with the exact reason, and the provider's technical message never reaches the patient."
+            },
+            {
+              "pt": "Testes sem rede: um servidor HTTP que imita o Asaas registra cada chamada e responde conforme o teste, então a integração é verificada sem o provedor.",
+              "en": "Network-free tests: an HTTP server that imitates Asaas records every call and answers as the test defines, so the integration is verified without the provider."
             }
           ],
           "diagrams": [
@@ -1283,8 +1299,8 @@
                 "en": "From payment to webhook"
               },
               "caption": {
-                "pt": "A cobrança nasce na subconta do profissional, com split; o aviso do Asaas passa por três verificações antes de mexer em qualquer dado.",
-                "en": "The charge is created in the professional's sub-account, with a split; the Asaas notice goes through three checks before touching any data."
+                "pt": "O checkout nasce na subconta do profissional, com split; o aviso do Asaas passa por três verificações antes de mexer em qualquer dado.",
+                "en": "The checkout is created in the professional's sub-account, with a split; the Asaas notice goes through three checks before touching any data."
               },
               "stages": [
                 {
@@ -1301,8 +1317,8 @@
                   "nodes": [
                     {
                       "title": {
-                        "pt": "iPsiq cria a cobrança",
-                        "en": "iPsiq creates the charge"
+                        "pt": "iPsiq cria o checkout",
+                        "en": "iPsiq creates the checkout"
                       },
                       "detail": {
                         "pt": "na subconta do profissional, com a consulta como referência e o split para a carteira do iPsiq",
@@ -1320,8 +1336,8 @@
                         "en": "Asaas"
                       },
                       "detail": {
-                        "pt": "processa o pagamento e faz o repasse automático",
-                        "en": "processes the payment and makes the automatic transfer"
+                        "pt": "processa o pagamento, faz o repasse automático e avisa por webhook",
+                        "en": "processes the payment, makes the automatic transfer and notifies by webhook"
                       }
                     }
                   ]
@@ -1352,18 +1368,18 @@
                         "en": "2. Event id"
                       },
                       "detail": {
-                        "pt": "processado uma única vez",
-                        "en": "processed exactly once"
+                        "pt": "reivindicado de forma atômica, tratado uma única vez",
+                        "en": "claimed atomically, handled exactly once"
                       }
                     },
                     {
                       "title": {
-                        "pt": "3. Conciliação",
-                        "en": "3. Reconciliation"
+                        "pt": "3. Leitura no Asaas",
+                        "en": "3. Read at Asaas"
                       },
                       "detail": {
-                        "pt": "a consulta de referência liga o pagamento; o estorno integral desfaz o split",
-                        "en": "the reference appointment ties the payment; a full refund undoes the split"
+                        "pt": "o pagamento é lido de novo na API, com a chave da conta certa, antes de mudar a consulta",
+                        "en": "the payment is read again from the API, with the right account's key, before the appointment changes"
                       }
                     }
                   ]
@@ -1412,8 +1428,8 @@
           },
           "points": [
             {
-              "pt": "Exemplo de tela: Atendimento, com a tolerância para iniciar a consulta, depois da qual a consulta não iniciada é estornada automaticamente.",
-              "en": "Example screen: Service, with the tolerance for starting an appointment, after which an unstarted appointment is refunded automatically."
+              "pt": "As telas são agrupadas por tema (consultas, financeiro e integrações), e cada alteração fica na trilha de auditoria.",
+              "en": "Screens are grouped by theme (appointments, finance and integrations), and every change goes into the audit trail."
             },
             {
               "pt": "As telas de regras comerciais e fiscais não são mostradas aqui.",
