@@ -40,11 +40,13 @@ export const PageShell = ({ resume, currentPage, locale, base, translate, childr
         <footer className="border-t border-hairline pt-6 print:hidden">
           <a
             href={resume.meta.repository}
-            rel="noopener"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex min-h-touch items-center gap-2 text-sm text-ink-muted underline decoration-hairline-strong underline-offset-4 transition-colors hover:text-ink hover:decoration-accent"
           >
             <GitHubIcon />
             {translate('sourceCode')}
+            <span className="sr-only"> ({translate('opensInNewTab')})</span>
           </a>
         </footer>
       ) : null}

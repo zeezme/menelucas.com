@@ -52,6 +52,7 @@ const ProjectCard = ({ project, isFirstShowcase, locale, base, translate }: Proj
             className="inline-flex min-h-touch items-center gap-1 self-start text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"
           >
             {translate(hasScreens ? 'projectDetails' : 'projectDetailsEngineering')}
+            <span className="sr-only">: {projectTitle(project, locale)}</span>
             <span aria-hidden="true">→</span>
           </a>
         ) : null}

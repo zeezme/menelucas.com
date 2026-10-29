@@ -5,6 +5,8 @@ type FlowNodeData = Diagram['stages'][number]['nodes'][number]
 
 interface FlowNodeProps {
   node: FlowNodeData
+  /** Texto lido por leitores de tela nos blocos planejados, que na tela se distinguem só pelo tracejado. */
+  plannedLabel: string
   locale: Locale
   /** Se o bloco está dentro de uma caixa de grupo, que já tem fundo próprio. */
   isNested: boolean
@@ -13,6 +15,7 @@ interface FlowNodeProps {
 interface FlowDiagramProps {
   diagram: Diagram
   locale: Locale
+  plannedLabel: string
 }
 
 const COLUMNS_BY_NODE_COUNT: Record<number, string> = {
@@ -34,10 +37,11 @@ const nodeToneClass = (node: FlowNodeData, isNested: boolean): string => {
   return isNested ? 'border-hairline bg-surface-3' : 'border-hairline bg-surface-2'
 }
 
-const FlowNode = ({ node, locale, isNested }: FlowNodeProps) => (
+const FlowNode = ({ node, plannedLabel, locale, isNested }: FlowNodeProps) => (
   <div className={`min-w-0 rounded-lg border px-4 py-3 ${nodeToneClass(node, isNested)}`}>
     <p translate="no" className={`break-words text-sm font-semibold ${node.tone === 'future' ? 'text-ink-muted' : 'text-ink'}`}>
       {pick(node.title, locale)}
+      {node.tone === 'future' ? <span className="sr-only"> ({plannedLabel})</span> : null}
     </p>
     {node.detail ? (
       <p className="mt-1 text-pretty text-[0.8125rem] leading-relaxed text-ink-muted">{pick(node.detail, locale)}</p>
@@ -46,7 +50,7 @@ const FlowNode = ({ node, locale, isNested }: FlowNodeProps) => (
 )
 
 /** Diagrama de fluxo em HTML e CSS: segue o tema, quebra bem no celular e é lido como uma lista ordenada. */
-export const FlowDiagram = ({ diagram, locale }: FlowDiagramProps) => (
+export const FlowDiagram = ({ diagram, locale, plannedLabel }: FlowDiagramProps) => (
   <figure className="flex flex-col gap-3">
     <div className="rounded-xl border border-hairline bg-surface-1 p-4 sm:p-6">
       <p className="mb-4 text-sm font-semibold text-ink">{pick(diagram.title, locale)}</p>
@@ -55,7 +59,7 @@ export const FlowDiagram = ({ diagram, locale }: FlowDiagramProps) => (
           const nodes = (
             <div className={`grid grid-cols-1 gap-3 ${COLUMNS_BY_NODE_COUNT[stage.nodes.length] ?? ''}`}>
               {stage.nodes.map((node) => (
-                <FlowNode key={node.title.en} node={node} locale={locale} isNested={stage.title !== undefined} />
+                <FlowNode key={node.title.en} node={node} plannedLabel={plannedLabel} locale={locale} isNested={stage.title !== undefined} />
               ))}
             </div>
           )
