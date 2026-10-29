@@ -101,9 +101,9 @@ export function Header({ resume, locale, base, t }: Props) {
         <img
           src={`${base}avatar.webp`}
           alt={t('avatarAlt')}
-          width={80}
-          height={80}
-          className="h-20 w-20 shrink-0 rounded-full border border-hairline bg-surface-2 object-cover"
+          width={136}
+          height={136}
+          className="h-28 w-28 shrink-0 sm:h-[136px] sm:w-[136px] rounded-full border border-hairline bg-surface-2 object-cover"
           fetchPriority="high"
         />
         <div className="min-w-0">
