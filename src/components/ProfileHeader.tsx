@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { labelTags, pick, roleOf, type Translator } from '../internationalization'
 import type { Locale, Resume } from '../schema/resume'
+import { Tooltip } from './Tooltip'
 import { DownloadIcon, GitHubIcon, LinkedInIcon, MailIcon, WhatsAppIcon } from './icons'
 
 interface ProfileHeaderProps {
@@ -28,10 +29,12 @@ const CONTACT_LINK_CLASS =
 
 const ContactLink = ({ href, label, rel, children }: ContactLinkProps) => (
   <li>
-    <a href={href} className={CONTACT_LINK_CLASS} {...(rel ? { rel } : {})}>
-      {children}
-      <span className="sm:sr-only">{label}</span>
-    </a>
+    <Tooltip label={label} desktopOnly>
+      <a href={href} className={CONTACT_LINK_CLASS} {...(rel ? { rel } : {})}>
+        {children}
+        <span className="sm:sr-only">{label}</span>
+      </a>
+    </Tooltip>
   </li>
 )
 

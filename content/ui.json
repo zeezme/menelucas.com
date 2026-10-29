@@ -1,7 +1,7 @@
 {
   "skipLink": { "pt": "Pular para o conteúdo", "en": "Skip to content" },
   "downloadPdf": { "pt": "Baixar PDF", "en": "Download PDF" },
-  "themeToggle": { "pt": "Alternar tema claro/escuro", "en": "Toggle light/dark theme" },
+  "themeToggle": { "pt": "Tema escuro", "en": "Dark theme" },
   "languageNav": { "pt": "Idioma", "en": "Language" },
   "contactNav": { "pt": "Contato", "en": "Contact" },
   "summary": { "pt": "Resumo", "en": "Summary" },
@@ -17,6 +17,8 @@
   "projectDetails": { "pt": "Ver detalhes e telas", "en": "See details and screens" },
   "projectsNav": { "pt": "Projetos", "en": "Projects" },
   "partsNav": { "pt": "Partes do sistema", "en": "System parts" },
+  "backToTop": { "pt": "Voltar ao topo", "en": "Back to top" },
+  "partOpened": { "pt": "Parte aberta", "en": "Part opened" },
   "pagerNav": { "pt": "Parte anterior e próxima", "en": "Previous and next part" },
   "prevPart": { "pt": "Anterior", "en": "Previous" },
   "nextPart": { "pt": "Próxima", "en": "Next" },

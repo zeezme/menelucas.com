@@ -52,3 +52,9 @@ export const DownloadIcon = () => (
     <path d="M12 3v12m0 0-4-4m4 4 4-4M4 20h16" />
   </svg>
 )
+
+export const ArrowUpIcon = () => (
+  <svg {...base} width={18} height={18} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 20V5m0 0-6 6m6-6 6 6" />
+  </svg>
+)
