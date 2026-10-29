@@ -139,14 +139,13 @@ for (const pp of PROJECT_PAGES) {
   test.describe(`projeto confidencial em ${pp.path}`, () => {
     test.use({ locale: pp.locale })
 
-    test('vem depois do primeiro, abre pelo link do currículo, tem aviso e não tem imagens', async ({ page }) => {
+    test('vem depois do primeiro e abre pelo link do currículo', async ({ page }) => {
       const resumePath = pp.locale === 'pt-BR' ? '/' : '/en/'
       await page.goto(resumePath)
       const card = page.locator('section[aria-labelledby="projects-title"] article').nth(1)
       await card.getByRole('link').click()
       await expect(page).toHaveURL(new RegExp(`${pp.path}#clinica-overview$`))
       await expect(page.locator('#clinica-overview')).toBeVisible()
-      await expect(page.locator('article').nth(1).locator('img')).toHaveCount(0)
       await expect(page.locator('#clinica-overview h3')).toBeInViewport()
     })
 

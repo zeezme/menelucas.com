@@ -156,7 +156,7 @@ describe('página Projetos', () => {
       expect(img).toMatch(/ width="\d+"/)
       expect(img).toMatch(/ height="\d+"/)
       expect(img).toContain('loading="lazy"')
-      expect(img).toMatch(/src="\/projetos\/ipsiq\/\d\d-[a-z-]+\.webp"/)
+      expect(img).toMatch(/src="\/projetos\/[a-z]+\/[a-z0-9-]+\.webp"/)
     }
   })
 
@@ -231,10 +231,6 @@ describe('projeto confidencial', () => {
   it('existe e vem depois do primeiro projeto', () => {
     expect(secret.length).toBeGreaterThan(0)
     expect(showcase.indexOf(secret[0] as (typeof showcase)[number])).toBeGreaterThan(0)
-  })
-
-  it('não tem imagens de tela', () => {
-    for (const p of secret) expect((p.areas ?? []).flatMap((a) => a.gallery ?? [])).toHaveLength(0)
   })
 
   it('o card no currículo leva à seção do projeto em /projetos/ e /en/projects/', () => {

@@ -2702,6 +2702,36 @@
                 "en": "Integration tests against real Postgres cover the previous-value rebuild, hiding failed writes, isolation between clinics, per-record-type permission, the cursor, the user timeline, partitions and the worker through the queue; a unit test covers masking."
               }
             }
+          ],
+          "gallery": [
+            {
+              "src": "projetos/clinica/historico-lista.webp",
+              "width": 767,
+              "height": 1350,
+              "maxWidth": 440,
+              "alt": {
+                "pt": "Painel lateral de histórico de usuários, com filtros de período e de mudança e a lista de quem fez o quê e quando.",
+                "en": "Side panel with the users history, with period and change filters and a list of who did what and when."
+              },
+              "caption": {
+                "pt": "O histórico de uma lista: quem fez o quê e quando, com filtros de período e de tipo de mudança e carregamento por cursor.",
+                "en": "The history of a list: who did what and when, with period and change-type filters and cursor-based loading."
+              }
+            },
+            {
+              "src": "projetos/clinica/historico-registro.webp",
+              "width": 767,
+              "height": 760,
+              "maxWidth": 440,
+              "alt": {
+                "pt": "Painel de histórico de um usuário, mostrando a mudança de papel de Recepção para Financeiro, com o valor anterior riscado.",
+                "en": "History panel of one user, showing the role change from Recepção to Financeiro, with the previous value struck through."
+              },
+              "caption": {
+                "pt": "O histórico de um registro: cada mudança traz o valor anterior riscado ao lado do novo, e o id do papel aparece como o nome do papel.",
+                "en": "The history of one record: each change shows the previous value struck through next to the new one, and the role id appears as the role name."
+              }
+            }
           ]
         },
         {
@@ -2883,6 +2913,21 @@
               "text": {
                 "pt": "O token viaja só no cabeçalho Authorization, nunca em cookie, o que elimina a superfície de CSRF por desenho. CORS por ambiente e CSP via Helmet.",
                 "en": "The token travels only in the Authorization header, never in a cookie, which removes the CSRF surface by design. Per-environment CORS and CSP through Helmet."
+              }
+            }
+          ],
+          "gallery": [
+            {
+              "src": "projetos/clinica/usuarios.webp",
+              "width": 1200,
+              "height": 442,
+              "alt": {
+                "pt": "Lista de usuários da clínica, com nome, e-mail, papel, data de entrada e as ações de histórico, edição e remoção de acesso.",
+                "en": "List of the clinic users, with name, email, role, join date and the history, edit and remove-access actions."
+              },
+              "caption": {
+                "pt": "Os acessos por papel: cada pessoa tem um papel, que é um conjunto de permissões, e o botão de histórico só aparece para quem tem a permissão de auditoria.",
+                "en": "Role-based access: each person has a role, which is a set of permissions, and the history button only shows for whoever has the audit permission."
               }
             }
           ]
@@ -3153,7 +3198,11 @@
             }
           ]
         }
-      ]
+      ],
+      "galleryNote": {
+        "pt": "Capturas de tela de um ambiente de desenvolvimento, com dados fictícios.",
+        "en": "Screenshots of a development environment, with fictitious data."
+      }
     }
   ],
   "education": [
