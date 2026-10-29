@@ -91,7 +91,7 @@ const diagram = z.strictObject({
 
 const area = z.strictObject({
   title: localized,
-  summary: localized,
+  summary: localized.optional(),
   points: z.array(highlight).optional(),
   diagrams: z.array(diagram).optional(),
   snippets: z.array(snippet).optional(),
@@ -102,10 +102,20 @@ const area = z.strictObject({
 const project = z
   .strictObject({
     name: z.string().min(1),
+    /** Prefixo dos endereços (#slug-...) das partes; padrão: o nome em minúsculas, sem acentos. */
+    slug: z.string().regex(/^[a-z0-9-]+$/).optional(),
+    /** Título exibido nos dois idiomas; sem ele, mostra `name` (nome próprio, sem tradução). */
+    title: localized.optional(),
     roles: localized,
     startDate: yearMonth,
     endDate: yearMonth.optional(),
     description: localized,
+    /** Texto do card no currículo (substitui a descrição e os destaques, que ficam só na página do projeto). */
+    cardText: localized.optional(),
+    /** Aviso fixo no topo do projeto (ex.: confidencialidade). */
+    banner: localized.optional(),
+    /** Diagramas da visão geral. */
+    diagrams: z.array(diagram).optional(),
     highlights: z.array(highlight).min(1),
     /** Seções temáticas, só na página do projeto (o card do currículo mostra apenas `highlights`). */
     detailSections: z.array(z.strictObject({ title: localized, items: z.array(highlight).min(1) })).optional(),
@@ -171,6 +181,17 @@ export type Snippet = NonNullable<Area['snippets']>[number]
 
 /** A aba/página Projetos só existe se algum projeto tiver partes do sistema (tirar o item do JSON remove tudo). */
 export const showcaseProjects = (resume: Resume): Project[] => (resume.projects ?? []).filter((p) => (p.areas?.length ?? 0) > 0)
+
+const plainSlug = (text: string): string =>
+  text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+
+export const projectSlug = (p: Project): string => p.slug ?? plainSlug(p.name)
+export const projectTitle = (p: Project, locale: Locale): string => (p.title ? p.title[locale] : p.name)
 
 export function parseResume(data: unknown): Resume {
   const result = resumeSchema.safeParse(data)

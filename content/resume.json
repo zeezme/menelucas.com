@@ -1493,6 +1493,588 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Luhmera: SaaS de gestão clínica (projeto confidencial)",
+      "slug": "clinica",
+      "title": {
+        "pt": "Luhmera: SaaS de gestão clínica (projeto confidencial)",
+        "en": "Luhmera: Clinic management SaaS (confidential project)"
+      },
+      "roles": {
+        "pt": "Engenheiro full stack",
+        "en": "Full stack engineer"
+      },
+      "startDate": "2026-09",
+      "description": {
+        "pt": "Plataforma SaaS multi-tenant para clínicas, com back-end em NestJS e PostgreSQL e front-end em React. Fui responsável pela arquitetura e pela implementação de ponta a ponta: isolamento entre clientes, processamento assíncrono confiável, auditoria, tempo real, segurança e testes.",
+        "en": "Multi-tenant SaaS platform for clinics, with a NestJS + PostgreSQL back-end and a React front-end. I owned the architecture and end-to-end implementation: tenant isolation, reliable asynchronous processing, auditing, real time, security and testing."
+      },
+      "cardText": {
+        "pt": "Plataforma multi-tenant em NestJS, PostgreSQL e React, com outbox transacional, filas BullMQ, auditoria particionada, tempo real com Socket.io/Redis e MFA.",
+        "en": "Multi-tenant platform on NestJS, PostgreSQL and React, with a transactional outbox, BullMQ queues, partitioned audit trail, Socket.io/Redis real time and MFA."
+      },
+      "banner": {
+        "pt": "Projeto sob confidencialidade: sem telas ou regras de negócio. Aqui está só a engenharia.",
+        "en": "Confidential project: no screens or business rules. Engineering only."
+      },
+      "highlights": [
+        {
+          "pt": "Cerca de 1.200 commits em back-end e front-end desde setembro de 2026.",
+          "en": "About 1,200 commits across back-end and front-end since September 2026."
+        },
+        {
+          "pt": "Isolamento entre clientes provado por testes de integração contra Postgres e Redis reais.",
+          "en": "Tenant isolation proven by integration tests against real Postgres and Redis."
+        },
+        {
+          "pt": "Eventos entregues de forma confiável com outbox transacional e filas BullMQ.",
+          "en": "Reliable event delivery with a transactional outbox and BullMQ queues."
+        }
+      ],
+      "diagrams": [
+        {
+          "title": {
+            "pt": "Arquitetura",
+            "en": "Architecture"
+          },
+          "caption": {
+            "pt": "Do navegador à API, com o PostgreSQL, o Redis e o S3 por baixo e os workers cuidando do processamento assíncrono.",
+            "en": "From the browser to the API, with PostgreSQL, Redis and S3 underneath and workers handling asynchronous processing."
+          },
+          "stages": [
+            {
+              "nodes": [
+                {
+                  "title": {
+                    "pt": "Browser · React SPA",
+                    "en": "Browser · React SPA"
+                  }
+                }
+              ]
+            },
+            {
+              "connector": {
+                "pt": "HTTPS / WebSocket",
+                "en": "HTTPS / WebSocket"
+              },
+              "nodes": [
+                {
+                  "title": {
+                    "pt": "API NestJS · N instâncias",
+                    "en": "NestJS API · N instances"
+                  },
+                  "detail": {
+                    "pt": "Guards: auth · tenant · RBAC",
+                    "en": "Guards: auth · tenant · RBAC"
+                  },
+                  "tone": "accent"
+                }
+              ]
+            },
+            {
+              "title": {
+                "pt": "Dados e armazenamento",
+                "en": "Data and storage"
+              },
+              "nodes": [
+                {
+                  "title": {
+                    "pt": "PostgreSQL",
+                    "en": "PostgreSQL"
+                  }
+                },
+                {
+                  "title": {
+                    "pt": "Redis",
+                    "en": "Redis"
+                  },
+                  "detail": {
+                    "pt": "Cache · Rate limit · Filas BullMQ · Adapter Socket.io",
+                    "en": "Cache · Rate limit · BullMQ queues · Socket.io adapter"
+                  }
+                },
+                {
+                  "title": {
+                    "pt": "S3",
+                    "en": "S3"
+                  },
+                  "detail": {
+                    "pt": "URLs pré-assinadas",
+                    "en": "Presigned URLs"
+                  }
+                }
+              ]
+            },
+            {
+              "title": {
+                "pt": "Processamento assíncrono",
+                "en": "Asynchronous processing"
+              },
+              "connector": {
+                "pt": "Filas BullMQ",
+                "en": "BullMQ queues"
+              },
+              "nodes": [
+                {
+                  "title": {
+                    "pt": "Workers",
+                    "en": "Workers"
+                  },
+                  "detail": {
+                    "pt": "gravam o resultado no PostgreSQL",
+                    "en": "write results to PostgreSQL"
+                  }
+                },
+                {
+                  "title": {
+                    "pt": "PDF · Puppeteer",
+                    "en": "PDF · Puppeteer"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "areas": [
+        {
+          "title": {
+            "pt": "Multi-tenant e isolamento",
+            "en": "Multi-tenancy and isolation"
+          },
+          "points": [
+            {
+              "pt": "Cada clínica é um tenant, com os dados isolados por `tenant_id` e verificação em guards na entrada de cada requisição.",
+              "en": "Each clinic is a tenant, with data isolated by `tenant_id` and enforced by guards at the start of every request."
+            },
+            {
+              "pt": "Uma suíte de testes de integração passa pela pilha HTTP real (guards, pipes e filtros) sobre Postgres e Redis reais e prova que uma clínica nunca lê nem altera dados de outra.",
+              "en": "An integration suite goes through the real HTTP stack (guards, pipes, filters) on real Postgres and Redis and proves that one clinic can never read or change another's data."
+            },
+            {
+              "pt": "Remover ou rebaixar um usuário vale já na requisição seguinte, sem esperar o token expirar.",
+              "en": "Removing or demoting a user takes effect on the very next request, without waiting for the token to expire."
+            },
+            {
+              "pt": "O time da plataforma tem uma área própria de administração dos tenants, com acesso controlado.",
+              "en": "Platform staff have a separate tenant-administration area with controlled access."
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Eventos, outbox e filas",
+            "en": "Events, outbox and queues"
+          },
+          "points": [
+            {
+              "pt": "Outbox transacional: a mensagem é gravada na mesma transação da operação de negócio, então nada é publicado se a transação falhar.",
+              "en": "Transactional outbox: the message is written in the same transaction as the business operation, so nothing is published if it fails."
+            },
+            {
+              "pt": "Um relay leva as mensagens para o BullMQ, acordado por `LISTEN/NOTIFY` do Postgres e com polling de segurança a cada segundo.",
+              "en": "A relay moves messages to BullMQ, woken by Postgres `LISTEN/NOTIFY`, with a one-second safety poll."
+            },
+            {
+              "pt": "Lotes travados com `FOR UPDATE SKIP LOCKED`: várias instâncias podem rodar o relay ao mesmo tempo sem publicar a mesma mensagem duas vezes.",
+              "en": "Batches locked with `FOR UPDATE SKIP LOCKED`, so several instances can relay at once without double-publishing."
+            },
+            {
+              "pt": "Publicação idempotente (o id do job é o id da mensagem), ordem preservada e retentativa automática em caso de falha.",
+              "en": "Idempotent publishing (job id = message id), preserved ordering and automatic retry on failure."
+            },
+            {
+              "pt": "Filas BullMQ separadas por domínio (auditoria, documentos fiscais, notificações etc.), com workers que rodam em processos dedicados.",
+              "en": "Per-domain BullMQ queues (audit, invoices, notifications, etc.), processed by workers in dedicated processes."
+            }
+          ],
+          "diagrams": [
+            {
+              "title": {
+                "pt": "Outbox",
+                "en": "Outbox"
+              },
+              "caption": {
+                "pt": "A mensagem nasce na mesma transação da operação e só depois é publicada, sem duplicar mesmo com várias instâncias do relay.",
+                "en": "The message is born in the same transaction as the operation and only then published, with no duplicates even with several relay instances."
+              },
+              "stages": [
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Cliente",
+                        "en": "Client"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "connector": {
+                    "pt": "requisição",
+                    "en": "request"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "API",
+                        "en": "API"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "connector": {
+                    "pt": "BEGIN · COMMIT",
+                    "en": "BEGIN · COMMIT"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "PostgreSQL",
+                        "en": "PostgreSQL"
+                      },
+                      "detail": {
+                        "pt": "grava a entidade e a mensagem outbox na mesma transação",
+                        "en": "writes the entity and the outbox message in one transaction"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "connector": {
+                    "pt": "NOTIFY outbox (ou polling a cada 1 s)",
+                    "en": "NOTIFY outbox (or polling every 1 s)"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Relay",
+                        "en": "Relay"
+                      },
+                      "detail": {
+                        "pt": "SELECT ... FOR UPDATE SKIP LOCKED",
+                        "en": "SELECT ... FOR UPDATE SKIP LOCKED"
+                      },
+                      "tone": "accent"
+                    }
+                  ]
+                },
+                {
+                  "connector": {
+                    "pt": "publica (jobId = id da mensagem)",
+                    "en": "publishes (jobId = message id)"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "BullMQ",
+                        "en": "BullMQ"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "connector": {
+                    "pt": "processa",
+                    "en": "processes"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Worker",
+                        "en": "Worker"
+                      },
+                      "detail": {
+                        "pt": "grava o resultado no PostgreSQL",
+                        "en": "writes the result to PostgreSQL"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Auditoria",
+            "en": "Audit trail"
+          },
+          "points": [
+            {
+              "pt": "Toda alteração relevante gera um evento de auditoria pelo outbox, gravado por um worker dedicado.",
+              "en": "Every relevant change emits an audit event through the outbox, written by a dedicated worker."
+            },
+            {
+              "pt": "Tabela de auditoria particionada por data no PostgreSQL, com uma rotina que cria as partições futuras e mantém as antigas, para o volume crescer sem degradar as consultas.",
+              "en": "Audit table range-partitioned by date in PostgreSQL, with a maintenance job that creates future partitions and manages old ones, so volume grows without slowing queries."
+            },
+            {
+              "pt": "O evento guarda quando a alteração aconteceu, não quando foi processada, mesmo se a fila atrasar.",
+              "en": "Events record when the change happened, not when it was processed, even if the queue lags."
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Tempo real",
+            "en": "Real time"
+          },
+          "points": [
+            {
+              "pt": "Atualizações em tempo real com Socket.io organizadas por namespaces e salas.",
+              "en": "Real-time updates with Socket.io, organized by namespaces and rooms."
+            },
+            {
+              "pt": "Com o adaptador Redis, um evento emitido em qualquer instância da API chega aos usuários conectados em todas as outras, o que permite escalar horizontalmente.",
+              "en": "With the Redis adapter, an event emitted on any API instance reaches users connected to every other instance, enabling horizontal scaling."
+            },
+            {
+              "pt": "Qualquer serviço emite para uma sala sem depender do módulo do gateway.",
+              "en": "Any service can emit to a room without depending on the gateway module."
+            }
+          ],
+          "diagrams": [
+            {
+              "title": {
+                "pt": "Tempo real",
+                "en": "Real time"
+              },
+              "caption": {
+                "pt": "Um evento emitido em qualquer instância chega aos sockets de todas as outras pelo adaptador Redis.",
+                "en": "An event emitted on any instance reaches the sockets of all the others through the Redis adapter."
+              },
+              "stages": [
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Serviço na instância 1",
+                        "en": "Service on instance 1"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Hub de tempo real",
+                        "en": "Real-time hub"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Redis adapter",
+                        "en": "Redis adapter"
+                      },
+                      "tone": "accent"
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Instância 1 · sockets",
+                        "en": "Instance 1 · sockets"
+                      }
+                    },
+                    {
+                      "title": {
+                        "pt": "Instância 2 · sockets",
+                        "en": "Instance 2 · sockets"
+                      }
+                    },
+                    {
+                      "title": {
+                        "pt": "Instância N · sockets",
+                        "en": "Instance N · sockets"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Segurança",
+            "en": "Security"
+          },
+          "points": [
+            {
+              "pt": "Autenticação com JWT, MFA por TOTP (app autenticador, com QR code) e senhas com Argon2.",
+              "en": "Authentication with JWT, TOTP-based MFA (authenticator app with QR code) and Argon2 password hashing."
+            },
+            {
+              "pt": "Segredos de MFA e credenciais de integrações criptografados no banco com AES-256-GCM.",
+              "en": "MFA secrets and integration credentials encrypted at rest with AES-256-GCM."
+            },
+            {
+              "pt": "RBAC com permissões por recurso e ação, e um teste que falha se alguma rota da API ficar sem permissão declarada.",
+              "en": "Resource/action RBAC, plus a test that fails if any API route lacks a declared permission."
+            },
+            {
+              "pt": "Rate limiting distribuído em Redis, Helmet e validação de entrada com Zod; configuração validada na inicialização.",
+              "en": "Redis-backed distributed rate limiting, Helmet and Zod input validation; configuration validated at startup."
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Front-end",
+            "en": "Front-end"
+          },
+          "points": [
+            {
+              "pt": "SPA em React com Vite e React Router, com cadeia de guards por rota: sessão, área da plataforma, clínica e permissão.",
+              "en": "React SPA with Vite and React Router, with a per-route guard chain: session, platform area, clinic and permission."
+            },
+            {
+              "pt": "Dados do servidor com TanStack Query, com cache e política de retentativa configuradas; estado global leve com Jotai.",
+              "en": "Server state with TanStack Query (tuned caching and retry policy); light global state with Jotai."
+            },
+            {
+              "pt": "Formulários com react-hook-form e Zod sobre um hook próprio, que padroniza carregamento, validação e envio.",
+              "en": "Forms built on react-hook-form + Zod through an in-house hook that standardizes loading, validation and submission."
+            },
+            {
+              "pt": "Design system com Radix/shadcn e Tailwind, com temas visuais configuráveis por clínica.",
+              "en": "Design system on Radix/shadcn and Tailwind, with per-clinic configurable visual themes."
+            },
+            {
+              "pt": "Detalhes de UX: paleta de comandos, exclusão com desfazer, aviso de alterações não salvas e listas paginadas.",
+              "en": "UX details: command palette, delete with undo, unsaved-changes guard and paginated lists."
+            }
+          ],
+          "diagrams": [
+            {
+              "title": {
+                "pt": "Guards do front",
+                "en": "Front-end guards"
+              },
+              "caption": {
+                "pt": "Cada rota passa pela cadeia de guards: sessão, área da plataforma, clínica e permissão.",
+                "en": "Every route goes through the guard chain: session, platform area, clinic and permission."
+              },
+              "stages": [
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Rota",
+                        "en": "Route"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Sessão válida?",
+                        "en": "Valid session?"
+                      },
+                      "detail": {
+                        "pt": "não: vai para o login",
+                        "en": "no: goes to login"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Área da plataforma?",
+                        "en": "Platform area?"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Clínica selecionada?",
+                        "en": "Clinic selected?"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Tem permissão?",
+                        "en": "Has permission?"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "connector": {
+                    "pt": "sim / não",
+                    "en": "yes / no"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Página",
+                        "en": "Page"
+                      },
+                      "tone": "accent"
+                    },
+                    {
+                      "title": {
+                        "pt": "Acesso negado",
+                        "en": "Access denied"
+                      },
+                      "tone": "future"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": {
+            "pt": "Qualidade e entrega",
+            "en": "Quality and delivery"
+          },
+          "points": [
+            {
+              "pt": "Testes de integração com Testcontainers (PostgreSQL e Redis), Supertest e dados gerados com Faker; testes e2e do front com Cypress.",
+              "en": "Integration tests with Testcontainers (PostgreSQL and Redis), Supertest and Faker-generated data; front-end e2e tests with Cypress."
+            },
+            {
+              "pt": "Teste que garante que as migrations estão sempre em sincronia com as entidades.",
+              "en": "A test that keeps migrations in sync with the entities."
+            },
+            {
+              "pt": "Documentação da API em OpenAPI, publicada com Scalar; health checks de banco e Redis com Terminus.",
+              "en": "OpenAPI docs published with Scalar; database and Redis health checks with Terminus."
+            },
+            {
+              "pt": "Geração de PDFs no servidor com Puppeteer e arquivos no S3 com URLs pré-assinadas.",
+              "en": "Server-side PDF generation with Puppeteer and S3 storage via presigned URLs."
+            },
+            {
+              "pt": "Docker e deploy na AWS com CloudFormation.",
+              "en": "Docker, and AWS deployment with CloudFormation."
+            }
+          ]
+        }
+      ]
     }
   ],
   "education": [

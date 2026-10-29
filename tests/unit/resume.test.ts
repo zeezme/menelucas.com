@@ -45,7 +45,7 @@ describe('projects (seção opcional)', () => {
     delete without.projects
     expect(parseResume(without).projects).toBeUndefined()
     expect(parseResume({ ...without, projects: [] }).projects).toEqual([])
-    expect(parseResume(resumeJson).projects).toHaveLength(1)
+    expect(parseResume(resumeJson).projects).toHaveLength(resumeJson.projects.length)
   })
 
   it('rejeita projeto com idioma faltando, data inválida ou fim antes do início', () => {

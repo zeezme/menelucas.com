@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { Locale, Project, Resume, Work } from '../schema/resume'
+import { projectSlug, projectTitle, showcaseProjects, type Locale, type Project, type Resume, type Work } from '../schema/resume'
 import { formatYearMonth, pagePath, pick, type T } from '../i18n'
 
 export function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
@@ -121,12 +121,13 @@ export function Experience({ resume, locale, t }: { resume: Resume; locale: Loca
   )
 }
 
-function ProjectItem({ project, locale, base, t }: { project: Project; locale: Locale; base: string; t: T }) {
+function ProjectItem({ project, first, locale, base, t }: { project: Project; first: boolean; locale: Locale; base: string; t: T }) {
+  const hasScreens = project.areas?.some((a) => a.gallery) ?? false
   return (
     <article className="flex flex-col gap-3 rounded-xl border border-hairline bg-surface-1 p-5">
       <header>
-        <h3 translate="no" className="text-lg font-semibold leading-snug tracking-title">
-          {project.name}
+        <h3 translate={project.title ? undefined : 'no'} className="text-lg font-semibold leading-snug tracking-title">
+          {projectTitle(project, locale)}
         </h3>
         <p className="mt-1 text-sm text-ink-muted">
           <span className="font-medium text-ink">{pick(project.roles, locale)}</span>
@@ -136,14 +137,14 @@ function ProjectItem({ project, locale, base, t }: { project: Project; locale: L
           </span>
         </p>
       </header>
-      <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">{pick(project.description, locale)}</p>
-      <Bullets items={project.highlights} locale={locale} />
+      <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">{pick(project.cardText ?? project.description, locale)}</p>
+      {project.cardText ? null : <Bullets items={project.highlights} locale={locale} />}
       {(project.areas?.length ?? 0) > 0 ? (
         <a
-          href={pagePath('projects', locale, base)}
+          href={`${pagePath('projects', locale, base)}${first ? '' : `#${projectSlug(project)}-overview`}`}
           className="inline-flex min-h-touch items-center gap-1 self-start text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"
         >
-          {t('projectDetails')}
+          {t(hasScreens ? 'projectDetails' : 'projectDetailsEngineering')}
           <span aria-hidden="true">→</span>
         </a>
       ) : null}
@@ -155,11 +156,12 @@ function ProjectItem({ project, locale, base, t }: { project: Project; locale: L
 export function Projects({ resume, locale, base, t }: { resume: Resume; locale: Locale; base: string; t: T }) {
   const projects = resume.projects ?? []
   if (projects.length === 0) return null
+  const firstShowcase = showcaseProjects(resume)[0]
   return (
     <Section id="projects" title={t('projects')}>
       <div className="flex flex-col gap-4">
         {projects.map((project) => (
-          <ProjectItem key={project.name} project={project} locale={locale} base={base} t={t} />
+          <ProjectItem key={project.name} first={project === firstShowcase} project={project} locale={locale} base={base} t={t} />
         ))}
       </div>
     </Section>

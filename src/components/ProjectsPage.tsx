@@ -1,5 +1,5 @@
 import type { Area, GalleryItem, Locale, Project, Resume, Snippet, UiStrings } from '../schema/resume'
-import { showcaseProjects } from '../schema/resume'
+import { projectSlug, projectTitle, showcaseProjects } from '../schema/resume'
 import { createT, formatYearMonth, localePath, pagePath, pick, type T } from '../i18n'
 import { areasScript } from '../seo/areas-script'
 import { LangToggle, ThemeToggle } from './Header'
@@ -15,6 +15,8 @@ interface Props {
 
 const slugOf = (text: string): string =>
   text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
@@ -71,21 +73,22 @@ function CodeBlock({ snippet, locale }: { snippet: Snippet; locale: Locale }) {
 
 function Overview({ project, id, locale, t }: { project: Project; id: string; locale: Locale; t: T }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="flex flex-col gap-8 scroll-mt-6">
+    <section id={id} aria-label={`${t('overview')}: ${projectTitle(project, locale)}`} className="flex flex-col gap-8 scroll-mt-6">
       <div className="flex flex-col gap-4">
-        <h3 id={`${id}-title`} className={headingClass}>
+        <h3 className={headingClass}>
           {t('overview')}
         </h3>
         <p className="text-pretty text-base leading-relaxed text-ink-muted">{pick(project.description, locale)}</p>
         <Bullets items={project.highlights} locale={locale} />
       </div>
+      {(project.diagrams ?? []).map((diagram) => (
+        <FlowDiagram key={diagram.title.en} diagram={diagram} locale={locale} />
+      ))}
       {(project.detailSections ?? []).map((section) => (
-        <section key={section.title.en} aria-labelledby={`${id}-${slugOf(section.title.en)}`} className="flex flex-col gap-3">
-          <h4 id={`${id}-${slugOf(section.title.en)}`} className="text-lg font-semibold leading-snug tracking-title">
-            {pick(section.title, locale)}
-          </h4>
+        <div key={section.title.en} className="flex flex-col gap-3">
+          <h4 className="text-lg font-semibold leading-snug tracking-title">{pick(section.title, locale)}</h4>
           <Bullets items={section.items} locale={locale} />
-        </section>
+        </div>
       ))}
       {project.notice ? (
         <aside aria-label={t('noteLabel')} className="rounded-xl border border-hairline-strong bg-surface-2 p-5">
@@ -106,7 +109,7 @@ function AreaPanel({ area, id, project, locale, base }: { area: Area; id: string
         <h3 id={`${id}-title`} className={headingClass}>
           {pick(area.title, locale)}
         </h3>
-        <p className="text-pretty text-base leading-relaxed text-ink-muted">{pick(area.summary, locale)}</p>
+        {area.summary ? <p className="text-pretty text-base leading-relaxed text-ink-muted">{pick(area.summary, locale)}</p> : null}
         {area.points ? <Bullets items={area.points} locale={locale} /> : null}
       </div>
       {(area.diagrams ?? []).map((diagram) => (
@@ -124,7 +127,7 @@ function AreaPanel({ area, id, project, locale, base }: { area: Area; id: string
 }
 
 function ProjectDetail({ project, locale, base, t }: { project: Project; locale: Locale; base: string; t: T }) {
-  const slug = slugOf(project.name)
+  const slug = projectSlug(project)
   const panels = [
     { id: `${slug}-overview`, label: t('overview') },
     ...(project.areas ?? []).map((area) => ({ id: `${slug}-${slugOf(area.title.en)}`, label: pick(area.title, locale) })),
@@ -132,8 +135,8 @@ function ProjectDetail({ project, locale, base, t }: { project: Project; locale:
   return (
     <article aria-labelledby={`${slug}-title`} className="flex flex-col gap-8 border-t border-hairline pt-8">
       <header>
-        <h2 id={`${slug}-title`} translate="no" className="text-2xl font-semibold leading-tight tracking-title sm:text-[1.75rem]">
-          {project.name}
+        <h2 id={`${slug}-title`} translate={project.title ? undefined : 'no'} className="text-2xl font-semibold leading-tight tracking-title sm:text-[1.75rem]">
+          {projectTitle(project, locale)}
         </h2>
         <p className="mt-2 text-sm text-ink-muted">
           <span className="font-medium text-ink">{pick(project.roles, locale)}</span>
@@ -146,9 +149,15 @@ function ProjectDetail({ project, locale, base, t }: { project: Project; locale:
         </p>
       </header>
 
+      {project.banner ? (
+        <aside aria-label={t('confidentialLabel')} className="rounded-xl border border-hairline-strong bg-surface-2 p-5">
+          <p className="text-pretty text-sm leading-relaxed text-ink">{pick(project.banner, locale)}</p>
+        </aside>
+      ) : null}
+
       <div className="grid gap-8 md:grid-cols-[13.5rem_minmax(0,1fr)] md:items-start">
         <nav
-          aria-label={t('partsNav')}
+          aria-label={`${t('partsNav')}: ${projectTitle(project, locale)}`}
           data-areas-nav
           className="rounded-xl border border-hairline bg-surface-1 p-2 md:sticky md:top-6"
         >
@@ -171,7 +180,7 @@ function ProjectDetail({ project, locale, base, t }: { project: Project; locale:
           {(project.areas ?? []).map((area, i) => (
             <AreaPanel key={area.title.en} area={area} id={panels[i + 1]?.id ?? ''} project={project} locale={locale} base={base} />
           ))}
-          <nav aria-label={t('pagerNav')} data-areas-pager hidden className="flex items-stretch justify-between gap-3 border-t border-hairline pt-6 print:hidden">
+          <nav aria-label={`${t('pagerNav')}: ${projectTitle(project, locale)}`} data-areas-pager hidden className="flex items-stretch justify-between gap-3 border-t border-hairline pt-6 print:hidden">
             {(['prev', 'next'] as const).map((dir) => (
               <a
                 key={dir}
@@ -220,7 +229,7 @@ export function ProjectsPage({ resume, ui, locale, base }: Props) {
             </p>
           </div>
           {projects.map((project) => (
-            <ProjectDetail key={project.name} project={project} locale={locale} base={base} t={t} />
+            <ProjectDetail key={projectSlug(project)} project={project} locale={locale} base={base} t={t} />
           ))}
         </main>
       </div>

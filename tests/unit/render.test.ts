@@ -6,7 +6,9 @@ import { buildHeadMeta, buildRobots, buildSitemap, skillKeywords } from '../../s
 import { siteConfig } from '../../src/site'
 
 const site = siteConfig({})
-const galleryItems = (resume.projects?.[0]?.areas ?? []).flatMap((a) => a.gallery ?? [])
+const showcase = (resume.projects ?? []).filter((p) => (p.areas?.length ?? 0) > 0)
+const allAreas = showcase.flatMap((p) => p.areas ?? [])
+const galleryItems = allAreas.flatMap((a) => a.gallery ?? [])
 const html = (locale: 'pt' | 'en') => renderPage({ resume, ui, locale, site, css: '' })
 
 describe('i18n helpers', () => {
@@ -161,9 +163,10 @@ describe('página Projetos', () => {
   it.each(['pt', 'en'] as const)('%s: barra lateral com as partes do sistema, cada uma com seu painel', (locale) => {
     const out = projectsHtml(locale)
     const h3 = [...out.matchAll(/<h3[^>]*>(.*?)<\/h3>/g)].map((m) => m[1])
-    expect(h3).toHaveLength(1 + (resume.projects?.[0]?.areas?.length ?? 0))
-    const nav = /<nav[^>]*data-areas-nav[^>]*>.*?<\/nav>/s.exec(out)?.[0] ?? ''
-    const links = [...nav.matchAll(/<a href="#(ipsiq-[a-z0-9-]+)"[^>]*>(.*?)<\/a>/g)]
+    expect(h3).toHaveLength(allAreas.length + showcase.length)
+    const navs = [...out.matchAll(/<nav[^>]*data-areas-nav[^>]*>.*?<\/nav>/gs)].map((m) => m[0])
+    expect(navs).toHaveLength(showcase.length)
+    const links = navs.flatMap((nav) => [...nav.matchAll(/<a href="#([a-z0-9-]+)"[^>]*>(.*?)<\/a>/g)])
     expect(links.map((m) => m[2])).toEqual(h3)
     for (const m of links) expect(out).toContain(`<section id="${m[1]}"`)
   })
@@ -171,16 +174,15 @@ describe('página Projetos', () => {
   it.each(['pt', 'en'] as const)('%s: visão geral com as seções temáticas e a nota', (locale) => {
     const out = projectsHtml(locale)
     const h4 = [...out.matchAll(/<h4[^>]*>(.*?)<\/h4>/g)].map((m) => m[1])
-    expect(h4).toHaveLength(resume.projects?.[0]?.detailSections?.length ?? 0)
-    const aside = /<aside[^>]*>.*?<\/aside>/s.exec(out)?.[0] ?? ''
-    expect(aside.length > 0).toBe(Boolean(resume.projects?.[0]?.notice))
+    expect(h4).toHaveLength(showcase.flatMap((p) => p.detailSections ?? []).length)
+    const asides = out.match(/<aside[ >]/g) ?? []
+    expect(asides).toHaveLength(showcase.filter((p) => p.notice).length + showcase.filter((p) => p.banner).length)
   })
 
   it.each(['pt', 'en'] as const)('%s: blocos de código rolam com teclado e cada diagrama vira uma lista ordenada', (locale) => {
     const out = projectsHtml(locale)
-    const areas = resume.projects?.[0]?.areas ?? []
-    const snippets = areas.flatMap((a) => a.snippets ?? []).length
-    const diagrams = areas.flatMap((a) => a.diagrams ?? []).length
+    const snippets = allAreas.flatMap((a) => a.snippets ?? []).length
+    const diagrams = allAreas.flatMap((a) => a.diagrams ?? []).length + showcase.flatMap((p) => p.diagrams ?? []).length
     expect(out.match(/<pre[ >]/g) ?? []).toHaveLength(snippets)
     expect(out.match(/<pre tabindex="0"/g) ?? []).toHaveLength(snippets)
     expect(out.match(/<figure[^>]*><div[^>]*><p[^>]*>[^<]*<\/p><ol/g) ?? []).toHaveLength(diagrams)
@@ -212,7 +214,7 @@ describe('página Projetos', () => {
       )
     }
     const noAreas = structuredClone(resume)
-    delete noAreas.projects?.[0]?.areas
+    for (const p of noAreas.projects ?? []) delete p.areas
     expect(renderPage({ resume: noAreas, ui, locale: 'pt', site, css: '' })).not.toContain('href="/projetos/"')
   })
 
@@ -220,5 +222,54 @@ describe('página Projetos', () => {
     const { existsSync } = await import('node:fs')
     expect(galleryItems.length).toBeGreaterThan(0)
     for (const item of galleryItems) expect(existsSync(`public/${item.src}`), item.src).toBe(true)
+  })
+})
+
+describe('projeto confidencial', () => {
+  const secret = showcase.filter((p) => p.banner)
+
+  it('existe, vem depois do primeiro projeto e mostra o aviso no topo, antes da barra lateral', () => {
+    expect(secret.length).toBeGreaterThan(0)
+    expect(showcase.indexOf(secret[0] as (typeof showcase)[number])).toBeGreaterThan(0)
+    for (const locale of ['pt', 'en'] as const) {
+      const out = renderPage({ resume, ui, locale, site, css: '', page: 'projects' })
+      for (const p of secret) {
+        const banner = p.banner?.[locale] ?? ''
+        expect(out).toContain(banner)
+        const article = out.slice(out.indexOf(`id="${p.slug}-title"`))
+        expect(article.indexOf(banner)).toBeLessThan(article.indexOf('data-areas-nav'))
+      }
+    }
+  })
+
+  it('não tem imagens de tela', () => {
+    for (const p of secret) expect((p.areas ?? []).flatMap((a) => a.gallery ?? [])).toHaveLength(0)
+  })
+
+  it('o card no currículo leva à seção do projeto em /projetos/ e /en/projects/', () => {
+    for (const [locale, base] of [['pt', '/projetos/'], ['en', '/en/projects/']] as const) {
+      const out = html(locale)
+      for (const p of secret) expect(out).toContain(`href="${base}#${p.slug}-overview"`)
+    }
+  })
+
+  it('nada dele entra no JSON-LD', () => {
+    const titles = secret.flatMap((p) => [p.name, p.title?.pt ?? '', p.title?.en ?? '', p.cardText?.pt ?? '', p.cardText?.en ?? ''])
+    for (const page of ['resume', 'projects'] as const) {
+      for (const locale of ['pt', 'en'] as const) {
+        const meta = buildHeadMeta(resume, locale, site, page, 'Projetos')
+        const ld = JSON.stringify(meta.jsonLd)
+        for (const t of titles) expect(ld).not.toContain(t)
+      }
+    }
+  })
+})
+
+describe('termos do projeto confidencial', () => {
+  it('as páginas e o conteúdo só citam o nome do produto, e só como "Luhmera"', () => {
+    const pages = (['pt', 'en'] as const).flatMap((locale) => [html(locale), renderPage({ resume, ui, locale, site, css: '', page: 'projects' })])
+    for (const text of [...pages, JSON.stringify(resume), JSON.stringify(ui)]) {
+      expect(text.replaceAll('Luhmera', '')).not.toMatch(/luhmera|LM Solutions/i)
+    }
   })
 })

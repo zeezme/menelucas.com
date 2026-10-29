@@ -7,9 +7,10 @@ const PROJECT_PAGES = [
 ]
 
 /** Os ids das partes vêm da própria barra lateral, então os testes não repetem a lista de partes. */
-const panelIds = async (page: Page, nav: RegExp): Promise<string[]> =>
-  page
-    .getByRole('navigation', { name: nav })
+const navOf = (page: Page, nav: RegExp, project = 0) => page.locator('article').nth(project).getByRole('navigation', { name: nav })
+
+const panelIds = async (page: Page, nav: RegExp, project = 0): Promise<string[]> =>
+  navOf(page, nav, project)
     .getByRole('link')
     .evaluateAll((links) => links.map((a) => (a.getAttribute('href') ?? '').slice(1)))
 
@@ -23,7 +24,7 @@ for (const pp of PROJECT_PAGES) {
       await page.goto(pp.path)
       const ids = await panelIds(page, pp.nav)
       expect(ids.length).toBeGreaterThan(1)
-      const links = page.getByRole('navigation', { name: pp.nav }).getByRole('link')
+      const links = navOf(page, pp.nav).getByRole('link')
       await expect(links.first()).toHaveAttribute('aria-current', 'true')
       await expect(page.locator(`#${ids[1]}`)).toBeHidden()
 
@@ -40,7 +41,7 @@ for (const pp of PROJECT_PAGES) {
       await page.setViewportSize({ width: 375, height: 700 })
       await page.goto(pp.path)
       const ids = await panelIds(page, pp.nav)
-      const pager = page.locator('[data-areas-pager]')
+      const pager = page.locator('article').first().locator('[data-areas-pager]')
       const prev = pager.locator('[data-pager="prev"]')
       const next = pager.locator('[data-pager="next"]')
       await expect(prev).toBeHidden()
@@ -62,7 +63,7 @@ for (const pp of PROJECT_PAGES) {
       await page.goto(`${pp.path}#${target}`)
       await expect(page.locator(`#${target}`)).toBeVisible()
       await expect(page.locator(`#${ids[0]}`)).toBeHidden()
-      await page.getByRole('navigation', { name: pp.nav }).getByRole('link').first().click()
+      await navOf(page, pp.nav).getByRole('link').first().click()
       await expect(page.locator(`#${ids[0]}`)).toBeVisible()
       await page.goBack()
       await expect(page.locator(`#${target}`)).toBeVisible()
@@ -125,6 +126,56 @@ for (const pp of PROJECT_PAGES) {
   })
 }
 
+for (const pp of PROJECT_PAGES) {
+  test.describe(`projeto confidencial em ${pp.path}`, () => {
+    test.use({ locale: pp.locale })
+
+    test('vem depois do primeiro, abre pelo link do currículo, tem aviso e não tem imagens', async ({ page }) => {
+      const resumePath = pp.locale === 'pt-BR' ? '/' : '/en/'
+      await page.goto(resumePath)
+      const card = page.locator('section[aria-labelledby="projects-title"] article').nth(1)
+      await card.getByRole('link').click()
+      await expect(page).toHaveURL(new RegExp(`${pp.path}#clinica-overview$`))
+      await expect(page.locator('#clinica-overview')).toBeVisible()
+      await expect(page.locator('article').nth(1).locator('aside')).toBeVisible()
+      await expect(page.locator('article').nth(1).locator('img')).toHaveCount(0)
+      await expect(page.locator('#clinica-overview h3')).toBeInViewport()
+    })
+
+    test('todas as partes cabem em 375px e os diagramas passam no axe, nos dois temas', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 800 })
+      await page.goto(pp.path)
+      const ids = await panelIds(page, pp.nav, 1)
+      expect(ids.length).toBeGreaterThan(1)
+      for (const id of ids) {
+        await page.goto(`${pp.path}#${id}`)
+        await expect(page.locator(`#${id}`)).toBeVisible()
+        expect(await overflowOf(page), id).toBeLessThanOrEqual(0)
+      }
+      for (const scheme of ['dark', 'light'] as const) {
+        await page.emulateMedia({ colorScheme: scheme })
+        for (const id of ids) {
+          await page.goto(`${pp.path}#${id}`)
+          await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
+          await page.addStyleTag({ content: '*{transition:none!important}' }) // a troca de tema anima as cores; o axe mediria no meio
+          const results = await new AxeBuilder({ page }).analyze()
+          expect(results.violations, `${scheme} ${id}`).toEqual([])
+        }
+      }
+    })
+
+    test('abrir uma parte do segundo projeto não fecha a do primeiro', async ({ page }) => {
+      await page.goto(pp.path)
+      const first = await panelIds(page, pp.nav, 0)
+      const second = await panelIds(page, pp.nav, 1)
+      await page.goto(`${pp.path}#${first[2]}`)
+      await page.goto(`${pp.path}#${second[1]}`)
+      await expect(page.locator(`#${second[1]}`)).toBeVisible()
+      await expect(page.locator(`#${first[2]}`)).toBeVisible()
+    })
+  })
+}
+
 test.describe('sem JavaScript', () => {
   test.use({ locale: 'pt-BR', javaScriptEnabled: false })
 
@@ -132,8 +183,8 @@ test.describe('sem JavaScript', () => {
     await page.goto('/projetos/')
     const parts = await page.locator('[data-areas-nav] a').count()
     expect(parts).toBeGreaterThan(1)
-    await expect(page.locator('section[id^="ipsiq-"]:visible')).toHaveCount(parts)
-    await expect(page.locator('[data-areas-pager]')).toBeHidden()
+    await expect(page.locator('article section[id]:visible')).toHaveCount(parts)
+    await expect(page.locator('[data-areas-pager]').first()).toBeHidden()
   })
 })
 

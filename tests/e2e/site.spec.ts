@@ -226,3 +226,12 @@ test.describe('impressão usa fundo branco e texto escuro, mesmo com o tema escu
     })
   }
 })
+
+test('o site final não expõe dados do projeto confidencial além do nome do produto', async ({ request }) => {
+  const paths = ['/', '/en/', '/projetos/', '/en/projects/', '/sitemap.xml', '/robots.txt']
+  for (const path of paths) {
+    const text = await (await request.get(path)).text()
+    // O nome "Luhmera" pode aparecer; a empresa e qualquer variação (domínio, minúsculas) não.
+    expect(text.replaceAll('Luhmera', ''), path).not.toMatch(/luhmera|LM Solutions/i)
+  }
+})

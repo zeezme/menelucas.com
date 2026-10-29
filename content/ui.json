@@ -19,6 +19,8 @@
   "prevPart": { "pt": "Anterior", "en": "Previous" },
   "nextPart": { "pt": "Próxima", "en": "Next" },
   "overview": { "pt": "Visão geral", "en": "Overview" },
+  "confidentialLabel": { "pt": "Confidencialidade", "en": "Confidentiality" },
+  "projectDetailsEngineering": { "pt": "Ver detalhes de engenharia", "en": "See engineering details" },
   "noteLabel": { "pt": "Nota", "en": "Note" },
   "education": { "pt": "Formação", "en": "Education" },
   "languages": { "pt": "Idiomas", "en": "Languages" },
