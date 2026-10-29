@@ -189,9 +189,13 @@ test.describe('tema claro/escuro', () => {
 
   test('ao trocar de tema as transições ficam desligadas, para o item selecionado não piscar', async ({ page }) => {
     await page.goto('/projetos/')
-    const selected = page.locator('[aria-current="page"]').first()
-    await page.getByRole('button', { name: /tema|theme/i }).click()
-    expect(await selected.evaluate((element) => getComputedStyle(element).transitionDuration)).toBe('0s')
+    // O clique e a leitura acontecem no mesmo instante, antes de o navegador pintar o próximo quadro.
+    const duringSwitch = await page.evaluate(() => {
+      const selected = document.querySelector('[aria-current="page"]') as HTMLElement
+      ;(document.querySelector('[data-theme-toggle]') as HTMLElement).click()
+      return getComputedStyle(selected).transitionDuration
+    })
+    expect(duringSwitch).toBe('0s')
     await expect(page.locator('html')).not.toHaveAttribute('data-theme-switching', '')
   })
 
