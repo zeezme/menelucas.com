@@ -130,6 +130,33 @@
   }
 }
 
+/* Contraste maior pedido no sistema: filetes e textos secundários ganham o contraste do texto principal. */
+@media (prefers-contrast: more) {
+  :root,
+  :root[data-theme] {
+    --c-hairline: var(--c-ink-subtle);
+    --c-hairline-strong: var(--c-ink);
+    --c-ink-muted: var(--c-ink);
+    --c-ink-subtle: var(--c-ink);
+  }
+}
+
+/* Cores forçadas (modo de alto contraste do Windows): sem fundos, o item atual precisa de outra marca além da cor. */
+@media (forced-colors: active) {
+  [aria-current='page'],
+  [aria-current='true'] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    font-weight: 700;
+  }
+  .tooltip {
+    border-color: CanvasText;
+  }
+  [data-back-to-top] {
+    border-color: ButtonText;
+  }
+}
+
 @media print {
   section[hidden] {
     display: flex !important;
