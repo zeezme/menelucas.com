@@ -8,9 +8,9 @@ interface SummarySectionProps {
   translate: Translator
 }
 
-/** Resumo profissional. */
+/** Resumo profissional, inteiro, em um único parágrafo na largura da página. */
 export const SummarySection = ({ resume, locale, translate }: SummarySectionProps) => (
   <Section id="summary" title={translate('summary')}>
-    <p className="text-pretty text-base leading-relaxed text-ink-muted lg:columns-2 lg:gap-10">{pick(resume.basics.summary, locale)}</p>
+    <p className="text-pretty text-[1.0625rem] leading-relaxed text-ink-muted">{pick(resume.basics.summary, locale)}</p>
   </Section>
 )

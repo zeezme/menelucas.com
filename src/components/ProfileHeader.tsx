@@ -64,9 +64,19 @@ export const ProfileHeader = ({ resume, locale, base, translate }: ProfileHeader
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 text-sm text-ink-subtle sm:col-span-2">
-        {tags ? <p className="text-pretty">{tags}</p> : null}
-        <p>{pick(basics.location.note, locale)}</p>
+      <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1 text-sm text-ink-subtle">
+          {tags ? <p className="text-pretty">{tags}</p> : null}
+          <p>{pick(basics.location.note, locale)}</p>
+        </div>
+        <a
+          href={`${base}${meta.pdf[locale].slice(1)}`}
+          download
+          className="inline-flex min-h-touch shrink-0 items-center justify-center gap-2 rounded-btn bg-accent-solid px-4 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+        >
+          <DownloadIcon />
+          {translate('downloadPdf')}
+        </a>
       </div>
 
       <nav
@@ -98,14 +108,6 @@ export const ProfileHeader = ({ resume, locale, base, translate }: ProfileHeader
         </ul>
       </nav>
 
-      <a
-        href={`${base}${meta.pdf[locale].slice(1)}`}
-        download
-        className="inline-flex min-h-touch items-center justify-center gap-2 rounded-btn bg-accent-solid px-4 text-sm font-medium text-white transition-colors hover:bg-accent-hover sm:col-span-2 sm:justify-self-start"
-      >
-        <DownloadIcon />
-        {translate('downloadPdf')}
-      </a>
     </div>
   )
 }
