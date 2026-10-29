@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { resume, ui } from '../../src/content'
-import { detectLocale, firstSentence, formatYearMonth, localePath } from '../../src/i18n'
+import { interfaceTexts, resume } from '../../src/content'
+import { detectLocale, firstSentence, formatYearMonth, localePath } from '../../src/internationalization'
 import { renderPage } from '../../src/render'
 import { buildHeadMeta, buildRobots, buildSitemap, skillKeywords } from '../../src/seo/head'
 import { siteConfig } from '../../src/site'
@@ -9,7 +9,7 @@ const site = siteConfig({})
 const showcase = (resume.projects ?? []).filter((p) => (p.areas?.length ?? 0) > 0)
 const allAreas = showcase.flatMap((p) => p.areas ?? [])
 const galleryItems = allAreas.flatMap((a) => a.gallery ?? [])
-const html = (locale: 'pt' | 'en') => renderPage({ resume, ui, locale, site, css: '' })
+const html = (locale: 'pt' | 'en') => renderPage({ resume, interfaceTexts, locale, site, css: '' })
 
 describe('i18n helpers', () => {
   it('detecta pt* como PT e o resto como EN', () => {
@@ -61,7 +61,7 @@ describe('SEO para recrutadores', () => {
   })
 
   it('staging recebe noindex; produção é indexável', () => {
-    const staged = renderPage({ resume, ui, locale: 'pt', site: siteConfig({ BASE_PATH: '/staging/' }), css: '' })
+    const staged = renderPage({ resume, interfaceTexts, locale: 'pt', site: siteConfig({ BASE_PATH: '/staging/' }), css: '' })
     expect(staged).toContain('content="noindex, nofollow"')
     expect(html('pt')).toContain('content="index, follow, max-image-preview:large"')
   })
@@ -81,7 +81,7 @@ describe('página renderizada', () => {
     expect(out).toContain('<meta charset="utf-8"/>')
     expect(out).not.toMatch(/ (charSet|hrefLang|fetchPriority|crossOrigin|tabIndex|dateTime)=/)
     expect(out).toContain(`content="https://menelucas.com/banner-${locale}.jpg"`)
-    const versioned = renderPage({ resume, ui, locale, site: { ...site, ogVersions: { [locale]: 'abc12345' } }, css: '' })
+    const versioned = renderPage({ resume, interfaceTexts, locale, site: { ...site, openGraphVersions: { [locale]: 'abc12345' } }, css: '' })
     expect(versioned).toContain(`content="https://menelucas.com/banner-${locale}-abc12345.jpg"`)
     expect(out).toContain(`property="og:image:secure_url" content="https://menelucas.com/banner-${locale}.jpg"`)
     expect(out).toContain('property="og:image:type" content="image/jpeg"')
@@ -106,7 +106,7 @@ describe('página renderizada', () => {
   })
 
   it('respeita BASE_PATH nos links de idioma e ativos', () => {
-    const staged = renderPage({ resume, ui, locale: 'pt', site: siteConfig({ BASE_PATH: 'staging' }), css: '' })
+    const staged = renderPage({ resume, interfaceTexts, locale: 'pt', site: siteConfig({ BASE_PATH: 'staging' }), css: '' })
     expect(staged).toContain('href="/staging/en/"')
     expect(staged).toContain('src="/staging/avatar.webp"')
   })
@@ -131,14 +131,14 @@ describe('seção Projetos', () => {
     const without = structuredClone(resume)
     delete without.projects
     for (const locale of ['pt', 'en'] as const) {
-      expect(sectionOf(renderPage({ resume: without, ui, locale, site, css: '' }))).toBe('')
-      expect(sectionOf(renderPage({ resume: { ...without, projects: [] }, ui, locale, site, css: '' }))).toBe('')
+      expect(sectionOf(renderPage({ resume: without, interfaceTexts, locale, site, css: '' }))).toBe('')
+      expect(sectionOf(renderPage({ resume: { ...without, projects: [] }, interfaceTexts, locale, site, css: '' }))).toBe('')
     }
   })
 })
 
 describe('página Projetos', () => {
-  const projectsHtml = (locale: 'pt' | 'en', r = resume) => renderPage({ resume: r, ui, locale, site, css: '', page: 'projects' })
+  const projectsHtml = (locale: 'pt' | 'en', r = resume) => renderPage({ resume: r, interfaceTexts, locale, site, css: '', page: 'projects' })
 
   it.each([
     ['pt', 'Projetos', 'Currículo'],
@@ -209,13 +209,13 @@ describe('página Projetos', () => {
     const without = structuredClone(resume)
     delete without.projects
     for (const locale of ['pt', 'en'] as const) {
-      expect(renderPage({ resume: without, ui, locale, site, css: '' })).not.toContain(
+      expect(renderPage({ resume: without, interfaceTexts, locale, site, css: '' })).not.toContain(
         'aria-label="' + (locale === 'pt' ? 'Seções do site' : 'Site sections') + '"',
       )
     }
     const noAreas = structuredClone(resume)
     for (const p of noAreas.projects ?? []) delete p.areas
-    expect(renderPage({ resume: noAreas, ui, locale: 'pt', site, css: '' })).not.toContain('href="/projetos/"')
+    expect(renderPage({ resume: noAreas, interfaceTexts, locale: 'pt', site, css: '' })).not.toContain('href="/projetos/"')
   })
 
   it('imagens de public/ existem', async () => {
@@ -232,7 +232,7 @@ describe('projeto confidencial', () => {
     expect(secret.length).toBeGreaterThan(0)
     expect(showcase.indexOf(secret[0] as (typeof showcase)[number])).toBeGreaterThan(0)
     for (const locale of ['pt', 'en'] as const) {
-      const out = renderPage({ resume, ui, locale, site, css: '', page: 'projects' })
+      const out = renderPage({ resume, interfaceTexts, locale, site, css: '', page: 'projects' })
       for (const p of secret) {
         const banner = p.banner?.[locale] ?? ''
         expect(out).toContain(banner)
@@ -267,8 +267,8 @@ describe('projeto confidencial', () => {
 
 describe('termos do projeto confidencial', () => {
   it('as páginas e o conteúdo só citam o nome do produto, e só como "Luhmera"', () => {
-    const pages = (['pt', 'en'] as const).flatMap((locale) => [html(locale), renderPage({ resume, ui, locale, site, css: '', page: 'projects' })])
-    for (const text of [...pages, JSON.stringify(resume), JSON.stringify(ui)]) {
+    const pages = (['pt', 'en'] as const).flatMap((locale) => [html(locale), renderPage({ resume, interfaceTexts, locale, site, css: '', page: 'projects' })])
+    for (const text of [...pages, JSON.stringify(resume), JSON.stringify(interfaceTexts)]) {
       expect(text.replaceAll('Luhmera', '')).not.toMatch(/luhmera|LM Solutions/i)
     }
   })

@@ -44,10 +44,10 @@ const work = z
     sections: z.array(workSection).optional(),
     highlights: z.array(highlight).optional(),
   })
-  .refine((w) => (w.sections?.length ?? 0) + (w.highlights?.length ?? 0) > 0, {
+  .refine((workItem) => (workItem.sections?.length ?? 0) + (workItem.highlights?.length ?? 0) > 0, {
     message: 'informe highlights ou sections',
   })
-  .refine((w) => w.endDate === undefined || w.endDate >= w.startDate, {
+  .refine((workItem) => workItem.endDate === undefined || workItem.endDate >= workItem.startDate, {
     message: 'endDate anterior a startDate',
   })
 
@@ -127,7 +127,7 @@ const project = z
     galleryNote: localized.optional(),
     url: z.url().optional(),
   })
-  .refine((p) => p.endDate === undefined || p.endDate >= p.startDate, {
+  .refine((project) => project.endDate === undefined || project.endDate >= project.startDate, {
     message: 'endDate anterior a startDate',
   })
 
@@ -180,9 +180,11 @@ export type Diagram = NonNullable<Area['diagrams']>[number]
 export type Snippet = NonNullable<Area['snippets']>[number]
 
 /** A aba/página Projetos só existe se algum projeto tiver partes do sistema (tirar o item do JSON remove tudo). */
-export const showcaseProjects = (resume: Resume): Project[] => (resume.projects ?? []).filter((p) => (p.areas?.length ?? 0) > 0)
+export const showcaseProjects = (resume: Resume): Project[] =>
+  (resume.projects ?? []).filter((project) => (project.areas?.length ?? 0) > 0)
 
-const plainSlug = (text: string): string =>
+/** Transforma um texto em slug de URL: minúsculas, sem acentos, com hífens entre as palavras. */
+export const toSlug = (text: string): string =>
   text
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
@@ -190,10 +192,14 @@ const plainSlug = (text: string): string =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
 
-export const projectSlug = (p: Project): string => p.slug ?? plainSlug(p.name)
-export const projectTitle = (p: Project, locale: Locale): string => (p.title ? p.title[locale] : p.name)
+/** Prefixo dos endereços (`#slug-parte`) de um projeto. */
+export const projectSlug = (project: Project): string => project.slug ?? toSlug(project.name)
 
-export function parseResume(data: unknown): Resume {
+/** Título do projeto no idioma pedido; sem `title`, o nome próprio. */
+export const projectTitle = (project: Project, locale: Locale): string => project.title?.[locale] ?? project.name
+
+/** Valida o conteúdo de `resume.json`; qualquer erro derruba o build com a lista dos campos inválidos. */
+export const parseResume = (data: unknown): Resume => {
   const result = resumeSchema.safeParse(data)
   if (!result.success) {
     throw new Error(`resume.json inválido:\n${z.prettifyError(result.error)}`)
@@ -201,12 +207,12 @@ export function parseResume(data: unknown): Resume {
   return result.data
 }
 
-const uiSchema = z.record(
+const interfaceTextsSchema = z.record(
   z.string(),
   z.strictObject({ pt: z.string().min(1), en: z.string().min(1) }),
 )
-export type UiStrings = z.infer<typeof uiSchema>
+/** Textos de interface (`content/ui.json`), por chave e idioma. */
+export type InterfaceTexts = z.infer<typeof interfaceTextsSchema>
 
-export function parseUi(data: unknown): UiStrings {
-  return uiSchema.parse(data)
-}
+/** Valida `content/ui.json`. */
+export const parseInterfaceTexts = (data: unknown): InterfaceTexts => interfaceTextsSchema.parse(data)

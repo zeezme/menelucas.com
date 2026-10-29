@@ -6,16 +6,15 @@ import { serve } from './serve'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
-/** Rebuild num processo filho para sempre ler resume.json/CSS atualizados. */
-function rebuild(): Promise<void> {
-  return new Promise((done) => {
+/** Refaz o build num processo filho, para sempre ler `resume.json` e o CSS atualizados. */
+const rebuild = (): Promise<void> =>
+  new Promise((resolveBuild) => {
     const child = spawn(process.execPath, ['--import', 'tsx', join(root, 'scripts/build.ts')], {
       cwd: root,
       stdio: 'inherit',
     })
-    child.on('close', () => done())
+    child.on('close', () => resolveBuild())
   })
-}
 
 await rebuild()
 serve()

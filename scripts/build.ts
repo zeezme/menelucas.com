@@ -3,19 +3,25 @@ import { createHash } from 'node:crypto'
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { resume, ui } from '../src/content'
+import { interfaceTexts, resume } from '../src/content'
+import { pageFile, type PageId } from '../src/internationalization'
 import { renderPage } from '../src/render'
-import { buildRobots, buildSitemap } from '../src/seo/head'
-import { pageFile, type PageId } from '../src/i18n'
 import { LOCALES, showcaseProjects } from '../src/schema/resume'
-import { isIndexable, ogImagePath, ogImageSource, siteConfig } from '../src/site'
+import { buildRobots, buildSitemap } from '../src/seo/head'
+import { isIndexable, openGraphImagePath, openGraphImageSource, siteConfig } from '../src/site'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+
+/** Pasta de saída do build. */
 export const distDir = join(root, 'dist')
 
-const FONT_SRC = join(root, 'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+const FONT_SOURCE = join(root, 'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
 
-function compileCss(base: string): string {
+/**
+ * Compila o Tailwind e acrescenta o `@font-face` da fonte local.
+ * @param base Prefixo de publicação, usado no endereço da fonte.
+ */
+const compileCss = (base: string): string => {
   const tailwindCli = join(root, 'node_modules/tailwindcss/lib/cli.js')
   const css = execFileSync(process.execPath, [tailwindCli, '-i', 'src/styles/main.css', '--minify'], {
     cwd: root,
@@ -26,37 +32,42 @@ function compileCss(base: string): string {
   return fontFace + css
 }
 
-/** Gera `dist/`: `/` (PT) e `/en/` (EN) como HTML estático, mais os arquivos de `public/`. */
-export function build(): void {
-  const base = siteConfig()
-  const hash = (file: string) => createHash('sha1').update(readFileSync(join(root, 'public', file))).digest('hex').slice(0, 8)
-  const site = { ...base, ogVersions: { pt: hash(ogImageSource('pt')), en: hash(ogImageSource('en')) } }
+/** Gera `dist/`: as páginas em PT e EN como HTML estático, os arquivos de `public/`, o sitemap e o robots. */
+export const build = (): void => {
+  const baseConfig = siteConfig()
+  const hashOf = (file: string) =>
+    createHash('sha1').update(readFileSync(join(root, 'public', file))).digest('hex').slice(0, 8)
+  const site = {
+    ...baseConfig,
+    openGraphVersions: { pt: hashOf(openGraphImageSource('pt')), en: hashOf(openGraphImageSource('en')) },
+  }
   rmSync(distDir, { recursive: true, force: true })
   mkdirSync(join(distDir, 'assets'), { recursive: true })
   cpSync(join(root, 'public'), distDir, { recursive: true })
-  if (!existsSync(FONT_SRC)) throw new Error(`Fonte não encontrada: ${FONT_SRC}`)
-  cpSync(FONT_SRC, join(distDir, 'assets/inter-latin.woff2'))
+  if (!existsSync(FONT_SOURCE)) throw new Error(`Fonte não encontrada: ${FONT_SOURCE}`)
+  cpSync(FONT_SOURCE, join(distDir, 'assets/inter-latin.woff2'))
 
   for (const locale of LOCALES) {
-    cpSync(join(root, 'public', ogImageSource(locale)), join(distDir, ogImagePath(site, locale)))
+    cpSync(join(root, 'public', openGraphImageSource(locale)), join(distDir, openGraphImagePath(site, locale)))
   }
 
   const css = compileCss(site.base)
-  // A página Projetos só existe se algum projeto tiver galeria no resume.json.
   const pages: PageId[] = showcaseProjects(resume).length > 0 ? ['resume', 'projects'] : ['resume']
   for (const page of pages) {
     for (const locale of LOCALES) {
       const file = join(distDir, pageFile(page, locale))
       mkdirSync(dirname(file), { recursive: true })
-      writeFileSync(file, renderPage({ resume, ui, locale, site, css, page }))
+      writeFileSync(file, renderPage({ resume, interfaceTexts, locale, site, css, page }))
     }
   }
   if (isIndexable(site)) {
     writeFileSync(join(distDir, 'sitemap.xml'), buildSitemap(site, pages))
     writeFileSync(join(distDir, 'robots.txt'), buildRobots(site))
   }
-  const size = (p: string) => (readFileSync(join(distDir, p)).length / 1024).toFixed(1)
-  console.log(`dist/index.html ${size('index.html')} kB · dist/en/index.html ${size('en/index.html')} kB (base ${site.base})`)
+  const sizeInKilobytes = (path: string) => (readFileSync(join(distDir, path)).length / 1024).toFixed(1)
+  console.log(
+    `dist/index.html ${sizeInKilobytes('index.html')} kB · dist/en/index.html ${sizeInKilobytes('en/index.html')} kB (base ${site.base})`,
+  )
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) build()
