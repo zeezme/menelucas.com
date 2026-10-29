@@ -30,7 +30,7 @@ export const LanguageToggle = ({ locale, hrefForLocale, translate }: LanguageTog
                 lang={option.locale}
                 data-lang={option.locale}
                 aria-current={isCurrent ? 'page' : undefined}
-                className={`inline-flex min-h-[42px] min-w-[48px] items-center justify-center px-3 text-sm font-medium transition-colors ${cornerClass} ${
+                className={`inline-flex min-h-[42px] min-w-[44px] items-center justify-center px-2.5 text-sm sm:min-w-[48px] sm:px-3 font-medium transition-colors ${cornerClass} ${
                   isCurrent ? 'bg-surface-3 text-ink' : 'text-ink-subtle hover:text-ink'
                 }`}
               >
