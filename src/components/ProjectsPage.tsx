@@ -167,6 +167,19 @@ function ProjectDetail({ project, locale, base, t }: { project: Project; locale:
           {(project.areas ?? []).map((area, i) => (
             <AreaPanel key={area.title.en} area={area} id={panels[i + 1]?.id ?? ''} project={project} locale={locale} base={base} />
           ))}
+          <nav aria-label={t('pagerNav')} data-areas-pager hidden className="flex items-stretch justify-between gap-3 border-t border-hairline pt-6 print:hidden">
+            {(['prev', 'next'] as const).map((dir) => (
+              <a
+                key={dir}
+                href="#"
+                data-pager={dir}
+                className={`flex min-h-touch min-w-0 max-w-[48%] flex-col justify-center gap-0.5 rounded-xl border border-hairline bg-surface-1 px-4 py-3 transition-colors hover:bg-surface-2 ${dir === 'next' ? 'ml-auto text-right' : ''}`}
+              >
+                <span className="text-xs text-ink-subtle">{t(dir === 'prev' ? 'prevPart' : 'nextPart')}</span>
+                <span data-pager-name className="text-sm font-medium text-ink"></span>
+              </a>
+            ))}
+          </nav>
         </div>
       </div>
     </article>

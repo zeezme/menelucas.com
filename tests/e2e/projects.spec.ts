@@ -76,6 +76,27 @@ for (const pp of PROJECT_PAGES) {
       }
     })
 
+    test('botões Anterior/Próxima no fim da parte funcionam (no celular a barra lateral fica lá em cima)', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 700 })
+      await page.goto(pp.path)
+      const pager = page.locator('[data-areas-pager]')
+      const prev = pager.locator('[data-pager="prev"]')
+      const next = pager.locator('[data-pager="next"]')
+      await expect(pager).toBeVisible()
+      await expect(prev).toBeHidden()
+      await expect(next).toContainText(pp.parts[1] ?? '')
+      await next.scrollIntoViewIfNeeded()
+      await next.click()
+      await expect(page).toHaveURL(new RegExp(`#${IDS[1]}$`))
+      await expect(page.locator(`#${IDS[1]}`)).toBeVisible()
+      await expect(prev).toContainText(pp.parts[0] ?? '')
+      await expect(next).toContainText(pp.parts[2] ?? '')
+      await expect(page.getByRole('heading', { level: 3, name: pp.parts[1] ?? '' })).toBeInViewport()
+      await page.goto(`${pp.path}#${IDS[IDS.length - 1]}`)
+      await expect(next).toBeHidden()
+      await expect(prev).toContainText(pp.parts[pp.parts.length - 2] ?? '')
+    })
+
     test('link direto com # abre a parte certa, e voltar restaura a anterior', async ({ page }) => {
       await page.goto(`${pp.path}#ipsiq-audit-and-history`)
       await expect(page.locator('#ipsiq-audit-and-history')).toBeVisible()
