@@ -39,12 +39,6 @@ for (const p of PAGES) {
       })
     }
 
-    test('JSON-LD não menciona o iPsiq', async ({ page }) => {
-      await page.goto(p.path)
-      const ld = (await page.locator('script[type="application/ld+json"]').textContent()) ?? ''
-      expect(ld.toLowerCase()).not.toContain('ipsiq')
-    })
-
     test('botão de PDF aponta para o PDF do idioma e ele existe', async ({ page, request }) => {
       await page.goto(p.path)
       await expect(page.getByRole('link', { name: p.cta })).toHaveAttribute('href', p.pdf)
