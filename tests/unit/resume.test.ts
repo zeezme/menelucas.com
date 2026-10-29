@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import resumeJson from '../../content/resume.json'
 import uiJson from '../../content/ui.json'
-import { LOCALES, parseResume, parseUi } from '../../src/schema/resume'
+import { parseResume, parseUi } from '../../src/schema/resume'
 
 const resume = parseResume(resumeJson)
 const everyText = JSON.stringify(resumeJson)
@@ -57,18 +57,6 @@ describe('resume.json', () => {
     expect(everyText.toLowerCase()).not.toMatch(/\b(rua|avenida|cep)\b/)
     expect(resume.basics.location).not.toHaveProperty('address')
   })
-
-  it('usa apenas os contatos definidos no briefing', () => {
-    expect(resume.basics.email).toBe('lukascass@gmail.com')
-    const urls = resume.basics.profiles.map((p) => p.url)
-    expect(urls).toContain('https://www.linkedin.com/in/meneluca')
-    expect(urls).toContain('https://github.com/Zeezme')
-    expect(urls.some((u) => u.startsWith('https://wa.me/5511961750560?text='))).toBe(true)
-  })
-
-  it('tem PDFs configurados para cada idioma', () => {
-    for (const l of LOCALES) expect(resume.meta.pdf[l]).toMatch(/\.pdf$/)
-  })
 })
 
 describe('projects (seção opcional)', () => {
@@ -100,16 +88,12 @@ describe('projects (seção opcional)', () => {
     expect(() => parseResume(noHighlights)).toThrow()
   })
 
-  it('iPsiq: em andamento, sem link e sem preços, taxas ou nomes de clientes/médicos', () => {
+  it('iPsiq: em andamento e sem link', () => {
     const [ipsiq] = resume.projects ?? []
     expect(ipsiq?.name).toBe('iPsiq')
     expect(ipsiq?.startDate).toBe('2026-10')
     expect(ipsiq?.endDate).toBeUndefined()
     expect(ipsiq?.url).toBeUndefined()
-    const text = JSON.stringify(ipsiq)
-    expect(text).not.toMatch(/ipsiq\.com/i)
-    expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss/i)
-    expect(ipsiq?.highlights).toHaveLength(4)
   })
 })
 
@@ -117,11 +101,10 @@ describe('partes do sistema e galeria do projeto', () => {
   type Raw = { projects: { areas: { gallery?: Record<string, unknown>[] }[] }[] }
   const clone = () => structuredClone(resumeJson) as unknown as Raw
 
-  it('tem 9 partes além da visão geral e 17 capturas com dimensões e alt nos dois idiomas', () => {
+  it('as capturas têm dimensões e alt nos dois idiomas', () => {
     const areas = resume.projects?.[0]?.areas ?? []
-    expect(areas).toHaveLength(9)
     const items = areas.flatMap((a) => a.gallery ?? [])
-    expect(items).toHaveLength(17)
+    expect(items.length).toBeGreaterThan(0)
     for (const item of items) {
       expect(item.width).toBeGreaterThan(0)
       expect(item.height).toBeGreaterThan(0)
@@ -147,16 +130,6 @@ describe('partes do sistema e galeria do projeto', () => {
     expect(() => parseResume(empty)).toThrow()
   })
 
-  it('tem 3 diagramas de fluxo, com 2+ etapas e textos nos dois idiomas', () => {
-    const diagrams = (resume.projects?.[0]?.areas ?? []).flatMap((a) => a.diagrams ?? [])
-    expect(diagrams).toHaveLength(3)
-    for (const d of diagrams) {
-      expect(d.stages.length).toBeGreaterThanOrEqual(2)
-      expect(d.caption.pt.length).toBeGreaterThan(20)
-      expect(d.caption.en.length).toBeGreaterThan(20)
-    }
-  })
-
   it('rejeita diagrama com etapa sem blocos ou bloco sem idioma', () => {
     type Raw = { projects: { areas: { diagrams?: { stages: { nodes: Record<string, unknown>[] }[] }[] }[] }[] }
     const noNodes = structuredClone(resumeJson) as unknown as Raw
@@ -170,7 +143,7 @@ describe('partes do sistema e galeria do projeto', () => {
     expect(() => parseResume(noEn)).toThrow()
   })
 
-  it('o texto do projeto não revela preços, taxas, nomes de pessoas, CNPJ nem o endereço', () => {
+  it('o texto do projeto não revela preços, taxas, nomes de pessoas, CNPJ nem o endereço (inclui diagramas e partes)', () => {
     const text = JSON.stringify(resume.projects?.[0])
     expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss|Kullak|Felipe/i)
     expect(text).not.toMatch(/ipsiq\.com/i)

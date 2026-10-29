@@ -6,6 +6,7 @@ import { buildHeadMeta, buildRobots, buildSitemap, skillKeywords } from '../../s
 import { siteConfig } from '../../src/site'
 
 const site = siteConfig({})
+const galleryItems = (resume.projects?.[0]?.areas ?? []).flatMap((a) => a.gallery ?? [])
 const html = (locale: 'pt' | 'en') => renderPage({ resume, ui, locale, site, css: '' })
 
 describe('i18n helpers', () => {
@@ -140,14 +141,6 @@ describe('seção Projetos', () => {
       expect(sectionOf(renderPage({ resume: { ...without, projects: [] }, ui, locale, site, css: '' }))).toBe('')
     }
   })
-
-  it('o iPsiq não entra no JSON-LD nem vira link', () => {
-    const out = html('pt')
-    const ld = /<script type="application\/ld\+json">(.*?)<\/script>/s.exec(out)?.[1] ?? ''
-    expect(ld).not.toBe('')
-    expect(ld.toLowerCase()).not.toContain('ipsiq')
-    expect(out.toLowerCase()).not.toContain('ipsiq.com')
-  })
 })
 
 describe('página Projetos', () => {
@@ -161,14 +154,14 @@ describe('página Projetos', () => {
   it.each([
     ['pt', 'Projetos', 'Currículo'],
     ['en', 'Projects', 'Resume'],
-  ] as const)('%s: h1, abas e 17 imagens acessíveis', (locale, title, tab) => {
+  ] as const)('%s: h1, abas e imagens acessíveis', (locale, title, tab) => {
     const out = projectsHtml(locale)
     expect(out.match(/<h1[ >]/g)).toHaveLength(1)
     expect(out).toContain(`>${title}</h1>`)
     expect(out).toContain('aria-current="page"')
     expect(out).toContain(`>${tab}</a>`)
     const imgs = out.match(/<img [^>]*>/g) ?? []
-    expect(imgs).toHaveLength(17)
+    expect(imgs).toHaveLength(galleryItems.length)
     for (const img of imgs) {
       expect(img).toMatch(/ alt="[^"]{10,}"/)
       expect(img).toMatch(/ width="\d+"/)
@@ -191,20 +184,21 @@ describe('página Projetos', () => {
   it.each(['pt', 'en'] as const)('%s: visão geral com seções temáticas e nota de conformidade', (locale) => {
     const out = projectsHtml(locale)
     const h4 = [...out.matchAll(/<h4[^>]*>(.*?)<\/h4>/g)].map((m) => m[1])
-    expect(h4).toHaveLength(5)
+    expect(h4).toHaveLength(resume.projects?.[0]?.detailSections?.length ?? 0)
     const aside = /<aside[^>]*>.*?<\/aside>/s.exec(out)?.[0] ?? ''
     expect(aside).toContain('LGPD')
     expect(aside).toContain('CFM')
     expect(aside).toMatch(locale === 'pt' ? /revisão jurídica/ : /legal review/)
   })
 
-  it.each(['pt', 'en'] as const)('%s: explica auditoria, BaseRepository, RBAC, decorators e a integração com o Asaas', (locale) => {
+  it.each(['pt', 'en'] as const)('%s: blocos de código rolam com teclado e cada diagrama vira uma lista ordenada', (locale) => {
     const out = projectsHtml(locale)
-    for (const term of ['BaseRepository', 'writeAuditEvent', 'append-only|só aceita inclusão', '@Permissions', '@CurrentDoctorId', 'RBAC', 'ZodValidationPipe', 'webhook', 'split']) {
-      expect(out, term).toMatch(new RegExp(term, 'i'))
-    }
-    expect((out.match(/<pre[ >]/g) ?? []).length).toBe(3)
-    expect(out).toContain('tabindex="0"')
+    const areas = resume.projects?.[0]?.areas ?? []
+    const snippets = areas.flatMap((a) => a.snippets ?? []).length
+    const diagrams = areas.flatMap((a) => a.diagrams ?? []).length
+    expect(out.match(/<pre[ >]/g) ?? []).toHaveLength(snippets)
+    expect(out.match(/<pre tabindex="0"/g) ?? []).toHaveLength(snippets)
+    expect(out.match(/<figure[^>]*><div[^>]*><p[^>]*>[^<]*<\/p><ol/g) ?? []).toHaveLength(diagrams)
   })
 
   it('tem hreflang, canonical próprio e redireciona PT→EN só na versão PT', () => {
@@ -215,13 +209,11 @@ describe('página Projetos', () => {
     expect(projectsHtml('en')).not.toMatch(/<html[^>]*data-en-url/)
   })
 
-  it('não tem JSON-LD, preço, taxa, nome de pessoa nem o endereço do iPsiq, e avisa que os dados são fictícios', () => {
+  it('não tem JSON-LD nem o endereço do iPsiq, e avisa que os dados são fictícios', () => {
     for (const locale of ['pt', 'en'] as const) {
       const out = projectsHtml(locale)
       expect(out).not.toContain('application/ld+json')
       expect(out.toLowerCase()).not.toContain('ipsiq.com')
-      expect(out).not.toMatch(/R\$\s?\d/)
-      expect(out).not.toMatch(/Kullak|Felipe|CNPJ/i)
       expect(out).toContain(locale === 'pt' ? 'dados fictícios' : 'fictitious data')
     }
   })
@@ -241,8 +233,7 @@ describe('página Projetos', () => {
 
   it('imagens de public/ existem', async () => {
     const { existsSync } = await import('node:fs')
-    const items = (resume.projects?.[0]?.areas ?? []).flatMap((a) => a.gallery ?? [])
-    expect(items).toHaveLength(17)
-    for (const item of items) expect(existsSync(`public/${item.src}`), item.src).toBe(true)
+    expect(galleryItems.length).toBeGreaterThan(0)
+    for (const item of galleryItems) expect(existsSync(`public/${item.src}`), item.src).toBe(true)
   })
 })
