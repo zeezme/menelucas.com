@@ -21,15 +21,16 @@ export const TabNavigation = ({ resume, currentPage, locale, base, translate }: 
   ]
   return (
     <nav aria-label={translate('tabsNav')} className="print:hidden">
-      <ul className="inline-flex overflow-hidden rounded-btn border border-hairline bg-surface-1">
-        {tabs.map((tab) => {
+      <ul className="inline-flex rounded-btn border border-hairline bg-surface-1">
+        {tabs.map((tab, tabIndex) => {
           const isCurrent = tab.page === currentPage
+          const cornerClass = tabIndex === 0 ? 'rounded-l-btn' : 'rounded-r-btn'
           return (
             <li key={tab.page}>
               <a
                 href={pagePath(tab.page, locale, base)}
                 aria-current={isCurrent ? 'page' : undefined}
-                className={`inline-flex min-h-[42px] items-center justify-center px-4 text-sm font-medium transition-colors ${
+                className={`inline-flex min-h-[42px] items-center justify-center px-4 text-sm font-medium transition-colors ${cornerClass} ${
                   isCurrent ? 'bg-surface-3 text-ink' : 'text-ink-subtle hover:text-ink'
                 }`}
               >
