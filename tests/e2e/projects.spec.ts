@@ -143,7 +143,18 @@ for (const pp of PROJECT_PAGES) {
         .getByRole('navigation', { name: /Idioma|Language/ })
         .getByRole('link', { name: new RegExp(`^${pp.switchTo}`) })
         .click()
-      await expect(page).toHaveURL(new RegExp(`${pp.other.replace(/\//g, '\\/')}$`))
+      await expect(page).toHaveURL(new RegExp(`${pp.other.replace(/\//g, '\\/')}(#ipsiq-overview)?$`))
+    })
+
+    test('troca de idioma mantém a parte selecionada', async ({ page }) => {
+      await page.goto(`${pp.path}#ipsiq-audit-and-history`)
+      await page
+        .getByRole('navigation', { name: /Idioma|Language/ })
+        .getByRole('link', { name: new RegExp(`^${pp.switchTo}`) })
+        .click()
+      await expect(page).toHaveURL(new RegExp(`${pp.other.replace(/\//g, '\\/')}#ipsiq-audit-and-history$`))
+      await expect(page.locator('#ipsiq-audit-and-history')).toBeVisible()
+      await expect(page.locator('#ipsiq-overview')).toBeHidden()
     })
   })
 }

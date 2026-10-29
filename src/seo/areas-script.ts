@@ -17,6 +17,9 @@ var on=i===idx;
 if(panels[i])panels[i].hidden=!on;
 if(on){links[i].setAttribute('aria-current','true')}else{links[i].removeAttribute('aria-current')}
 }
+var h='#'+panels[idx].id;
+[].slice.call(document.querySelectorAll('a[data-lang]')).forEach(function(a){
+var b=a.getAttribute('href').split('#')[0];a.setAttribute('href',b+h)});
 if(scroll&&panels[idx]){
 var top=panels[idx].getBoundingClientRect().top+window.pageYOffset-24;
 if(window.pageYOffset>top)window.scrollTo(0,top);

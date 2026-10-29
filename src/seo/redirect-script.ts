@@ -21,5 +21,5 @@ var l=navigator.languages&&navigator.languages.length?navigator.languages:[navig
 target=/^pt/i.test(l[0]||'')?'pt':'en';
 try{localStorage.setItem('lang',target)}catch(_){}
 }
-if(target==='en')location.replace(en);
+if(target==='en')location.replace(en+location.hash);
 })();`
