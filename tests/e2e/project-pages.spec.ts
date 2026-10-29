@@ -28,7 +28,6 @@ for (const { locale, projects, resume, otherProjects, switchTo } of LOCALES) {
         expect(response?.status()).toBe(200)
         await expect(page.getByRole('heading', { level: 1 })).toHaveText(title)
         await expect(page.locator('article')).toHaveCount(1)
-        await expect(page.locator('[data-projects-menu]')).toHaveCount(0)
         const breadcrumb = page.getByRole('navigation', { name: /Você está em|You are here/ })
         await expect(breadcrumb.getByRole('link')).toHaveAttribute('href', projects)
         await expect(page).toHaveTitle(new RegExp(`^${title} \\| `))
@@ -103,14 +102,13 @@ for (const { locale, projects, resume, otherProjects, switchTo } of LOCALES) {
   test.describe(`currículo e lista em ${resume}`, () => {
     test.use({ locale })
 
-    test('os cards do currículo levam às páginas próprias e a lista de projetos continua igual', async ({ page }) => {
+    test('os cards do currículo levam às páginas próprias e a lista de projetos é o menu para elas', async ({ page }) => {
       await page.goto(resume)
       const links = page.locator('section[aria-labelledby="projects-title"] article a')
       await expect(links).toHaveCount(PROJECTS.length)
       for (const [index, { slug }] of PROJECTS.entries()) await expect(links.nth(index)).toHaveAttribute('href', `${projects}${slug}/`)
       await page.goto(projects)
-      await expect(page.locator('article')).toHaveCount(PROJECTS.length)
-      await expect(page.locator('[data-project-select] option')).toHaveCount(PROJECTS.length)
+      await expect(page.getByRole('navigation', { name: /Menu de projetos|Projects menu/ }).getByRole('link')).toHaveCount(PROJECTS.length)
     })
 
     test('o sitemap lista as páginas dos projetos e o primeiro acesso de quem usa inglês é levado à versão em inglês', async ({ page, request }) => {

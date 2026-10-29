@@ -1,9 +1,8 @@
 import { PageShell } from '../components/PageShell'
-import { ProjectDetail } from '../components/projects/ProjectDetail'
 import { ProjectMenu } from '../components/projects/ProjectMenu'
 import { createTranslator, pagePath } from '../internationalization'
-import { projectSlug, showcaseProjects, type InterfaceTexts, type Locale, type Resume } from '../schema/resume'
-import { areasScript } from '../seo/areas-script'
+import { showcaseProjects, type InterfaceTexts, type Locale, type Resume } from '../schema/resume'
+import { legacyHashScript } from '../seo/legacy-hash-script'
 
 interface ProjectsPageProps {
   resume: Resume
@@ -13,11 +12,9 @@ interface ProjectsPageProps {
   base: string
 }
 
-/** Página de projetos (`/projetos/` e `/en/projects/`): abas de projeto e, em cada um, a barra lateral com as partes do sistema. */
+/** Página de projetos (`/projetos/` e `/en/projects/`): o menu que leva à página própria de cada projeto. */
 export const ProjectsPage = ({ resume, interfaceTexts, locale, base }: ProjectsPageProps) => {
   const translate = createTranslator(interfaceTexts, locale)
-  const projects = showcaseProjects(resume)
-  const hasMenu = projects.length > 1
   return (
     <PageShell
       resume={resume}
@@ -27,24 +24,13 @@ export const ProjectsPage = ({ resume, interfaceTexts, locale, base }: ProjectsP
       base={base}
       translate={translate}
     >
-      <main id="content" tabIndex={-1} className="flex flex-col gap-10 outline-none">
+      <main id="content" tabIndex={-1} className="flex flex-col gap-8 outline-none">
         <h1 className="text-balance text-[1.75rem] font-semibold leading-[1.1] tracking-display sm:text-[2.25rem]">
           {translate('projects')}
         </h1>
-        {hasMenu ? <ProjectMenu projects={projects} locale={locale} translate={translate} /> : null}
-        {projects.map((project) => (
-          <ProjectDetail
-            key={projectSlug(project)}
-            project={project}
-            hasMenu={hasMenu}
-            locale={locale}
-            base={base}
-            translate={translate}
-          />
-        ))}
+        <ProjectMenu projects={showcaseProjects(resume)} locale={locale} base={base} translate={translate} />
       </main>
-      <div role="status" aria-live="polite" className="sr-only" data-areas-status data-opened-label={translate('partOpened')} />
-      <script dangerouslySetInnerHTML={{ __html: areasScript }} />
+      <script dangerouslySetInnerHTML={{ __html: legacyHashScript }} />
     </PageShell>
   )
 }

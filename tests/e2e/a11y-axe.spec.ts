@@ -36,20 +36,29 @@ for (const { locale, resume, projects } of LOCALES) {
         await expectNoViolations(page, 'currículo')
       })
 
-      test('todas as partes de todos os projetos', async ({ page }) => {
+      test('a lista de projetos', async ({ page }) => {
         await page.goto(projects)
         await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
         await freezeTransitions(page)
-        const panelIds = await page.locator('[data-areas-nav] a').evaluateAll((links) =>
-          links.map((link) => (link.getAttribute('href') ?? '').slice(1)),
-        )
-        expect(panelIds.length).toBeGreaterThan(10)
-        for (const id of panelIds) {
-          await page.goto(`${projects}#${id}`)
-          await expect(page.locator(`#${id}`)).toBeVisible()
-          await expectNoViolations(page, `parte ${id}`)
-        }
+        await expectNoViolations(page, 'lista de projetos')
       })
+
+      for (const slug of ['ipsiq', 'clinica']) {
+        test(`todas as partes da página do projeto ${slug}`, async ({ page }) => {
+          await page.goto(`${projects}${slug}/`)
+          await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
+          await freezeTransitions(page)
+          const panelIds = await page.locator('[data-areas-nav] a').evaluateAll((links) =>
+            links.map((link) => (link.getAttribute('href') ?? '').slice(1)),
+          )
+          expect(panelIds.length).toBeGreaterThan(5)
+          for (const id of panelIds) {
+            await page.goto(`${projects}${slug}/#${id}`)
+            await expect(page.locator(`#${id}`)).toBeVisible()
+            await expectNoViolations(page, `parte ${id}`)
+          }
+        })
+      }
     })
   }
 }

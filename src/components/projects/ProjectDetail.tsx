@@ -1,16 +1,12 @@
 import { pick, type Translator } from '../../internationalization'
 import { projectSlug, projectTitle, toSlug, type Locale, type Project } from '../../schema/resume'
 import { DateRange } from '../DateRange'
-import { Heading, type HeadingLevel } from '../Heading'
+import { Heading } from '../Heading'
 import { AreaPanel } from './AreaPanel'
 import { ProjectOverview } from './ProjectOverview'
 
 interface ProjectDetailProps {
   project: Project
-  /** Se há mais de um projeto, o menu de escolha fica acima e o filete do topo sai. */
-  hasMenu: boolean
-  /** Na página própria do projeto o título é o h1 e as partes são h2; na página com todos os projetos, h2 e h3. */
-  standalone?: boolean
   locale: Locale
   base: string
   translate: Translator
@@ -19,13 +15,10 @@ interface ProjectDetailProps {
 const PAGER_DIRECTIONS = ['prev', 'next'] as const
 
 /**
- * Projeto completo: cabeçalho, aviso, barra lateral com as partes do sistema e os painéis.
+ * Projeto completo, na página própria dele: cabeçalho, aviso, barra lateral com as partes do sistema e os painéis.
  * Os botões Anterior e Próxima ficam no fim de cada painel e só aparecem no celular, onde a barra lateral fica no topo.
  */
-export const ProjectDetail = ({ project, hasMenu, standalone = false, locale, base, translate }: ProjectDetailProps) => {
-  const levels: { project: HeadingLevel; panel: HeadingLevel; section: HeadingLevel } = standalone
-    ? { project: 1, panel: 2, section: 3 }
-    : { project: 2, panel: 3, section: 4 }
+export const ProjectDetail = ({ project, locale, base, translate }: ProjectDetailProps) => {
   const slug = projectSlug(project)
   const title = projectTitle(project, locale)
   const panels = [
@@ -36,11 +29,11 @@ export const ProjectDetail = ({ project, hasMenu, standalone = false, locale, ba
     <article
       aria-labelledby={`${slug}-title`}
       data-project={slug}
-      className={`flex flex-col gap-8 ${hasMenu ? '' : 'border-t border-hairline pt-8'}`}
+      className="flex flex-col gap-8"
     >
       <header>
         <Heading
-          level={levels.project}
+          level={1}
           id={`${slug}-title`}
           translate={project.title ? undefined : 'no'}
           className="text-2xl font-semibold leading-tight tracking-title sm:text-[1.75rem]"
@@ -80,13 +73,13 @@ export const ProjectDetail = ({ project, hasMenu, standalone = false, locale, ba
           <ProjectOverview
             project={project}
             id={panels[0]?.id ?? `${slug}-overview`}
-            panelLevel={levels.panel}
-            sectionLevel={levels.section}
+            panelLevel={2}
+            sectionLevel={3}
             locale={locale}
             translate={translate}
           />
           {(project.areas ?? []).map((area, areaIndex) => (
-            <AreaPanel key={area.title.en} area={area} id={panels[areaIndex + 1]?.id ?? ''} project={project} panelLevel={levels.panel} locale={locale} base={base} translate={translate} />
+            <AreaPanel key={area.title.en} area={area} id={panels[areaIndex + 1]?.id ?? ''} project={project} panelLevel={2} locale={locale} base={base} translate={translate} />
           ))}
           <nav
             aria-label={`${translate('pagerNav')}: ${title}`}

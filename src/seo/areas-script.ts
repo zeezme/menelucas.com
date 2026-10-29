@@ -4,20 +4,16 @@
  *
  * - Cada projeto tem a sua barra lateral e a sua parte aberta; o `#id` da URL escolhe a parte (e o projeto).
  *   Voltar e avançar funcionam pelo evento `hashchange`.
- * - Com mais de um projeto, o menu de escolha (`<select>`) mostra um por vez e lembra a parte aberta de cada um.
  * - No fim de cada parte, os botões Anterior e Próxima ajudam no celular, onde a barra lateral fica no topo.
  * - A parte aberta recebe `aria-current` no link; as demais ganham o atributo `hidden`.
  * - Os links de idioma levam o `#` da parte aberta para a outra versão da página.
  * - Acessibilidade: ao trocar de parte pelo teclado ou pelos botões Anterior e Próxima, o foco vai para o título da
- *   parte aberta (o botão que recebeu o clique muda de destino); nos links da barra lateral e no menu de projetos o foco volta
+ *   parte aberta (o botão que recebeu o clique muda de destino); nos links da barra lateral o foco volta
  *   ao link (a navegação por `#` o tiraria dele), e uma região `role="status"` anuncia a troca.
  */
 export const areasScript = `(() => {
   const navigations = [...document.querySelectorAll('[data-areas-nav]')];
   if (!navigations.length) return;
-  const projectMenu = document.querySelector('[data-projects-menu]');
-  const projectSelect = document.querySelector('[data-project-select]');
-  if (projectMenu) projectMenu.hidden = false;
   const projects = navigations.map((navigation) => {
     const article = navigation.closest('article');
     const links = [...navigation.querySelectorAll('a[href^="#"]')];
@@ -78,10 +74,6 @@ export const areasScript = `(() => {
         activeProject = projectIndex;
       }
     });
-    projects.forEach((project, projectIndex) => {
-      project.article.hidden = Boolean(projectSelect) && projectIndex !== activeProject;
-    });
-    if (projectSelect) projectSelect.selectedIndex = activeProject;
     const hash = openLink(projects[activeProject]).getAttribute('href');
     document.querySelectorAll('a[data-lang]').forEach((link) => {
       link.setAttribute('href', link.getAttribute('href').split('#')[0] + hash);
@@ -89,8 +81,7 @@ export const areasScript = `(() => {
     if (target && scroll) {
       if (status) {
         const link = openLink(projects[activeProject]);
-        const projectName = projectSelect ? projectSelect.options[activeProject].text + ' · ' : '';
-        status.textContent = status.getAttribute('data-opened-label') + ': ' + projectName + link.textContent;
+        status.textContent = status.getAttribute('data-opened-label') + ': ' + link.textContent;
       }
       if (moveFocus) target.querySelector('h2, h3')?.focus({ preventScroll: true });
       else if (activatedLink) activatedLink.focus({ preventScroll: true });
@@ -104,10 +95,6 @@ export const areasScript = `(() => {
   document.addEventListener('click', (event) => {
     if (event.target?.closest?.('[data-areas-pager] a')) moveFocus = true;
     activatedLink = event.target?.closest?.('[data-areas-nav] a') ?? null;
-  });
-  projectSelect?.addEventListener('change', () => {
-    activatedLink = projectSelect;
-    location.hash = openLink(projects[projectSelect.selectedIndex]).getAttribute('href');
   });
   window.addEventListener('hashchange', () => show(currentHash(), true));
   show(currentHash(), currentHash() !== '');

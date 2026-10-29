@@ -143,7 +143,9 @@ export const buildHeadMeta = (
     const firstProject = showcaseProjects(resume)[0]
     return {
       title: `${pageLabel} — ${basics.name}`,
-      description: firstProject ? pick(firstProject.description, locale) : description,
+      description: firstProject
+        ? `${showcaseProjects(resume).map((project) => projectTitle(project, locale)).join(', ')}. ${description}`
+        : description,
       keywords: '',
       canonical: pageUrl(locale),
       alternates,

@@ -51,11 +51,11 @@ for (const { path, locale } of PAGES) {
   })
 }
 
-test.describe('página de projetos', () => {
+test.describe('página de um projeto', () => {
   test.use({ locale: 'pt-BR' })
 
   test('o botão de tema informa o estado com aria-pressed', async ({ page }) => {
-    await page.goto('/projetos/')
+    await page.goto('/projetos/ipsiq/')
     const toggle = page.getByRole('button', { name: 'Tema escuro' })
     await expect(toggle).toHaveAttribute('aria-pressed', 'true')
     await toggle.press('Enter')
@@ -64,11 +64,11 @@ test.describe('página de projetos', () => {
 
   test('Anterior/Próxima por teclado levam o foco ao título da parte aberta e anunciam a troca', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 700 })
-    await page.goto('/projetos/')
-    const next = page.locator('article').first().locator('[data-pager="next"]')
+    await page.goto('/projetos/ipsiq/')
+    const next = page.locator('[data-pager="next"]')
     await next.focus()
     await page.keyboard.press('Enter')
-    const heading = page.locator('section:visible h3').first()
+    const heading = page.locator('section:visible h2').first()
     await expect(heading).toBeFocused()
     const status = page.getByRole('status')
     await expect(status).toContainText('Parte aberta')
@@ -77,8 +77,8 @@ test.describe('página de projetos', () => {
 
   test('trocar de parte pela barra lateral, por teclado, mantém o foco no link e anuncia a troca', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
-    await page.goto('/projetos/')
-    const second = page.locator('article').first().locator('[data-areas-nav] a').nth(1)
+    await page.goto('/projetos/ipsiq/')
+    const second = page.locator('[data-areas-nav] a').nth(1)
     await second.focus()
     await page.keyboard.press('Enter')
     await expect(second).toBeFocused()
@@ -135,7 +135,7 @@ test.describe('botão de voltar ao topo', () => {
 test.describe('contorno do foco', () => {
   test.use({ locale: 'pt-BR', viewport: { width: 1280, height: 900 } })
 
-  for (const path of ['/', '/projetos/']) {
+  for (const path of ['/', '/projetos/', '/projetos/ipsiq/']) {
     test(`o contorno do foco nunca é cortado por um contêiner em ${path}`, async ({ page }) => {
       await page.goto(path)
       const clipped = await page.evaluate(() => {
