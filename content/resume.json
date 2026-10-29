@@ -841,6 +841,115 @@
               "en": "make check runs types, lint and tests inside Docker, and CI repeats it on every push."
             }
           ],
+          "diagrams": [
+            {
+              "title": {
+                "pt": "O caminho de uma requisição",
+                "en": "The path of a request"
+              },
+              "caption": {
+                "pt": "Da requisição ao handler: o acesso e a validação são declarados na rota e o guard global recusa o que não declara.",
+                "en": "From request to handler: access and validation are declared on the route, and the global guard rejects anything that does not declare them."
+              },
+              "stages": [
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Requisição",
+                        "en": "Request"
+                      },
+                      "detail": {
+                        "pt": "traz só o token, que é a chave da sessão",
+                        "en": "carries only the token, which is the session key"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Guard global",
+                        "en": "Global guard"
+                      },
+                      "detail": {
+                        "pt": "carrega a sessão viva (papel, permissões, médico) e falha fechado: rota sem declaração é recusada",
+                        "en": "loads the live session (role, permissions, doctor) and fails closed: a route that declares nothing is rejected"
+                      },
+                      "tone": "accent"
+                    }
+                  ]
+                },
+                {
+                  "title": {
+                    "pt": "Acesso declarado na rota",
+                    "en": "Access declared on the route"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "@Public()",
+                        "en": "@Public()"
+                      },
+                      "detail": {
+                        "pt": "rota aberta",
+                        "en": "open route"
+                      }
+                    },
+                    {
+                      "title": {
+                        "pt": "@Authenticated()",
+                        "en": "@Authenticated()"
+                      },
+                      "detail": {
+                        "pt": "qualquer pessoa logada",
+                        "en": "any signed-in person"
+                      }
+                    },
+                    {
+                      "title": {
+                        "pt": "@Permissions(...)",
+                        "en": "@Permissions(...)"
+                      },
+                      "detail": {
+                        "pt": "a role precisa conceder todas; os nomes são checados na compilação",
+                        "en": "the role must grant all of them; names are checked at compile time"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "ZodValidationPipe",
+                        "en": "ZodValidationPipe"
+                      },
+                      "detail": {
+                        "pt": "valida e transforma o corpo, com uma mensagem por campo inválido",
+                        "en": "validates and transforms the body, with one message per invalid field"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Handler",
+                        "en": "Handler"
+                      },
+                      "detail": {
+                        "pt": "@CurrentUser() e @CurrentDoctorId() vêm da sessão, nunca da URL nem do corpo",
+                        "en": "@CurrentUser() and @CurrentDoctorId() come from the session, never from the URL or the body"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           "snippets": [
             {
               "caption": {
@@ -909,6 +1018,114 @@
             {
               "pt": "Futuro: toda gravação passa por um único ponto (writeAuditEvent), hoje síncrono e na mesma transação porque o iPsiq não tem fila. Como a gravação é idempotente por id, esse ponto pode ser trocado por uma emissão de evento (padrão outbox) para levar a auditoria a um microsserviço, sem mexer no código dos repositórios.",
               "en": "Future: every write goes through a single point (writeAuditEvent), synchronous and in the same transaction today because iPsiq has no queue. Since the write is idempotent by id, that point can be swapped for an event emission (outbox pattern) to move auditing to a microservice, without touching the repositories' code."
+            }
+          ],
+          "diagrams": [
+            {
+              "title": {
+                "pt": "Como uma escrita vira histórico",
+                "en": "How a write becomes history"
+              },
+              "caption": {
+                "pt": "Fluxo de uma escrita: o evento de auditoria nasce na mesma transação da mudança. O bloco tracejado é o caminho futuro, que troca só o ponto de gravação.",
+                "en": "Flow of a write: the audit event is created in the same transaction as the change. The dashed block is the future path, which swaps only the write point."
+              },
+              "stages": [
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Rota ou serviço",
+                        "en": "Route or service"
+                      },
+                      "detail": {
+                        "pt": "pede para criar, alterar, excluir ou restaurar um registro",
+                        "en": "asks to create, update, delete or restore a record"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "BaseRepository",
+                        "en": "BaseRepository"
+                      },
+                      "detail": {
+                        "pt": "todo repositório herda dele; ao criar audita a linha salva, ao alterar os campos que quem chama informa e ao excluir o registro apagado",
+                        "en": "every repository inherits from it; on create it audits the saved row, on update the fields the caller states, and on delete the removed record"
+                      },
+                      "tone": "accent"
+                    }
+                  ]
+                },
+                {
+                  "title": {
+                    "pt": "Mesma transação do banco",
+                    "en": "Same database transaction"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Grava a mudança",
+                        "en": "Writes the change"
+                      },
+                      "detail": {
+                        "pt": "na tabela do negócio",
+                        "en": "to the business table"
+                      }
+                    },
+                    {
+                      "title": {
+                        "pt": "Grava o evento (writeAuditEvent)",
+                        "en": "Writes the event (writeAuditEvent)"
+                      },
+                      "detail": {
+                        "pt": "quem, o quê, quando e o que mudou, com os dados sensíveis mascarados; idempotente por id",
+                        "en": "who, what, when and what changed, with sensitive data masked; idempotent by id"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "connector": {
+                    "pt": "os dois ou nenhum",
+                    "en": "both or neither"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Tabela de auditoria",
+                        "en": "Audit table"
+                      },
+                      "detail": {
+                        "pt": "só aceita inclusão: o próprio banco recusa UPDATE, DELETE e TRUNCATE. Uma escrita que falha também deixa um evento, de resultado falha, fora da transação que falhou.",
+                        "en": "insert-only: the database itself rejects UPDATE, DELETE and TRUNCATE. A failed write also leaves an event, with a failure result, outside the failed transaction."
+                      }
+                    }
+                  ]
+                },
+                {
+                  "connector": {
+                    "pt": "no futuro",
+                    "en": "in the future"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Emissão de evento (outbox)",
+                        "en": "Event emission (outbox)"
+                      },
+                      "detail": {
+                        "pt": "troca só o writeAuditEvent e leva a auditoria a um microsserviço, sem mexer no código dos repositórios",
+                        "en": "swaps only writeAuditEvent and moves auditing to a microservice, without touching the repositories' code"
+                      },
+                      "tone": "future"
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "gallery": [
@@ -1059,6 +1276,115 @@
               "en": "Tests do not depend on the network: a local fake Asaas simulates the provider."
             }
           ],
+          "diagrams": [
+            {
+              "title": {
+                "pt": "Do pagamento ao webhook",
+                "en": "From payment to webhook"
+              },
+              "caption": {
+                "pt": "A cobrança nasce na subconta do profissional, com split; o aviso do Asaas passa por três verificações antes de mexer em qualquer dado.",
+                "en": "The charge is created in the professional's sub-account, with a split; the Asaas notice goes through three checks before touching any data."
+              },
+              "stages": [
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Paciente reserva e paga no Pix",
+                        "en": "Patient books and pays by Pix"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "iPsiq cria a cobrança",
+                        "en": "iPsiq creates the charge"
+                      },
+                      "detail": {
+                        "pt": "na subconta do profissional, com a consulta como referência e o split para a carteira do iPsiq",
+                        "en": "in the professional's sub-account, with the appointment as reference and the split to the iPsiq wallet"
+                      },
+                      "tone": "accent"
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Asaas",
+                        "en": "Asaas"
+                      },
+                      "detail": {
+                        "pt": "processa o pagamento e faz o repasse automático",
+                        "en": "processes the payment and makes the automatic transfer"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "title": {
+                    "pt": "Webhook do Asaas, três verificações",
+                    "en": "Asaas webhook, three checks"
+                  },
+                  "connector": {
+                    "pt": "aviso",
+                    "en": "notice"
+                  },
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "1. Token",
+                        "en": "1. Token"
+                      },
+                      "detail": {
+                        "pt": "comparação em tempo constante",
+                        "en": "constant-time comparison"
+                      }
+                    },
+                    {
+                      "title": {
+                        "pt": "2. Id do evento",
+                        "en": "2. Event id"
+                      },
+                      "detail": {
+                        "pt": "processado uma única vez",
+                        "en": "processed exactly once"
+                      }
+                    },
+                    {
+                      "title": {
+                        "pt": "3. Conciliação",
+                        "en": "3. Reconciliation"
+                      },
+                      "detail": {
+                        "pt": "a consulta de referência liga o pagamento; o estorno integral desfaz o split",
+                        "en": "the reference appointment ties the payment; a full refund undoes the split"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "nodes": [
+                    {
+                      "title": {
+                        "pt": "Consulta atualizada",
+                        "en": "Appointment updated"
+                      },
+                      "detail": {
+                        "pt": "e o aviso do provedor entra na linha do tempo de auditoria",
+                        "en": "and the provider notice enters the audit timeline"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           "gallery": [
             {
               "src": "projetos/ipsiq/14-config-integracao.webp",
@@ -1086,8 +1412,8 @@
           },
           "points": [
             {
-              "pt": "Exemplo: a tolerância para iniciar a consulta, depois da qual a consulta não iniciada é estornada automaticamente.",
-              "en": "Example: the tolerance for starting an appointment, after which an unstarted appointment is refunded automatically."
+              "pt": "Exemplo de tela: Atendimento, com a tolerância para iniciar a consulta, depois da qual a consulta não iniciada é estornada automaticamente.",
+              "en": "Example screen: Service, with the tolerance for starting an appointment, after which an unstarted appointment is refunded automatically."
             },
             {
               "pt": "As telas de regras comerciais e fiscais não são mostradas aqui.",
@@ -1096,16 +1422,16 @@
           ],
           "gallery": [
             {
-              "src": "projetos/ipsiq/13-config-atendimento.webp",
+              "src": "projetos/ipsiq/13-config-menu.webp",
               "width": 1600,
               "height": 1000,
               "alt": {
-                "pt": "Configuração de atendimento com os minutos de tolerância para iniciar a consulta",
-                "en": "Service setting with the tolerance minutes for starting an appointment"
+                "pt": "Menu inicial das configurações, com as telas agrupadas em Consultas, Financeiro e Integrações e uma busca por tela ou campo",
+                "en": "Settings home, with the screens grouped into Appointments, Finance and Integrations and a search by screen or field"
               },
               "caption": {
-                "pt": "Configurações: a regra de tolerância para iniciar a consulta.",
-                "en": "Settings: the tolerance rule for starting an appointment."
+                "pt": "Configurações: o menu inicial, com as telas por grupo e a busca por tela ou campo. As descrições das telas comerciais e fiscais foram ocultadas.",
+                "en": "Settings: the home menu, with screens by group and the search by screen or field. The descriptions of the commercial and tax screens were hidden."
               }
             }
           ]

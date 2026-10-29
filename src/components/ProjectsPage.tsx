@@ -3,6 +3,7 @@ import { showcaseProjects } from '../schema/resume'
 import { createT, formatYearMonth, localePath, pagePath, pick, type T } from '../i18n'
 import { areasScript } from '../seo/areas-script'
 import { LangToggle, ThemeToggle } from './Header'
+import { FlowDiagram } from './FlowDiagram'
 import { TabNav } from './TabNav'
 
 interface Props {
@@ -108,6 +109,9 @@ function AreaPanel({ area, id, project, locale, base }: { area: Area; id: string
         <p className="text-pretty text-base leading-relaxed text-ink-muted">{pick(area.summary, locale)}</p>
         {area.points ? <Bullets items={area.points} locale={locale} /> : null}
       </div>
+      {(area.diagrams ?? []).map((diagram) => (
+        <FlowDiagram key={diagram.title.en} diagram={diagram} locale={locale} />
+      ))}
       {(area.snippets ?? []).map((snippet) => (
         <CodeBlock key={snippet.code} snippet={snippet} locale={locale} />
       ))}
