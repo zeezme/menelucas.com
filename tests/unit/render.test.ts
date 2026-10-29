@@ -176,7 +176,7 @@ describe('página Projetos', () => {
     const h4 = [...out.matchAll(/<h4[^>]*>(.*?)<\/h4>/g)].map((m) => m[1])
     expect(h4).toHaveLength(showcase.flatMap((p) => p.detailSections ?? []).length)
     const asides = out.match(/<aside[ >]/g) ?? []
-    expect(asides).toHaveLength(showcase.filter((p) => p.notice).length + showcase.filter((p) => p.banner).length)
+    expect(asides).toHaveLength(showcase.filter((p) => p.notice).length)
   })
 
   it.each(['pt', 'en'] as const)('%s: blocos de código rolam com teclado e cada diagrama vira uma lista ordenada', (locale) => {
@@ -226,20 +226,11 @@ describe('página Projetos', () => {
 })
 
 describe('projeto confidencial', () => {
-  const secret = showcase.filter((p) => p.banner)
+  const secret = showcase.filter((p) => p.slug === 'clinica')
 
-  it('existe, vem depois do primeiro projeto e mostra o aviso no topo, antes da barra lateral', () => {
+  it('existe e vem depois do primeiro projeto', () => {
     expect(secret.length).toBeGreaterThan(0)
     expect(showcase.indexOf(secret[0] as (typeof showcase)[number])).toBeGreaterThan(0)
-    for (const locale of ['pt', 'en'] as const) {
-      const out = renderPage({ resume, interfaceTexts, locale, site, css: '', page: 'projects' })
-      for (const p of secret) {
-        const banner = p.banner?.[locale] ?? ''
-        expect(out).toContain(banner)
-        const article = out.slice(out.indexOf(`id="${p.slug}-title"`))
-        expect(article.indexOf(banner)).toBeLessThan(article.indexOf('data-areas-nav'))
-      }
-    }
   })
 
   it('não tem imagens de tela', () => {

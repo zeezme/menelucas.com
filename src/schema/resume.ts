@@ -114,8 +114,6 @@ const project = z
     description: localized,
     /** Texto do card no currículo (substitui a descrição e os destaques, que ficam só na página do projeto). */
     cardText: localized.optional(),
-    /** Aviso fixo no topo do projeto (ex.: confidencialidade). */
-    banner: localized.optional(),
     /** Diagramas da visão geral. */
     diagrams: z.array(diagram).optional(),
     highlights: z.array(highlight).min(1),

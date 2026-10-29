@@ -1499,8 +1499,8 @@
       "name": "Luhmera",
       "slug": "clinica",
       "roles": {
-        "pt": "Sócio, arquiteto e único desenvolvedor",
-        "en": "Partner, architect and sole developer"
+        "pt": "Sócio e arquiteto de software",
+        "en": "Partner and software architect"
       },
       "startDate": "2026-09",
       "description": {
@@ -1510,10 +1510,6 @@
       "cardText": {
         "pt": "Plataforma multi-tenant em NestJS, PostgreSQL e React, com outbox transacional, filas BullMQ, auditoria particionada, tempo real com Socket.io/Redis e MFA.",
         "en": "Multi-tenant platform on NestJS, PostgreSQL and React, with a transactional outbox, BullMQ queues, partitioned audit trail, Socket.io/Redis real time and MFA."
-      },
-      "banner": {
-        "pt": "Projeto sob confidencialidade: sem telas ou regras de negócio. Aqui está só a engenharia.",
-        "en": "Confidential project: no screens or business rules. Engineering only."
       },
       "highlights": [
         {

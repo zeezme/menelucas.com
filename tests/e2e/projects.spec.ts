@@ -146,7 +146,6 @@ for (const pp of PROJECT_PAGES) {
       await card.getByRole('link').click()
       await expect(page).toHaveURL(new RegExp(`${pp.path}#clinica-overview$`))
       await expect(page.locator('#clinica-overview')).toBeVisible()
-      await expect(page.locator('article').nth(1).locator('aside')).toBeVisible()
       await expect(page.locator('article').nth(1).locator('img')).toHaveCount(0)
       await expect(page.locator('#clinica-overview h3')).toBeInViewport()
     })

@@ -49,12 +49,6 @@ export const ProjectDetail = ({ project, hasTabs, locale, base, translate }: Pro
         </p>
       </header>
 
-      {project.banner ? (
-        <aside aria-label={translate('confidentialLabel')} className="rounded-xl border border-hairline-strong bg-surface-2 p-5">
-          <p className="text-pretty text-sm leading-relaxed text-ink">{pick(project.banner, locale)}</p>
-        </aside>
-      ) : null}
-
       <div className="grid gap-8 md:grid-cols-[13.5rem_minmax(0,1fr)] md:items-start">
         <nav
           aria-label={`${translate('partsNav')}: ${title}`}
