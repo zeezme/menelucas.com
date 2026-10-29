@@ -23,13 +23,14 @@ for (const { locale, projects, resume, otherProjects, switchTo } of LOCALES) {
       test.use({ locale })
       const path = `${projects}${slug}/`
 
-      test('abre, tem um h1 com o título, o caminho de volta e só o projeto dela', async ({ page }) => {
+      test('abre, tem um h1 com o título, o botão de voltar para a lista e só o projeto dela', async ({ page }) => {
         const response = await page.goto(path)
         expect(response?.status()).toBe(200)
         await expect(page.getByRole('heading', { level: 1 })).toHaveText(title)
         await expect(page.locator('article')).toHaveCount(1)
-        const breadcrumb = page.getByRole('navigation', { name: /Você está em|You are here/ })
-        await expect(breadcrumb.getByRole('link')).toHaveAttribute('href', projects)
+        const back = page.getByRole('link', { name: /Voltar aos projetos|Back to projects/ })
+        await expect(back).toHaveAttribute('href', projects)
+        expect((await back.boundingBox())?.y).toBeLessThan((await page.getByRole('heading', { level: 1 }).boundingBox())?.y ?? 0)
         await expect(page).toHaveTitle(new RegExp(`^${title} \\| `))
       })
 

@@ -64,3 +64,9 @@ export const ChevronDownIcon = () => (
     <path d="m6 9 6 6 6-6" />
   </svg>
 )
+
+export const ArrowLeftIcon = () => (
+  <svg {...base} width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 12H5m0 0 6-6m-6 6 6 6" />
+  </svg>
+)
