@@ -2,6 +2,7 @@
  * Script inline da página de projetos: transforma a lista de partes do sistema em uma barra lateral
  * que abre uma parte por vez (melhoria progressiva: sem JS, todas as partes ficam visíveis em sequência).
  *  - o `#id` da URL escolhe a parte aberta (link direto, voltar/avançar funcionam via hashchange);
+ *  - no fim de cada parte, botões Anterior/Próxima (a barra lateral fica no topo, longe no celular);
  *  - a parte aberta recebe `aria-current` no link e as demais ganham o atributo `hidden`.
  */
 export const areasScript = `(function(){
@@ -9,6 +10,19 @@ var nav=document.querySelector('[data-areas-nav]');
 if(!nav)return;
 var links=[].slice.call(nav.querySelectorAll('a[href^="#"]'));
 var panels=links.map(function(a){return document.getElementById(a.getAttribute('href').slice(1))});
+var pager=document.querySelector('[data-areas-pager]');
+function setPager(idx){
+if(!pager)return;
+pager.hidden=false;
+['prev','next'].forEach(function(dir){
+var a=pager.querySelector('[data-pager="'+dir+'"]');
+var to=links[idx+(dir==='next'?1:-1)];
+if(!to){a.style.visibility='hidden';return}
+a.style.visibility='';
+a.setAttribute('href',to.getAttribute('href'));
+a.querySelector('[data-pager-name]').textContent=to.textContent;
+});
+}
 function show(id,scroll){
 var idx=0,i;
 for(i=0;i<panels.length;i++){if(panels[i]&&panels[i].id===id){idx=i}}
@@ -17,6 +31,7 @@ var on=i===idx;
 if(panels[i])panels[i].hidden=!on;
 if(on){links[i].setAttribute('aria-current','true')}else{links[i].removeAttribute('aria-current')}
 }
+setPager(idx);
 var h='#'+panels[idx].id;
 [].slice.call(document.querySelectorAll('a[data-lang]')).forEach(function(a){
 var b=a.getAttribute('href').split('#')[0];a.setAttribute('href',b+h)});
