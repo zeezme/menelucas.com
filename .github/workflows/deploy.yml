@@ -57,11 +57,14 @@ jobs:
         run: |
           DEST="s3://$S3_BUCKET"
           if [ "$TARGET" = "staging" ]; then DEST="$DEST/staging"; fi
+          # --delete remove do bucket o que saiu do site (ex.: uma imagem trocada). Fica de fora o que não é do
+          # build: o staging, o backup e as páginas e o PDF antigos que ainda podem ter link por aí.
+          KEEP=(--exclude "staging/*" --exclude "backup/*" --exclude "preview.html" --exclude "index-pdfviewer.html" --exclude "cv_en.pdf")
           # Arquivos estáticos (imagens, fontes, PDFs): cache de 1 dia.
-          aws s3 sync dist "$DEST" --exclude "*.html" \
+          aws s3 sync dist "$DEST" --exclude "*.html" "${KEEP[@]}" --delete \
             --cache-control "public, max-age=86400"
           # HTML sempre revalidado.
-          aws s3 sync dist "$DEST" --exclude "*" --include "*.html" \
+          aws s3 sync dist "$DEST" --exclude "*" --include "*.html" "${KEEP[@]}" --delete \
             --cache-control "no-cache" --content-type "text/html; charset=utf-8"
 
       - name: Invalidar o CloudFront
