@@ -13,6 +13,8 @@ export interface HeadMeta {
   canonical: string
   alternates: { locale: Locale | 'x-default'; href: string }[]
   image: string
+  /** Perfis públicos (LinkedIn, GitHub) que apontam para esta pessoa; viram `<link rel="me">`. */
+  profileLinks: string[]
   /** Dados estruturados (schema.org) da pessoa; nunca incluem projetos. */
   jsonLd: Record<string, unknown>
 }
@@ -24,6 +26,9 @@ export const skillKeywords = (resume: Resume, locale: Locale): string[] => [
 
 /** Locale do Open Graph (`pt_BR`, `en_US`) para o idioma. */
 export const openGraphLocale = (locale: Locale): string => OPEN_GRAPH_LOCALES[locale]
+
+/** Último trecho do endereço de um perfil, que é o usuário na rede (`.../in/meneluca` → `meneluca`). */
+const handleOf = (profileUrl: string): string => new URL(profileUrl).pathname.split('/').filter(Boolean).pop() ?? ''
 
 /**
  * Monta os metadados de SEO de uma página, todos derivados de `resume.json`.
@@ -58,17 +63,21 @@ export const buildHeadMeta = (
     { locale: 'x-default', href: pageUrl('pt') },
   ]
 
+  const publicProfiles = basics.profiles.filter((profile) => profile.network !== 'WhatsApp')
+  const profileLinks = publicProfiles.map((profile) => profile.url)
+  const alternateNames = [...new Set([...(basics.alternateNames ?? []), ...publicProfiles.map((profile) => handleOf(profile.url))])]
+
   const person = {
     '@type': 'Person',
     '@id': personId,
     name: basics.name,
-    ...(basics.alternateNames ? { alternateName: basics.alternateNames } : {}),
+    alternateName: alternateNames,
     jobTitle: role,
     description,
     url: resumeUrl(locale),
     email: `mailto:${basics.email}`,
     image: absoluteUrl(`${site.base}avatar.webp`),
-    sameAs: basics.profiles.filter((profile) => profile.network !== 'WhatsApp').map((profile) => profile.url),
+    sameAs: profileLinks,
     address: {
       '@type': 'PostalAddress',
       addressLocality: basics.location.city,
@@ -101,6 +110,7 @@ export const buildHeadMeta = (
       canonical: pageUrl(locale),
       alternates,
       image,
+      profileLinks,
       jsonLd: { '@context': 'https://schema.org', '@graph': [person] },
     }
   }
@@ -112,6 +122,7 @@ export const buildHeadMeta = (
     canonical: pageUrl(locale),
     alternates,
     image,
+    profileLinks,
     jsonLd: {
       '@context': 'https://schema.org',
       '@graph': [
