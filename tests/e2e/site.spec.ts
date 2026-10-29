@@ -75,7 +75,7 @@ for (const p of PAGES) {
     test('alvos de toque do cabeçalho têm tamanho mínimo no mobile', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 812 })
       await page.goto(p.path)
-      const targets = page.locator('header a')
+      const targets = page.locator('header a, #profile a')
       const count = await targets.count()
       for (let i = 0; i < count; i++) {
         const box = await targets.nth(i).boundingBox()
@@ -187,6 +187,18 @@ test.describe('tema claro/escuro', () => {
     expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe('dark')
   })
 
+  test('ao trocar de tema as transições ficam desligadas, para o item selecionado não piscar', async ({ page }) => {
+    await page.goto('/projetos/')
+    // O clique e a leitura acontecem no mesmo instante, antes de o navegador pintar o próximo quadro.
+    const duringSwitch = await page.evaluate(() => {
+      const selected = document.querySelector('[aria-current="page"]') as HTMLElement
+      ;(document.querySelector('[data-theme-toggle]') as HTMLElement).click()
+      return getComputedStyle(selected).transitionDuration
+    })
+    expect(duringSwitch).toBe('0s')
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme-switching', '')
+  })
+
   test('funciona com localStorage indisponível', async ({ browser }) => {
     const context = await browser.newContext({ colorScheme: 'light' })
     await context.addInitScript(() => {
@@ -224,5 +236,14 @@ test.describe('impressão usa fundo branco e texto escuro, mesmo com o tema escu
       expect(colors.bg).toMatch(/rgb\(255, 255, 255\)|rgba\(0, 0, 0, 0\)/)
       expect(colors.text).toBe('rgb(0, 0, 0)')
     })
+  }
+})
+
+test('o site final não expõe dados do projeto confidencial além do nome do produto', async ({ request }) => {
+  const paths = ['/', '/en/', '/projetos/', '/en/projects/', '/sitemap.xml', '/robots.txt']
+  for (const path of paths) {
+    const text = await (await request.get(path)).text()
+    // O nome "Luhmera" pode aparecer; a empresa e qualquer variação (domínio, minúsculas) não.
+    expect(text.replaceAll('Luhmera', ''), path).not.toMatch(/luhmera|LM Solutions/i)
   }
 })

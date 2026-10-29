@@ -1,46 +1,111 @@
 /**
- * Script inline da página de projetos: transforma a lista de partes do sistema em uma barra lateral
- * que abre uma parte por vez (melhoria progressiva: sem JS, todas as partes ficam visíveis em sequência).
- *  - o `#id` da URL escolhe a parte aberta (link direto, voltar/avançar funcionam via hashchange);
- *  - no fim de cada parte, botões Anterior/Próxima (a barra lateral fica no topo, longe no celular);
- *  - a parte aberta recebe `aria-current` no link e as demais ganham o atributo `hidden`.
+ * Script inline da página de projetos. Melhoria progressiva: sem JavaScript, todos os projetos e todas as partes
+ * ficam visíveis em sequência.
+ *
+ * - Cada projeto tem a sua barra lateral e a sua parte aberta; o `#id` da URL escolhe a parte (e o projeto).
+ *   Voltar e avançar funcionam pelo evento `hashchange`.
+ * - Com mais de um projeto, o menu de abas mostra um por vez e lembra a parte aberta de cada um.
+ * - No fim de cada parte, os botões Anterior e Próxima ajudam no celular, onde a barra lateral fica no topo.
+ * - A parte aberta recebe `aria-current` no link; as demais ganham o atributo `hidden`.
+ * - Os links de idioma levam o `#` da parte aberta para a outra versão da página.
+ * - Acessibilidade: ao trocar de parte pelo teclado ou pelos botões Anterior e Próxima, o foco vai para o título da
+ *   parte aberta (o botão que recebeu o clique muda de destino); nos links da barra lateral e das abas o foco volta
+ *   ao link (a navegação por `#` o tiraria dele), e uma região `role="status"` anuncia a troca.
  */
-export const areasScript = `(function(){
-var nav=document.querySelector('[data-areas-nav]');
-if(!nav)return;
-var links=[].slice.call(nav.querySelectorAll('a[href^="#"]'));
-var panels=links.map(function(a){return document.getElementById(a.getAttribute('href').slice(1))});
-var pager=document.querySelector('[data-areas-pager]');
-function setPager(idx){
-if(!pager)return;
-pager.hidden=false;
-['prev','next'].forEach(function(dir){
-var a=pager.querySelector('[data-pager="'+dir+'"]');
-var to=links[idx+(dir==='next'?1:-1)];
-if(!to){a.style.visibility='hidden';return}
-a.style.visibility='';
-a.setAttribute('href',to.getAttribute('href'));
-a.querySelector('[data-pager-name]').textContent=to.textContent;
-});
-}
-function show(id,scroll){
-var idx=0,i;
-for(i=0;i<panels.length;i++){if(panels[i]&&panels[i].id===id){idx=i}}
-for(i=0;i<panels.length;i++){
-var on=i===idx;
-if(panels[i])panels[i].hidden=!on;
-if(on){links[i].setAttribute('aria-current','true')}else{links[i].removeAttribute('aria-current')}
-}
-setPager(idx);
-var h='#'+panels[idx].id;
-[].slice.call(document.querySelectorAll('a[data-lang]')).forEach(function(a){
-var b=a.getAttribute('href').split('#')[0];a.setAttribute('href',b+h)});
-if(scroll&&panels[idx]){
-var top=panels[idx].getBoundingClientRect().top+window.pageYOffset-24;
-if(window.pageYOffset>top)window.scrollTo(0,top);
-}
-}
-function current(){try{return decodeURIComponent(location.hash.slice(1))}catch(_){return ''}}
-window.addEventListener('hashchange',function(){show(current(),true)});
-show(current(),false);
+export const areasScript = `(() => {
+  const navigations = [...document.querySelectorAll('[data-areas-nav]')];
+  if (!navigations.length) return;
+  const projectLinks = [...document.querySelectorAll('[data-project-link]')];
+  const projects = navigations.map((navigation) => {
+    const article = navigation.closest('article');
+    const links = [...navigation.querySelectorAll('a[href^="#"]')];
+    return {
+      article,
+      links,
+      panels: links.map((link) => document.getElementById(link.getAttribute('href').slice(1))),
+      pager: article.querySelector('[data-areas-pager]'),
+    };
+  });
+  let activeProject = 0;
+  let moveFocus = false;
+  let activatedLink = null;
+  const status = document.querySelector('[data-areas-status]');
+
+  const currentHash = () => {
+    try { return decodeURIComponent(location.hash.slice(1)); } catch (error) { return ''; }
+  };
+  const openLink = (project) => project.links.find((link) => link.getAttribute('aria-current')) || project.links[0];
+
+  const updatePager = (project, index) => {
+    if (!project.pager) return;
+    project.pager.hidden = false;
+    for (const direction of ['prev', 'next']) {
+      const button = project.pager.querySelector('[data-pager="' + direction + '"]');
+      const destination = project.links[index + (direction === 'next' ? 1 : -1)];
+      if (!destination) {
+        button.style.visibility = 'hidden';
+        continue;
+      }
+      button.style.visibility = '';
+      button.setAttribute('href', destination.getAttribute('href'));
+      button.querySelector('[data-pager-name]').textContent = destination.textContent;
+    }
+  };
+
+  const openPanel = (project, id) => {
+    const found = project.panels.findIndex((panel) => panel && panel.id === id);
+    const index = found === -1 ? 0 : found;
+    project.panels.forEach((panel, panelIndex) => {
+      if (panel) panel.hidden = panelIndex !== index;
+      const link = project.links[panelIndex];
+      if (panelIndex === index) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+    updatePager(project, index);
+    return project.panels[index];
+  };
+
+  const show = (id, scroll) => {
+    let target = null;
+    projects.forEach((project, projectIndex) => {
+      const ownsId = project.panels.some((panel) => panel && panel.id === id);
+      const kept = openLink(project);
+      const panel = openPanel(project, ownsId ? id : kept.getAttribute('href').slice(1));
+      if (ownsId) {
+        target = panel;
+        activeProject = projectIndex;
+      }
+    });
+    projects.forEach((project, projectIndex) => {
+      project.article.hidden = projectLinks.length > 0 && projectIndex !== activeProject;
+      const projectLink = projectLinks[projectIndex];
+      if (!projectLink) return;
+      projectLink.setAttribute('href', openLink(project).getAttribute('href'));
+      if (projectIndex === activeProject) projectLink.setAttribute('aria-current', 'true');
+      else projectLink.removeAttribute('aria-current');
+    });
+    const hash = openLink(projects[activeProject]).getAttribute('href');
+    document.querySelectorAll('a[data-lang]').forEach((link) => {
+      link.setAttribute('href', link.getAttribute('href').split('#')[0] + hash);
+    });
+    if (target && scroll) {
+      if (status) {
+        const link = openLink(projects[activeProject]);
+        status.textContent = status.getAttribute('data-opened-label') + ': ' + link.textContent;
+      }
+      if (moveFocus) target.querySelector('h3')?.focus({ preventScroll: true });
+      else if (activatedLink) activatedLink.focus({ preventScroll: true });
+      moveFocus = false;
+      activatedLink = null;
+      const top = target.getBoundingClientRect().top + window.pageYOffset - 24;
+      if (window.pageYOffset > top) window.scrollTo(0, top);
+    }
+  };
+
+  document.addEventListener('click', (event) => {
+    if (event.target?.closest?.('[data-areas-pager] a')) moveFocus = true;
+    activatedLink = event.target?.closest?.('[data-areas-nav] a, [data-projects-nav] a') ?? null;
+  });
+  window.addEventListener('hashchange', () => show(currentHash(), true));
+  show(currentHash(), currentHash() !== '');
 })();`

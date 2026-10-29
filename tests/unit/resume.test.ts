@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import resumeJson from '../../content/resume.json'
 import uiJson from '../../content/ui.json'
-import { parseResume, parseUi } from '../../src/schema/resume'
+import { parseResume, parseInterfaceTexts } from '../../src/schema/resume'
 
 const resume = parseResume(resumeJson)
 
 describe('resume.json', () => {
   it('valida contra o schema', () => {
     expect(() => parseResume(resumeJson)).not.toThrow()
-    expect(() => parseUi(uiJson)).not.toThrow()
+    expect(() => parseInterfaceTexts(uiJson)).not.toThrow()
   })
 
   it('rejeita idioma faltando', () => {
@@ -45,7 +45,7 @@ describe('projects (seção opcional)', () => {
     delete without.projects
     expect(parseResume(without).projects).toBeUndefined()
     expect(parseResume({ ...without, projects: [] }).projects).toEqual([])
-    expect(parseResume(resumeJson).projects).toHaveLength(1)
+    expect(parseResume(resumeJson).projects).toHaveLength(resumeJson.projects.length)
   })
 
   it('rejeita projeto com idioma faltando, data inválida ou fim antes do início', () => {

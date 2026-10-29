@@ -44,10 +44,10 @@ const work = z
     sections: z.array(workSection).optional(),
     highlights: z.array(highlight).optional(),
   })
-  .refine((w) => (w.sections?.length ?? 0) + (w.highlights?.length ?? 0) > 0, {
+  .refine((workItem) => (workItem.sections?.length ?? 0) + (workItem.highlights?.length ?? 0) > 0, {
     message: 'informe highlights ou sections',
   })
-  .refine((w) => w.endDate === undefined || w.endDate >= w.startDate, {
+  .refine((workItem) => workItem.endDate === undefined || workItem.endDate >= workItem.startDate, {
     message: 'endDate anterior a startDate',
   })
 
@@ -89,10 +89,15 @@ const diagram = z.strictObject({
   stages: z.array(flowStage).min(2),
 })
 
+/** Blocos com título curto e texto. */
+const topics = z.array(z.strictObject({ title: localized, text: localized })).min(1)
+
 const area = z.strictObject({
   title: localized,
-  summary: localized,
+  summary: localized.optional(),
   points: z.array(highlight).optional(),
+  /** Blocos com título curto e texto, para explicar a parte em tópicos em vez de marcadores. */
+  topics: topics.optional(),
   diagrams: z.array(diagram).optional(),
   snippets: z.array(snippet).optional(),
   gallery: z.array(galleryItem).min(1).optional(),
@@ -102,13 +107,21 @@ const area = z.strictObject({
 const project = z
   .strictObject({
     name: z.string().min(1),
+    /** Prefixo dos endereços (#slug-...) das partes; padrão: o nome em minúsculas, sem acentos. */
+    slug: z.string().regex(/^[a-z0-9-]+$/).optional(),
+    /** Título exibido nos dois idiomas; sem ele, mostra `name` (nome próprio, sem tradução). */
+    title: localized.optional(),
     roles: localized,
     startDate: yearMonth,
     endDate: yearMonth.optional(),
     description: localized,
+    /** Texto do card no currículo (substitui a descrição e os destaques, que ficam só na página do projeto). */
+    cardText: localized.optional(),
+    /** Diagramas da visão geral. */
+    diagrams: z.array(diagram).optional(),
     highlights: z.array(highlight).min(1),
     /** Seções temáticas, só na página do projeto (o card do currículo mostra apenas `highlights`). */
-    detailSections: z.array(z.strictObject({ title: localized, items: z.array(highlight).min(1) })).optional(),
+    detailSections: z.array(z.strictObject({ title: localized, topics: topics })).optional(),
     /** Nota em destaque na página do projeto (ex.: o alcance do que foi descrito). */
     notice: localized.optional(),
     /** Partes do sistema (barra lateral da página do projeto), cada uma com explicação e telas. */
@@ -117,7 +130,7 @@ const project = z
     galleryNote: localized.optional(),
     url: z.url().optional(),
   })
-  .refine((p) => p.endDate === undefined || p.endDate >= p.startDate, {
+  .refine((project) => project.endDate === undefined || project.endDate >= project.startDate, {
     message: 'endDate anterior a startDate',
   })
 
@@ -126,6 +139,8 @@ export const resumeSchema = z.strictObject({
     locales: z.tuple([z.literal('pt'), z.literal('en')]),
     defaultLocale: z.enum(LOCALES),
     pdf: z.strictObject({ pt: z.string().startsWith('/'), en: z.string().startsWith('/') }),
+    /** Repositório público do código deste site. */
+    repository: z.url().optional(),
   }),
   basics: z.strictObject({
     name: z.string().min(1),
@@ -170,9 +185,26 @@ export type Diagram = NonNullable<Area['diagrams']>[number]
 export type Snippet = NonNullable<Area['snippets']>[number]
 
 /** A aba/página Projetos só existe se algum projeto tiver partes do sistema (tirar o item do JSON remove tudo). */
-export const showcaseProjects = (resume: Resume): Project[] => (resume.projects ?? []).filter((p) => (p.areas?.length ?? 0) > 0)
+export const showcaseProjects = (resume: Resume): Project[] =>
+  (resume.projects ?? []).filter((project) => (project.areas?.length ?? 0) > 0)
 
-export function parseResume(data: unknown): Resume {
+/** Transforma um texto em slug de URL: minúsculas, sem acentos, com hífens entre as palavras. */
+export const toSlug = (text: string): string =>
+  text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+
+/** Prefixo dos endereços (`#slug-parte`) de um projeto. */
+export const projectSlug = (project: Project): string => project.slug ?? toSlug(project.name)
+
+/** Título do projeto no idioma pedido; sem `title`, o nome próprio. */
+export const projectTitle = (project: Project, locale: Locale): string => project.title?.[locale] ?? project.name
+
+/** Valida o conteúdo de `resume.json`; qualquer erro derruba o build com a lista dos campos inválidos. */
+export const parseResume = (data: unknown): Resume => {
   const result = resumeSchema.safeParse(data)
   if (!result.success) {
     throw new Error(`resume.json inválido:\n${z.prettifyError(result.error)}`)
@@ -180,12 +212,12 @@ export function parseResume(data: unknown): Resume {
   return result.data
 }
 
-const uiSchema = z.record(
+const interfaceTextsSchema = z.record(
   z.string(),
   z.strictObject({ pt: z.string().min(1), en: z.string().min(1) }),
 )
-export type UiStrings = z.infer<typeof uiSchema>
+/** Textos de interface (`content/ui.json`), por chave e idioma. */
+export type InterfaceTexts = z.infer<typeof interfaceTextsSchema>
 
-export function parseUi(data: unknown): UiStrings {
-  return uiSchema.parse(data)
-}
+/** Valida `content/ui.json`. */
+export const parseInterfaceTexts = (data: unknown): InterfaceTexts => interfaceTextsSchema.parse(data)

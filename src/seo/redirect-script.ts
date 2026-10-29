@@ -1,25 +1,29 @@
 /**
- * Script inline (sem dependências) que roda antes da primeira pintura:
- *  - grava a escolha do botão PT|EN no localStorage (try/catch);
- *  - na página PT (`data-en-url` no <html>), se o idioma do navegador/preferência for EN,
- *    redireciona para a versão EN. Só decide uma vez: a escolha fica salva.
- * A regra de detecção espelha `detectLocale` em src/i18n: pt* → PT, resto → EN.
+ * Script inline, sem dependências, executado antes da primeira pintura:
+ * - grava no `localStorage` o idioma escolhido no botão PT | EN;
+ * - na página em português (atributo `data-en-url` no `<html>`), redireciona para a versão em inglês quando a
+ *   preferência salva ou o idioma do navegador for inglês, preservando o `#` da URL. A decisão acontece uma vez,
+ *   porque a escolha fica salva.
+ *
+ * A detecção segue `detectLocale`, em `src/internationalization`: `pt*` vira português e o resto, inglês.
+ * O acesso ao `localStorage` fica em `try/catch` para funcionar com o armazenamento bloqueado.
  */
-export const redirectScript = `(function(){
-var d=document.documentElement;
-document.addEventListener('click',function(e){
-var a=e.target&&e.target.closest&&e.target.closest('[data-lang]');
-if(a){try{localStorage.setItem('lang',a.getAttribute('data-lang'))}catch(_){}}
-});
-var en=d.getAttribute('data-en-url');
-if(!en)return;
-var saved=null;
-try{saved=localStorage.getItem('lang')}catch(_){}
-var target=saved;
-if(target!=='pt'&&target!=='en'){
-var l=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||''];
-target=/^pt/i.test(l[0]||'')?'pt':'en';
-try{localStorage.setItem('lang',target)}catch(_){}
-}
-if(target==='en')location.replace(en+location.hash);
+export const redirectScript = `(() => {
+  const root = document.documentElement;
+  document.addEventListener('click', (event) => {
+    const languageLink = event.target?.closest?.('[data-lang]');
+    if (!languageLink) return;
+    try { localStorage.setItem('lang', languageLink.getAttribute('data-lang')); } catch (error) {}
+  });
+  const englishUrl = root.getAttribute('data-en-url');
+  if (!englishUrl) return;
+  let savedLanguage = null;
+  try { savedLanguage = localStorage.getItem('lang'); } catch (error) {}
+  let targetLanguage = savedLanguage;
+  if (targetLanguage !== 'pt' && targetLanguage !== 'en') {
+    const languages = navigator.languages?.length ? navigator.languages : [navigator.language || ''];
+    targetLanguage = /^pt/i.test(languages[0] || '') ? 'pt' : 'en';
+    try { localStorage.setItem('lang', targetLanguage); } catch (error) {}
+  }
+  if (targetLanguage === 'en') location.replace(englishUrl + location.hash);
 })();`

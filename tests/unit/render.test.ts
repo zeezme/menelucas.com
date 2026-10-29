@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { resume, ui } from '../../src/content'
-import { detectLocale, firstSentence, formatYearMonth, localePath } from '../../src/i18n'
+import { interfaceTexts, resume } from '../../src/content'
+import { detectLocale, firstSentence, formatYearMonth, localePath } from '../../src/internationalization'
 import { renderPage } from '../../src/render'
 import { buildHeadMeta, buildRobots, buildSitemap, skillKeywords } from '../../src/seo/head'
 import { siteConfig } from '../../src/site'
 
 const site = siteConfig({})
-const galleryItems = (resume.projects?.[0]?.areas ?? []).flatMap((a) => a.gallery ?? [])
-const html = (locale: 'pt' | 'en') => renderPage({ resume, ui, locale, site, css: '' })
+const showcase = (resume.projects ?? []).filter((p) => (p.areas?.length ?? 0) > 0)
+const allAreas = showcase.flatMap((p) => p.areas ?? [])
+const galleryItems = allAreas.flatMap((a) => a.gallery ?? [])
+const html = (locale: 'pt' | 'en') => renderPage({ resume, interfaceTexts, locale, site, css: '' })
 
 describe('i18n helpers', () => {
   it('detecta pt* como PT e o resto como EN', () => {
@@ -59,7 +61,7 @@ describe('SEO para recrutadores', () => {
   })
 
   it('staging recebe noindex; produção é indexável', () => {
-    const staged = renderPage({ resume, ui, locale: 'pt', site: siteConfig({ BASE_PATH: '/staging/' }), css: '' })
+    const staged = renderPage({ resume, interfaceTexts, locale: 'pt', site: siteConfig({ BASE_PATH: '/staging/' }), css: '' })
     expect(staged).toContain('content="noindex, nofollow"')
     expect(html('pt')).toContain('content="index, follow, max-image-preview:large"')
   })
@@ -79,7 +81,7 @@ describe('página renderizada', () => {
     expect(out).toContain('<meta charset="utf-8"/>')
     expect(out).not.toMatch(/ (charSet|hrefLang|fetchPriority|crossOrigin|tabIndex|dateTime)=/)
     expect(out).toContain(`content="https://menelucas.com/banner-${locale}.jpg"`)
-    const versioned = renderPage({ resume, ui, locale, site: { ...site, ogVersions: { [locale]: 'abc12345' } }, css: '' })
+    const versioned = renderPage({ resume, interfaceTexts, locale, site: { ...site, openGraphVersions: { [locale]: 'abc12345' } }, css: '' })
     expect(versioned).toContain(`content="https://menelucas.com/banner-${locale}-abc12345.jpg"`)
     expect(out).toContain(`property="og:image:secure_url" content="https://menelucas.com/banner-${locale}.jpg"`)
     expect(out).toContain('property="og:image:type" content="image/jpeg"')
@@ -104,7 +106,7 @@ describe('página renderizada', () => {
   })
 
   it('respeita BASE_PATH nos links de idioma e ativos', () => {
-    const staged = renderPage({ resume, ui, locale: 'pt', site: siteConfig({ BASE_PATH: 'staging' }), css: '' })
+    const staged = renderPage({ resume, interfaceTexts, locale: 'pt', site: siteConfig({ BASE_PATH: 'staging' }), css: '' })
     expect(staged).toContain('href="/staging/en/"')
     expect(staged).toContain('src="/staging/avatar.webp"')
   })
@@ -129,14 +131,14 @@ describe('seção Projetos', () => {
     const without = structuredClone(resume)
     delete without.projects
     for (const locale of ['pt', 'en'] as const) {
-      expect(sectionOf(renderPage({ resume: without, ui, locale, site, css: '' }))).toBe('')
-      expect(sectionOf(renderPage({ resume: { ...without, projects: [] }, ui, locale, site, css: '' }))).toBe('')
+      expect(sectionOf(renderPage({ resume: without, interfaceTexts, locale, site, css: '' }))).toBe('')
+      expect(sectionOf(renderPage({ resume: { ...without, projects: [] }, interfaceTexts, locale, site, css: '' }))).toBe('')
     }
   })
 })
 
 describe('página Projetos', () => {
-  const projectsHtml = (locale: 'pt' | 'en', r = resume) => renderPage({ resume: r, ui, locale, site, css: '', page: 'projects' })
+  const projectsHtml = (locale: 'pt' | 'en', r = resume) => renderPage({ resume: r, interfaceTexts, locale, site, css: '', page: 'projects' })
 
   it.each([
     ['pt', 'Projetos', 'Currículo'],
@@ -154,16 +156,17 @@ describe('página Projetos', () => {
       expect(img).toMatch(/ width="\d+"/)
       expect(img).toMatch(/ height="\d+"/)
       expect(img).toContain('loading="lazy"')
-      expect(img).toMatch(/src="\/projetos\/ipsiq\/\d\d-[a-z-]+\.webp"/)
+      expect(img).toMatch(/src="\/projetos\/[a-z]+\/[a-z0-9-]+\.webp"/)
     }
   })
 
   it.each(['pt', 'en'] as const)('%s: barra lateral com as partes do sistema, cada uma com seu painel', (locale) => {
     const out = projectsHtml(locale)
     const h3 = [...out.matchAll(/<h3[^>]*>(.*?)<\/h3>/g)].map((m) => m[1])
-    expect(h3).toHaveLength(1 + (resume.projects?.[0]?.areas?.length ?? 0))
-    const nav = /<nav[^>]*data-areas-nav[^>]*>.*?<\/nav>/s.exec(out)?.[0] ?? ''
-    const links = [...nav.matchAll(/<a href="#(ipsiq-[a-z0-9-]+)"[^>]*>(.*?)<\/a>/g)]
+    expect(h3).toHaveLength(allAreas.length + showcase.length)
+    const navs = [...out.matchAll(/<nav[^>]*data-areas-nav[^>]*>.*?<\/nav>/gs)].map((m) => m[0])
+    expect(navs).toHaveLength(showcase.length)
+    const links = navs.flatMap((nav) => [...nav.matchAll(/<a href="#([a-z0-9-]+)"[^>]*>(.*?)<\/a>/g)])
     expect(links.map((m) => m[2])).toEqual(h3)
     for (const m of links) expect(out).toContain(`<section id="${m[1]}"`)
   })
@@ -171,16 +174,15 @@ describe('página Projetos', () => {
   it.each(['pt', 'en'] as const)('%s: visão geral com as seções temáticas e a nota', (locale) => {
     const out = projectsHtml(locale)
     const h4 = [...out.matchAll(/<h4[^>]*>(.*?)<\/h4>/g)].map((m) => m[1])
-    expect(h4).toHaveLength(resume.projects?.[0]?.detailSections?.length ?? 0)
-    const aside = /<aside[^>]*>.*?<\/aside>/s.exec(out)?.[0] ?? ''
-    expect(aside.length > 0).toBe(Boolean(resume.projects?.[0]?.notice))
+    expect(h4).toHaveLength(showcase.flatMap((p) => p.detailSections ?? []).length)
+    const asides = out.match(/<aside[ >]/g) ?? []
+    expect(asides).toHaveLength(showcase.filter((p) => p.notice).length)
   })
 
   it.each(['pt', 'en'] as const)('%s: blocos de código rolam com teclado e cada diagrama vira uma lista ordenada', (locale) => {
     const out = projectsHtml(locale)
-    const areas = resume.projects?.[0]?.areas ?? []
-    const snippets = areas.flatMap((a) => a.snippets ?? []).length
-    const diagrams = areas.flatMap((a) => a.diagrams ?? []).length
+    const snippets = allAreas.flatMap((a) => a.snippets ?? []).length
+    const diagrams = allAreas.flatMap((a) => a.diagrams ?? []).length + showcase.flatMap((p) => p.diagrams ?? []).length
     expect(out.match(/<pre[ >]/g) ?? []).toHaveLength(snippets)
     expect(out.match(/<pre tabindex="0"/g) ?? []).toHaveLength(snippets)
     expect(out.match(/<figure[^>]*><div[^>]*><p[^>]*>[^<]*<\/p><ol/g) ?? []).toHaveLength(diagrams)
@@ -207,18 +209,54 @@ describe('página Projetos', () => {
     const without = structuredClone(resume)
     delete without.projects
     for (const locale of ['pt', 'en'] as const) {
-      expect(renderPage({ resume: without, ui, locale, site, css: '' })).not.toContain(
+      expect(renderPage({ resume: without, interfaceTexts, locale, site, css: '' })).not.toContain(
         'aria-label="' + (locale === 'pt' ? 'Seções do site' : 'Site sections') + '"',
       )
     }
     const noAreas = structuredClone(resume)
-    delete noAreas.projects?.[0]?.areas
-    expect(renderPage({ resume: noAreas, ui, locale: 'pt', site, css: '' })).not.toContain('href="/projetos/"')
+    for (const p of noAreas.projects ?? []) delete p.areas
+    expect(renderPage({ resume: noAreas, interfaceTexts, locale: 'pt', site, css: '' })).not.toContain('href="/projetos/"')
   })
 
   it('imagens de public/ existem', async () => {
     const { existsSync } = await import('node:fs')
     expect(galleryItems.length).toBeGreaterThan(0)
     for (const item of galleryItems) expect(existsSync(`public/${item.src}`), item.src).toBe(true)
+  })
+})
+
+describe('projeto confidencial', () => {
+  const secret = showcase.filter((p) => p.slug === 'clinica')
+
+  it('existe e vem depois do primeiro projeto', () => {
+    expect(secret.length).toBeGreaterThan(0)
+    expect(showcase.indexOf(secret[0] as (typeof showcase)[number])).toBeGreaterThan(0)
+  })
+
+  it('o card no currículo leva à seção do projeto em /projetos/ e /en/projects/', () => {
+    for (const [locale, base] of [['pt', '/projetos/'], ['en', '/en/projects/']] as const) {
+      const out = html(locale)
+      for (const p of secret) expect(out).toContain(`href="${base}#${p.slug}-overview"`)
+    }
+  })
+
+  it('nada dele entra no JSON-LD', () => {
+    const titles = secret.flatMap((p) => [p.name, p.title?.pt ?? '', p.title?.en ?? '', p.cardText?.pt ?? '', p.cardText?.en ?? ''].filter(Boolean))
+    for (const page of ['resume', 'projects'] as const) {
+      for (const locale of ['pt', 'en'] as const) {
+        const meta = buildHeadMeta(resume, locale, site, page, 'Projetos')
+        const ld = JSON.stringify(meta.jsonLd)
+        for (const t of titles) expect(ld).not.toContain(t)
+      }
+    }
+  })
+})
+
+describe('termos do projeto confidencial', () => {
+  it('as páginas e o conteúdo só citam o nome do produto, e só como "Luhmera"', () => {
+    const pages = (['pt', 'en'] as const).flatMap((locale) => [html(locale), renderPage({ resume, interfaceTexts, locale, site, css: '', page: 'projects' })])
+    for (const text of [...pages, JSON.stringify(resume), JSON.stringify(interfaceTexts)]) {
+      expect(text.replaceAll('Luhmera', '')).not.toMatch(/luhmera|LM Solutions/i)
+    }
   })
 })
