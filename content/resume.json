@@ -424,18 +424,36 @@
             "pt": "Qualidade e entrega",
             "en": "Quality and delivery"
           },
-          "items": [
+          "topics": [
             {
-              "pt": "Mais de 500 testes automatizados, integração contínua a cada push e deploy automático na AWS.",
-              "en": "Over 500 automated tests, continuous integration on every push and automatic AWS deploys."
+              "title": {
+                "pt": "Testes e entrega",
+                "en": "Tests and delivery"
+              },
+              "text": {
+                "pt": "Mais de 500 testes automatizados, integração contínua a cada push e deploy automático na AWS.",
+                "en": "Over 500 automated tests, continuous integration on every push and automatic AWS deploys."
+              }
             },
             {
-              "pt": "36 migrações de banco, versionadas e com reversão.",
-              "en": "36 database migrations, versioned and reversible."
+              "title": {
+                "pt": "Migrações versionadas",
+                "en": "Versioned migrations"
+              },
+              "text": {
+                "pt": "36 migrações de banco, versionadas e com reversão.",
+                "en": "36 database migrations, versioned and reversible."
+              }
             },
             {
-              "pt": "O isolamento entre profissionais (nenhum acessa dados de outro, nem pela API) é provado por testes de integração no CI.",
-              "en": "Isolation between professionals (none can reach another's data, not even through the API) is proven by integration tests in CI."
+              "title": {
+                "pt": "Isolamento provado por testes",
+                "en": "Isolation proven by tests"
+              },
+              "text": {
+                "pt": "O isolamento entre profissionais (nenhum acessa dados de outro, nem pela API) é provado por testes de integração no CI.",
+                "en": "Isolation between professionals (none can reach another's data, not even through the API) is proven by integration tests in CI."
+              }
             }
           ]
         },
@@ -444,22 +462,46 @@
             "pt": "Segurança e controle de acesso",
             "en": "Security and access control"
           },
-          "items": [
+          "topics": [
             {
-              "pt": "Acesso fechado por padrão: toda rota declara quem pode chamá-la, e os papéis são conjuntos de permissões, com permissões extras por pessoa, sempre com motivo e histórico.",
-              "en": "Closed by default: every route declares who may call it, and roles are sets of permissions, with per-person extra permissions, always with a reason and history."
+              "title": {
+                "pt": "Acesso fechado por padrão",
+                "en": "Closed by default"
+              },
+              "text": {
+                "pt": "Toda rota declara quem pode chamá-la, e os papéis são conjuntos de permissões, com permissões extras por pessoa, sempre com motivo e histórico.",
+                "en": "Every route declares who may call it, and roles are sets of permissions, with per-person extra permissions, always with a reason and history."
+              }
             },
             {
-              "pt": "Perfil somente leitura que mostra o paciente só pelo código e oculta nome, e-mail, telefone e CPF, com um teste que percorre todas as rotas.",
-              "en": "A read-only profile that shows the patient only by code and hides name, e-mail, phone and ID number, with a test that walks every route."
+              "title": {
+                "pt": "Perfil somente leitura",
+                "en": "Read-only profile"
+              },
+              "text": {
+                "pt": "Perfil somente leitura que mostra o paciente só pelo código e oculta nome, e-mail, telefone e CPF, com um teste que percorre todas as rotas.",
+                "en": "A read-only profile that shows the patient only by code and hides name, e-mail, phone and ID number, with a test that walks every route."
+              }
             },
             {
-              "pt": "Sessão com token de renovação em cookie HttpOnly, bloqueio de tentativas de login, limites de reservas por IP e por paciente e chaves de terceiros criptografadas.",
-              "en": "Sessions with a refresh token in an HttpOnly cookie, login-attempt lockout, booking limits per IP and per patient, and third-party keys encrypted."
+              "title": {
+                "pt": "Sessão e limites",
+                "en": "Sessions and limits"
+              },
+              "text": {
+                "pt": "Sessão com token de renovação em cookie HttpOnly, bloqueio de tentativas de login, limites de reservas por IP e por paciente e chaves de terceiros criptografadas.",
+                "en": "Sessions with a refresh token in an HttpOnly cookie, login-attempt lockout, booking limits per IP and per patient, and third-party keys encrypted."
+              }
             },
             {
-              "pt": "Auditoria de tudo o que muda no sistema, gravada na mesma transação, com filtros por período, pessoa, médico e código do paciente.",
-              "en": "Audit of everything that changes in the system, written in the same transaction, filterable by period, person, doctor and patient code."
+              "title": {
+                "pt": "Auditoria",
+                "en": "Audit trail"
+              },
+              "text": {
+                "pt": "Auditoria de tudo o que muda no sistema, gravada na mesma transação, com filtros por período, pessoa, médico e código do paciente.",
+                "en": "Audit of everything that changes in the system, written in the same transaction, filterable by period, person, doctor and patient code."
+              }
             }
           ]
         },
@@ -468,22 +510,46 @@
             "pt": "Privacidade e LGPD",
             "en": "Privacy and LGPD"
           },
-          "items": [
+          "topics": [
             {
-              "pt": "Minimização de dados: nada de paciente em logs, URLs ou eventos de anúncio, e o CPF completo não é guardado, apenas mascarado e em hash com chave para busca.",
-              "en": "Data minimization: no patient data in logs, URLs or ad events, and the full ID number is not stored, only masked and as a keyed hash for lookups."
+              "title": {
+                "pt": "Minimização de dados",
+                "en": "Data minimization"
+              },
+              "text": {
+                "pt": "Nada de paciente em logs, URLs ou eventos de anúncio, e o CPF completo não é guardado, apenas mascarado e em hash com chave para busca.",
+                "en": "No patient data in logs, URLs or ad events, and the full ID number is not stored, only masked and as a keyed hash for lookups."
+              }
             },
             {
-              "pt": "Dados para receita coletados só depois do pagamento, criptografados e com cada acesso do médico auditado; a plataforma não emite receitas.",
-              "en": "Prescription data is collected only after payment, encrypted, with each doctor access audited; the platform does not issue prescriptions."
+              "title": {
+                "pt": "Dados de receita",
+                "en": "Prescription data"
+              },
+              "text": {
+                "pt": "Dados para receita coletados só depois do pagamento, criptografados e com cada acesso do médico auditado; a plataforma não emite receitas.",
+                "en": "Prescription data is collected only after payment, encrypted, with each doctor access audited; the platform does not issue prescriptions."
+              }
             },
             {
-              "pt": "Direitos do titular: anonimização de paciente sob demanda, origem de anúncio apagada depois de 180 dias e backup do banco criptografado, com retenção limitada.",
-              "en": "Data subject rights: on-demand patient anonymization, ad source erased after 180 days, and an encrypted database backup with limited retention."
+              "title": {
+                "pt": "Direitos do titular",
+                "en": "Data subject rights"
+              },
+              "text": {
+                "pt": "Anonimização de paciente sob demanda, origem de anúncio apagada depois de 180 dias e backup do banco criptografado, com retenção limitada.",
+                "en": "On-demand patient anonymization, ad source erased after 180 days, and an encrypted database backup with limited retention."
+              }
             },
             {
-              "pt": "Cookies: nenhum pixel antes do aceite, escolha por categoria e consentimento registrado; e-mail e telefone em hash não vão para as plataformas de anúncio.",
-              "en": "Cookies: no pixel before consent, choice by category and recorded consent; hashed e-mail and phone are not sent to ad platforms."
+              "title": {
+                "pt": "Cookies",
+                "en": "Cookies"
+              },
+              "text": {
+                "pt": "Nenhum pixel antes do aceite, escolha por categoria e consentimento registrado; e-mail e telefone em hash não vão para as plataformas de anúncio.",
+                "en": "No pixel before consent, choice by category and recorded consent; hashed e-mail and phone are not sent to ad platforms."
+              }
             }
           ]
         },
@@ -492,22 +558,46 @@
             "pt": "Regras do CFM e dos conselhos (CRM)",
             "en": "CFM and professional-council rules (CRM)"
           },
-          "items": [
+          "topics": [
             {
-              "pt": "Cada profissional aparece com o registro do seu conselho (CRM, CRP ou CRN); psicólogos e nutricionistas não aparecem como médicos nem com especialidade médica.",
-              "en": "Each professional is shown with their council registration (CRM, CRP or CRN); psychologists and nutritionists are not shown as doctors or with a medical specialty."
+              "title": {
+                "pt": "Registro no conselho",
+                "en": "Council registration"
+              },
+              "text": {
+                "pt": "Cada profissional aparece com o registro do seu conselho (CRM, CRP ou CRN); psicólogos e nutricionistas não aparecem como médicos nem com especialidade médica.",
+                "en": "Each professional is shown with their council registration (CRM, CRP or CRN); psychologists and nutritionists are not shown as doctors or with a medical specialty."
+              }
             },
             {
-              "pt": "A especialidade médica só é exibida com RQE, conforme as regras do CFM; sem RQE o profissional aparece apenas como \"Médico\".",
-              "en": "A medical specialty is only displayed with an RQE, following CFM rules; without an RQE the professional appears simply as \"Doctor\"."
+              "title": {
+                "pt": "Especialidade e RQE",
+                "en": "Specialty and RQE"
+              },
+              "text": {
+                "pt": "A especialidade médica só é exibida com RQE, conforme as regras do CFM; sem RQE o profissional aparece apenas como \"Médico\".",
+                "en": "A medical specialty is only displayed with an RQE, following CFM rules; without an RQE the professional appears simply as \"Doctor\"."
+              }
             },
             {
-              "pt": "O rótulo público de cada perfil segue a Resolução CFM 2.336/2023, sobre publicidade médica.",
-              "en": "Each public profile's label follows CFM Resolution 2,336/2023, on medical advertising."
+              "title": {
+                "pt": "Rótulo público",
+                "en": "Public label"
+              },
+              "text": {
+                "pt": "O rótulo público de cada perfil segue a Resolução CFM 2.336/2023, sobre publicidade médica.",
+                "en": "Each public profile's label follows CFM Resolution 2,336/2023, on medical advertising."
+              }
             },
             {
-              "pt": "Um profissional só vai para o site depois de completar o checklist de ativação e de a equipe ativá-lo.",
-              "en": "A professional only goes live on the site after completing the activation checklist and being activated by the team."
+              "title": {
+                "pt": "Ativação do profissional",
+                "en": "Professional activation"
+              },
+              "text": {
+                "pt": "Um profissional só vai para o site depois de completar o checklist de ativação e de a equipe ativá-lo.",
+                "en": "A professional only goes live on the site after completing the activation checklist and being activated by the team."
+              }
             }
           ]
         },
@@ -516,14 +606,26 @@
             "pt": "Infraestrutura na AWS",
             "en": "AWS infrastructure"
           },
-          "items": [
+          "topics": [
             {
-              "pt": "Segredos no SSM Parameter Store, e-mails transacionais no SES e fotos no S3 com URLs assinadas.",
-              "en": "Secrets in SSM Parameter Store, transactional e-mails in SES and photos in S3 with signed URLs."
+              "title": {
+                "pt": "Segredos, e-mail e fotos",
+                "en": "Secrets, email and photos"
+              },
+              "text": {
+                "pt": "Segredos no SSM Parameter Store, e-mails transacionais no SES e fotos no S3 com URLs assinadas.",
+                "en": "Secrets in SSM Parameter Store, transactional e-mails in SES and photos in S3 with signed URLs."
+              }
             },
             {
-              "pt": "Backup diário do banco para o S3, criptografado e com retenção de 30 dias, e deploy automático a cada push na branch principal.",
-              "en": "Daily database backup to S3, encrypted with 30-day retention, and automatic deploys on every push to the main branch."
+              "title": {
+                "pt": "Backup e deploy",
+                "en": "Backup and deploy"
+              },
+              "text": {
+                "pt": "Backup diário do banco para o S3, criptografado e com retenção de 30 dias, e deploy automático a cada push na branch principal.",
+                "en": "Daily database backup to S3, encrypted with 30-day retention, and automatic deploys on every push to the main branch."
+              }
             }
           ]
         }
@@ -546,16 +648,6 @@
             "pt": "O que o paciente vê: a página inicial e a página de cada profissional, com o agendamento em um só fluxo.",
             "en": "What the patient sees: the home page and each professional's page, with booking in a single flow."
           },
-          "points": [
-            {
-              "pt": "O horário escolhido fica reservado por um tempo e há proteção contra reserva dupla.",
-              "en": "The chosen slot is held for a while, with protection against double booking."
-            },
-            {
-              "pt": "O pagamento é feito no Pix na hora do agendamento, e a consulta é confirmada na hora.",
-              "en": "Payment is made via Pix at booking time, and the appointment is confirmed right away."
-            }
-          ],
           "gallery": [
             {
               "src": "projetos/ipsiq/01-home.webp",
@@ -584,6 +676,28 @@
                 "en": "Booking: pick the day and time, and confirm in the same flow."
               }
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Reserva temporária",
+                "en": "Temporary hold"
+              },
+              "text": {
+                "pt": "O horário escolhido fica reservado por um tempo e há proteção contra reserva dupla.",
+                "en": "The chosen slot is held for a while, with protection against double booking."
+              }
+            },
+            {
+              "title": {
+                "pt": "Pagamento no agendamento",
+                "en": "Payment at booking"
+              },
+              "text": {
+                "pt": "O pagamento é feito no Pix na hora do agendamento, e a consulta é confirmada na hora.",
+                "en": "Payment is made via Pix at booking time, and the appointment is confirmed right away."
+              }
+            }
           ]
         },
         {
@@ -595,24 +709,6 @@
             "pt": "Cada profissional entra com o próprio login e vê só os próprios dados: agenda, consultas, notas e horários.",
             "en": "Each professional signs in with their own login and sees only their own data: agenda, appointments, invoices and schedule."
           },
-          "points": [
-            {
-              "pt": "Nenhum profissional acessa dados de outro, nem pela API: isso é provado por testes de integração no CI.",
-              "en": "No professional can reach another's data, not even through the API: this is proven by integration tests in CI."
-            },
-            {
-              "pt": "A consulta é iniciada pelo botão Iniciar, que só é liberado perto do horário marcado.",
-              "en": "The appointment is started with the Start button, which is only enabled close to the scheduled time."
-            },
-            {
-              "pt": "Com a Google Agenda conectada, cada consulta ganha uma sala exclusiva do Meet, criada na agenda do próprio profissional; o evento leva só \"Consulta iPsiq\" e o primeiro nome do paciente.",
-              "en": "With Google Calendar connected, each appointment gets its own Meet room, created in the professional's own calendar; the event carries only \"iPsiq appointment\" and the patient's first name."
-            },
-            {
-              "pt": "Horários por dia da semana e folgas; mudanças não afetam consultas já marcadas.",
-              "en": "Weekly availability and time off; changes do not affect appointments already booked."
-            }
-          ],
           "gallery": [
             {
               "src": "projetos/ipsiq/10-medico-agenda.webp",
@@ -653,6 +749,48 @@
                 "en": "Doctor area: availability by day and time off, which the patient sees when booking."
               }
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Isolamento entre profissionais",
+                "en": "Isolation between professionals"
+              },
+              "text": {
+                "pt": "Nenhum profissional acessa dados de outro, nem pela API: isso é provado por testes de integração no CI.",
+                "en": "No professional can reach another's data, not even through the API: this is proven by integration tests in CI."
+              }
+            },
+            {
+              "title": {
+                "pt": "Início da consulta",
+                "en": "Starting the appointment"
+              },
+              "text": {
+                "pt": "A consulta é iniciada pelo botão Iniciar, que só é liberado perto do horário marcado.",
+                "en": "The appointment is started with the Start button, which is only enabled close to the scheduled time."
+              }
+            },
+            {
+              "title": {
+                "pt": "Sala do Meet",
+                "en": "Meet room"
+              },
+              "text": {
+                "pt": "Com a Google Agenda conectada, cada consulta ganha uma sala exclusiva do Meet, criada na agenda do próprio profissional; o evento leva só \"Consulta iPsiq\" e o primeiro nome do paciente.",
+                "en": "With Google Calendar connected, each appointment gets its own Meet room, created in the professional's own calendar; the event carries only \"iPsiq appointment\" and the patient's first name."
+              }
+            },
+            {
+              "title": {
+                "pt": "Horários e folgas",
+                "en": "Hours and days off"
+              },
+              "text": {
+                "pt": "Horários por dia da semana e folgas; mudanças não afetam consultas já marcadas.",
+                "en": "Weekly availability and time off; changes do not affect appointments already booked."
+              }
+            }
           ]
         },
         {
@@ -664,20 +802,6 @@
             "pt": "A equipe acompanha agenda, consultas, médicos e horários em um só lugar.",
             "en": "The team follows the agenda, appointments, doctors and schedules in one place."
           },
-          "points": [
-            {
-              "pt": "Busca de consultas por nome, e-mail, telefone, CPF ou código do paciente, com filtros por situação e médico.",
-              "en": "Appointment search by name, e-mail, phone, ID number or patient code, with status and doctor filters."
-            },
-            {
-              "pt": "Ações rápidas na agenda: concluir, registrar falta, remarcar e cancelar; remarcar exige um motivo, que vai para a auditoria.",
-              "en": "Quick agenda actions: complete, mark no-show, reschedule and cancel; rescheduling requires a reason, which goes to the audit trail."
-            },
-            {
-              "pt": "Paleta de comandos (Ctrl K) para ir direto a qualquer tela ou configuração.",
-              "en": "Command palette (Ctrl K) to jump straight to any screen or setting."
-            }
-          ],
           "gallery": [
             {
               "src": "projetos/ipsiq/03-agenda.webp",
@@ -731,6 +855,38 @@
                 "en": "Command palette (Ctrl K) to jump straight to any screen or setting."
               }
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Busca e filtros",
+                "en": "Search and filters"
+              },
+              "text": {
+                "pt": "Busca de consultas por nome, e-mail, telefone, CPF ou código do paciente, com filtros por situação e médico.",
+                "en": "Appointment search by name, e-mail, phone, ID number or patient code, with status and doctor filters."
+              }
+            },
+            {
+              "title": {
+                "pt": "Ações rápidas na agenda",
+                "en": "Quick actions on the agenda"
+              },
+              "text": {
+                "pt": "Concluir, registrar falta, remarcar e cancelar; remarcar exige um motivo, que vai para a auditoria.",
+                "en": "Quick agenda actions: complete, mark no-show, reschedule and cancel; rescheduling requires a reason, which goes to the audit trail."
+              }
+            },
+            {
+              "title": {
+                "pt": "Paleta de comandos",
+                "en": "Command palette"
+              },
+              "text": {
+                "pt": "Paleta de comandos (Ctrl K) para ir direto a qualquer tela ou configuração.",
+                "en": "Command palette (Ctrl K) to jump straight to any screen or setting."
+              }
+            }
           ]
         },
         {
@@ -742,44 +898,6 @@
             "pt": "RBAC por permissões: roles são conjuntos de permissões de recurso e ação, o acesso é fechado por padrão e cada rota declara quem pode chamá-la.",
             "en": "Permission-based RBAC: roles are sets of resource-and-action permissions, access is closed by default and every route declares who may call it."
           },
-          "points": [
-            {
-              "pt": "Uma permissão é um par recurso:ação, uma role é um conjunto de permissões e cada pessoa tem uma role; a cada requisição o guard junta a role com as permissões extras da pessoa que não foram retiradas.",
-              "en": "A permission is a resource:action pair, a role is a set of permissions and each person has one role; on every request the guard combines the role with the person's extra permissions that have not been revoked."
-            },
-            {
-              "pt": "O catálogo fica num arquivo tipado: o decorator só aceita permissões que existem. Na subida, o app sincroniza o catálogo com o banco (cria e remove permissões) com auditoria.",
-              "en": "The catalog lives in a typed file: the decorator only accepts permissions that exist. On startup, the app syncs the catalog with the database (creates and removes permissions), with auditing."
-            },
-            {
-              "pt": "Audiência: cada role e cada permissão é da equipe ou do médico, e as permissões de médico (own-*) só entram em role de médico, o que o banco também garante. O isolamento por médico fica na rota: a permissão diz o que a pessoa pode fazer, não de quem.",
-              "en": "Audience: every role and permission belongs to staff or to doctors, and doctor permissions (own-*) can only join doctor roles, which the database also enforces. Per-doctor isolation lives in the route: the permission says what a person may do, not on whose data."
-            },
-            {
-              "pt": "Roles de sistema: o Administrador é fixo (sempre todas as permissões, sem edição, para ninguém se trancar para fora); Médico e Product Manager são ajustáveis pela tela, e o arquivo é só o ponto de partida: o sync nunca desfaz o que foi mudado ali. Nenhuma pode ser excluída ou renomeada.",
-              "en": "System roles: the Administrator is fixed (always every permission, not editable, so nobody locks themselves out); Doctor and Product Manager can be adjusted on screen, and the file is only a starting point: the sync never undoes what was changed there. None can be deleted or renamed."
-            },
-            {
-              "pt": "Roles customizadas são montadas numa matriz de recurso por ação, e cada role tem seu histórico (quem mudou, quando, o que entrou e o que saiu); uma role com usuários não pode ser excluída.",
-              "en": "Custom roles are built in a resource-by-action matrix, and each role has its history (who changed it, when, what came in and what went out); a role that has users cannot be deleted."
-            },
-            {
-              "pt": "Regras de concessão: ninguém concede uma permissão que não tem, ninguém dá permissão a si mesmo, e a troca de role nunca é a própria, nunca para uma audiência diferente e nunca do último administrador.",
-              "en": "Grant rules: nobody grants a permission they do not have, nobody grants themselves a permission, and a role change is never one's own, never to a different audience and never of the last administrator."
-            },
-            {
-              "pt": "Permissões extras por pessoa exigem motivo ao conceder e ao retirar, guardam quem deu e quando, aparecem na mesma linha do tempo da auditoria e valem na próxima ação, sem novo login.",
-              "en": "Per-person extra permissions require a reason when granted and when revoked, record who granted them and when, show up in the same timeline as the audit, and take effect on the next action, with no new login."
-            },
-            {
-              "pt": "Product Manager, somente leitura: só permissões de visualização, com a lista exata de rotas travada em teste (uma rota nova fica fechada para ele até alguém incluir a permissão de propósito) e paciente só pelo código; um teste percorre todas as rotas dele com dados reais e falha se algum dado pessoal aparecer.",
-              "en": "Product Manager, read-only: view permissions only, with the exact list of routes locked in a test (a new route stays closed to this role until someone adds the permission on purpose) and patients only by code; a test walks all of its routes with real data and fails if any personal data shows up."
-            },
-            {
-              "pt": "O front-end decide as áreas e os botões pelas permissões (audiência e permissões vêm do endpoint da sessão), com guards por audiência e por permissão, e o servidor continua sendo quem decide.",
-              "en": "The front end decides areas and buttons from the permissions (audience and permissions come from the session endpoint), with guards by audience and by permission, and the server remains the one that decides."
-            }
-          ],
           "gallery": [
             {
               "src": "projetos/ipsiq/05-roles.webp",
@@ -817,6 +935,98 @@
               "language": "ts",
               "code": "// permissions.config.ts\nexport const PERMISSIONS = {\n  'recurso:ver': { audience: 'staff' },\n  'recurso:editar': { audience: 'staff' },\n  'own-agenda:view': { audience: 'doctor' },\n} as const;\n\nexport type Permission = keyof typeof PERMISSIONS;\n\n// @Permissions('recurso:ver')    -> compila\n// @Permissions('recurso:vre')    -> erro de compilação"
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Permissão, role e pessoa",
+                "en": "Permission, role and person"
+              },
+              "text": {
+                "pt": "Uma permissão é um par recurso:ação, uma role é um conjunto de permissões e cada pessoa tem uma role; a cada requisição o guard junta a role com as permissões extras da pessoa que não foram retiradas.",
+                "en": "A permission is a resource:action pair, a role is a set of permissions and each person has one role; on every request the guard combines the role with the person's extra permissions that have not been revoked."
+              }
+            },
+            {
+              "title": {
+                "pt": "Catálogo tipado",
+                "en": "Typed catalog"
+              },
+              "text": {
+                "pt": "O catálogo fica num arquivo tipado: o decorator só aceita permissões que existem. Na subida, o app sincroniza o catálogo com o banco (cria e remove permissões) com auditoria.",
+                "en": "The catalog lives in a typed file: the decorator only accepts permissions that exist. On startup, the app syncs the catalog with the database (creates and removes permissions), with auditing."
+              }
+            },
+            {
+              "title": {
+                "pt": "Audiência",
+                "en": "Audience"
+              },
+              "text": {
+                "pt": "Cada role e cada permissão é da equipe ou do médico, e as permissões de médico (own-*) só entram em role de médico, o que o banco também garante. O isolamento por médico fica na rota: a permissão diz o que a pessoa pode fazer, não de quem.",
+                "en": "Every role and permission belongs to staff or to doctors, and doctor permissions (own-*) can only join doctor roles, which the database also enforces. Per-doctor isolation lives in the route: the permission says what a person may do, not on whose data."
+              }
+            },
+            {
+              "title": {
+                "pt": "Roles de sistema",
+                "en": "System roles"
+              },
+              "text": {
+                "pt": "O Administrador é fixo (sempre todas as permissões, sem edição, para ninguém se trancar para fora); Médico e Product Manager são ajustáveis pela tela, e o arquivo é só o ponto de partida: o sync nunca desfaz o que foi mudado ali. Nenhuma pode ser excluída ou renomeada.",
+                "en": "The Administrator is fixed (always every permission, not editable, so nobody locks themselves out); Doctor and Product Manager can be adjusted on screen, and the file is only a starting point: the sync never undoes what was changed there. None can be deleted or renamed."
+              }
+            },
+            {
+              "title": {
+                "pt": "Roles customizadas",
+                "en": "Custom roles"
+              },
+              "text": {
+                "pt": "Roles customizadas são montadas numa matriz de recurso por ação, e cada role tem seu histórico (quem mudou, quando, o que entrou e o que saiu); uma role com usuários não pode ser excluída.",
+                "en": "Custom roles are built in a resource-by-action matrix, and each role has its history (who changed it, when, what came in and what went out); a role that has users cannot be deleted."
+              }
+            },
+            {
+              "title": {
+                "pt": "Regras de concessão",
+                "en": "Granting rules"
+              },
+              "text": {
+                "pt": "Ninguém concede uma permissão que não tem, ninguém dá permissão a si mesmo, e a troca de role nunca é a própria, nunca para uma audiência diferente e nunca do último administrador.",
+                "en": "Grant rules: nobody grants a permission they do not have, nobody grants themselves a permission, and a role change is never one's own, never to a different audience and never of the last administrator."
+              }
+            },
+            {
+              "title": {
+                "pt": "Permissões extras",
+                "en": "Extra permissions"
+              },
+              "text": {
+                "pt": "Permissões extras por pessoa exigem motivo ao conceder e ao retirar, guardam quem deu e quando, aparecem na mesma linha do tempo da auditoria e valem na próxima ação, sem novo login.",
+                "en": "Per-person extra permissions require a reason when granted and when revoked, record who granted them and when, show up in the same timeline as the audit, and take effect on the next action, with no new login."
+              }
+            },
+            {
+              "title": {
+                "pt": "Perfil somente leitura",
+                "en": "Read-only profile"
+              },
+              "text": {
+                "pt": "Product Manager, somente leitura: só permissões de visualização, com a lista exata de rotas travada em teste (uma rota nova fica fechada para ele até alguém incluir a permissão de propósito) e paciente só pelo código; um teste percorre todas as rotas dele com dados reais e falha se algum dado pessoal aparecer.",
+                "en": "Product Manager, read-only: view permissions only, with the exact list of routes locked in a test (a new route stays closed to this role until someone adds the permission on purpose) and patients only by code; a test walks all of its routes with real data and fails if any personal data shows up."
+              }
+            },
+            {
+              "title": {
+                "pt": "Front-end por permissão",
+                "en": "Permission-driven front end"
+              },
+              "text": {
+                "pt": "O front-end decide as áreas e os botões pelas permissões (audiência e permissões vêm do endpoint da sessão), com guards por audiência e por permissão, e o servidor continua sendo quem decide.",
+                "en": "The front end decides areas and buttons from the permissions (audience and permissions come from the session endpoint), with guards by audience and by permission, and the server remains the one that decides."
+              }
+            }
           ]
         },
         {
@@ -828,56 +1038,6 @@
             "pt": "O back-end é em NestJS e TypeScript, com a segurança e a validação declaradas na própria rota, por decorators, pipes e filtros globais, e verificadas por testes.",
             "en": "The back-end is NestJS and TypeScript, with security and validation declared on the route itself, through decorators, pipes and global filters, and checked by tests."
           },
-          "points": [
-            {
-              "pt": "Quatro decorators cobrem o acesso de toda rota: @Public() (aberta), @Authenticated() (qualquer pessoa logada) e @Permissions(...) (a role precisa conceder todas as permissões), mais @CurrentUser() e @CurrentDoctorId() para ler a pessoa da sessão.",
-              "en": "Four decorators cover every route's access: @Public() (open), @Authenticated() (any logged-in person) and @Permissions(...) (the role must grant all of the permissions), plus @CurrentUser() and @CurrentDoctorId() to read the person from the session."
-            },
-            {
-              "pt": "O guard global falha fechado: uma rota que não declara acesso é recusada, e um teste (access-control.spec) percorre todas as rotas para garantir isso.",
-              "en": "The global guard fails closed: a route that declares no access is refused, and a test (access-control.spec) walks every route to guarantee it."
-            },
-            {
-              "pt": "Os nomes das permissões em @Permissions são checados em tempo de compilação contra um catálogo tipado, então um erro de digitação não compila; o catálogo é sincronizado com o banco na subida, com auditoria.",
-              "en": "Permission names in @Permissions are checked at compile time against a typed catalog, so a typo does not compile; the catalog is synced with the database on startup, with auditing."
-            },
-            {
-              "pt": "O token é só a chave: papel, permissões e médico vêm da sessão viva a cada requisição, então logout, desativação, troca de senha e mudança de role valem na próxima chamada.",
-              "en": "The token is just the key: role, permissions and doctor come from the live session on every request, so logout, deactivation, password changes and role changes take effect on the next call."
-            },
-            {
-              "pt": "@CurrentDoctorId() entrega o médico da sessão: as rotas de médico nunca recebem o id pela URL nem pelo corpo, o que fecha a porta para ler dados de outro médico (IDOR).",
-              "en": "@CurrentDoctorId() hands over the session's doctor: doctor routes never receive the id from the URL or the body, which closes the door to reading another doctor's data (IDOR)."
-            },
-            {
-              "pt": "Validação na borda: o ZodValidationPipe valida e transforma o corpo com um schema Zod e devolve uma mensagem por campo inválido, no formato caminho: mensagem.",
-              "en": "Validation at the edge: the ZodValidationPipe validates and transforms the body with a Zod schema and returns one message per invalid field, in the path: message format."
-            },
-            {
-              "pt": "Um filtro global de exceções padroniza o erro da API, converte erros de integridade do Postgres em 409 ou 400 no lugar de 500, esconde a mensagem real de erros inesperados em produção e registra todo 5xx, sem deixar tokens de links nos logs.",
-              "en": "A global exception filter standardizes the API error, maps Postgres integrity errors to 409 or 400 instead of 500, hides the real message of unexpected errors in production and logs every 5xx, without letting link tokens reach the logs."
-            },
-            {
-              "pt": "Dados pessoais: criptografia de campo com AES-256-GCM, com a chave fora do banco, e hash com chave (HMAC-SHA256) para buscar um valor sem guardá-lo, como o CPF.",
-              "en": "Personal data: field encryption with AES-256-GCM, with the key outside the database, and a keyed hash (HMAC-SHA256) to look a value up without storing it, such as the ID number."
-            },
-            {
-              "pt": "Todo repositório tem escopo de tenant: o tenantId faz parte de toda consulta e de toda alteração, o que impede o acesso entre contextos.",
-              "en": "Every repository is tenant-scoped: the tenantId is part of every query and every update, which prevents access across contexts."
-            },
-            {
-              "pt": "Senhas com Argon2 e política de senha própria, bloqueio de tentativas de login por conta e limitador de requisições nas rotas de login.",
-              "en": "Passwords with Argon2 and a password policy, login-attempt lockout per account and a rate limiter on the login routes."
-            },
-            {
-              "pt": "Padrões que o time segue e os testes cobram: escritas só por repositório (um teste recusa SQL cru), migrações com reversão, enums tipados, componentes genéricos no front e comentários de código em inglês com textos de tela em português.",
-              "en": "Standards the team follows and tests enforce: writes only through repositories (a test rejects raw SQL), migrations with a working rollback, typed enums, generic components on the front end, and code comments in English with on-screen text in Portuguese."
-            },
-            {
-              "pt": "make check roda tipos, lint e testes dentro do Docker, e o CI repete isso a cada push.",
-              "en": "make check runs types, lint and tests inside Docker, and CI repeats it on every push."
-            }
-          ],
           "diagrams": [
             {
               "title": {
@@ -996,6 +1156,128 @@
               "language": "ts",
               "code": "@Controller('exemplo')\nexport class ExemploController {\n  // Qualquer pessoa logada, seja qual for a role.\n  @Get('eu')\n  @Authenticated()\n  quemSouEu(@CurrentUser() user: AuthenticatedUser) { /* ... */ }\n\n  // A role precisa conceder TODAS as permissões citadas;\n  // o nome é checado em tempo de compilação contra o catálogo tipado.\n  @Post()\n  @Permissions('recurso:acao')\n  criar(@Body(new ZodValidationPipe(CriarSchema)) dto: CriarDto) { /* ... */ }\n\n  // O médico vem da sessão, nunca da URL nem do corpo.\n  @Get('minha-agenda')\n  @Permissions('own-agenda:view')\n  agenda(@CurrentDoctorId() doctorId: string) { /* ... */ }\n\n  // Rota aberta (ex.: página pública), declarada de propósito.\n  @Public()\n  @Get('publico')\n  publico() { /* ... */ }\n}"
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Quatro decorators",
+                "en": "Four decorators"
+              },
+              "text": {
+                "pt": "Quatro decorators cobrem o acesso de toda rota: @Public() (aberta), @Authenticated() (qualquer pessoa logada) e @Permissions(...) (a role precisa conceder todas as permissões), mais @CurrentUser() e @CurrentDoctorId() para ler a pessoa da sessão.",
+                "en": "Four decorators cover every route's access: @Public() (open), @Authenticated() (any logged-in person) and @Permissions(...) (the role must grant all of the permissions), plus @CurrentUser() and @CurrentDoctorId() to read the person from the session."
+              }
+            },
+            {
+              "title": {
+                "pt": "Guard global que falha fechado",
+                "en": "A global guard that fails closed"
+              },
+              "text": {
+                "pt": "O guard global falha fechado: uma rota que não declara acesso é recusada, e um teste (access-control.spec) percorre todas as rotas para garantir isso.",
+                "en": "The global guard fails closed: a route that declares no access is refused, and a test (access-control.spec) walks every route to guarantee it."
+              }
+            },
+            {
+              "title": {
+                "pt": "Permissões checadas na compilação",
+                "en": "Permissions checked at compile time"
+              },
+              "text": {
+                "pt": "Os nomes das permissões em @Permissions são checados em tempo de compilação contra um catálogo tipado, então um erro de digitação não compila; o catálogo é sincronizado com o banco na subida, com auditoria.",
+                "en": "Permission names in @Permissions are checked at compile time against a typed catalog, so a typo does not compile; the catalog is synced with the database on startup, with auditing."
+              }
+            },
+            {
+              "title": {
+                "pt": "O token é só a chave",
+                "en": "The token is only the key"
+              },
+              "text": {
+                "pt": "Papel, permissões e médico vêm da sessão viva a cada requisição, então logout, desativação, troca de senha e mudança de role valem na próxima chamada.",
+                "en": "The token is just the key: role, permissions and doctor come from the live session on every request, so logout, deactivation, password changes and role changes take effect on the next call."
+              }
+            },
+            {
+              "title": {
+                "pt": "Médico da sessão",
+                "en": "Doctor from the session"
+              },
+              "text": {
+                "pt": "@CurrentDoctorId() entrega o médico da sessão: as rotas de médico nunca recebem o id pela URL nem pelo corpo, o que fecha a porta para ler dados de outro médico (IDOR).",
+                "en": "@CurrentDoctorId() hands over the session's doctor: doctor routes never receive the id from the URL or the body, which closes the door to reading another doctor's data (IDOR)."
+              }
+            },
+            {
+              "title": {
+                "pt": "Validação na borda",
+                "en": "Validation at the edge"
+              },
+              "text": {
+                "pt": "O ZodValidationPipe valida e transforma o corpo com um schema Zod e devolve uma mensagem por campo inválido, no formato caminho: mensagem.",
+                "en": "The ZodValidationPipe validates and transforms the body with a Zod schema and returns one message per invalid field, in the path: message format."
+              }
+            },
+            {
+              "title": {
+                "pt": "Filtro global de exceções",
+                "en": "Global exception filter"
+              },
+              "text": {
+                "pt": "Um filtro global de exceções padroniza o erro da API, converte erros de integridade do Postgres em 409 ou 400 no lugar de 500, esconde a mensagem real de erros inesperados em produção e registra todo 5xx, sem deixar tokens de links nos logs.",
+                "en": "A global exception filter standardizes the API error, maps Postgres integrity errors to 409 or 400 instead of 500, hides the real message of unexpected errors in production and logs every 5xx, without letting link tokens reach the logs."
+              }
+            },
+            {
+              "title": {
+                "pt": "Dados pessoais",
+                "en": "Personal data"
+              },
+              "text": {
+                "pt": "Criptografia de campo com AES-256-GCM, com a chave fora do banco, e hash com chave (HMAC-SHA256) para buscar um valor sem guardá-lo, como o CPF.",
+                "en": "Field encryption with AES-256-GCM, with the key outside the database, and a keyed hash (HMAC-SHA256) to look a value up without storing it, such as the ID number."
+              }
+            },
+            {
+              "title": {
+                "pt": "Escopo de tenant",
+                "en": "Tenant scope"
+              },
+              "text": {
+                "pt": "Todo repositório tem escopo de tenant: o tenantId faz parte de toda consulta e de toda alteração, o que impede o acesso entre contextos.",
+                "en": "Every repository is tenant-scoped: the tenantId is part of every query and every update, which prevents access across contexts."
+              }
+            },
+            {
+              "title": {
+                "pt": "Senhas e tentativas de login",
+                "en": "Passwords and login attempts"
+              },
+              "text": {
+                "pt": "Senhas com Argon2 e política de senha própria, bloqueio de tentativas de login por conta e limitador de requisições nas rotas de login.",
+                "en": "Passwords with Argon2 and a password policy, login-attempt lockout per account and a rate limiter on the login routes."
+              }
+            },
+            {
+              "title": {
+                "pt": "Padrões cobrados por testes",
+                "en": "Patterns enforced by tests"
+              },
+              "text": {
+                "pt": "Padrões que o time segue e os testes cobram: escritas só por repositório (um teste recusa SQL cru), migrações com reversão, enums tipados, componentes genéricos no front e comentários de código em inglês com textos de tela em português.",
+                "en": "Standards the team follows and tests enforce: writes only through repositories (a test rejects raw SQL), migrations with a working rollback, typed enums, generic components on the front end, and code comments in English with on-screen text in Portuguese."
+              }
+            },
+            {
+              "title": {
+                "pt": "make check",
+                "en": "make check"
+              },
+              "text": {
+                "pt": "Make check roda tipos, lint e testes dentro do Docker, e o CI repete isso a cada push.",
+                "en": "Make check runs types, lint and tests inside Docker, and CI repeats it on every push."
+              }
+            }
           ]
         },
         {
@@ -1007,56 +1289,6 @@
             "pt": "Toda alteração de dados deixa um registro de quem fez, o quê, quando e o que mudou, e o histórico não pode ser editado nem apagado.",
             "en": "Every data change leaves a record of who did it, what, when and what changed, and the history cannot be edited or deleted."
           },
-          "points": [
-            {
-              "pt": "Todos os repositórios herdam de um BaseRepository: toda escrita (criar, alterar, excluir e restaurar) grava o evento de auditoria na mesma transação do negócio, então ou os dois são gravados ou nenhum.",
-              "en": "Every repository extends a BaseRepository: every write (create, update, delete and restore) records its audit event in the same transaction as the business write, so either both are saved or neither is."
-            },
-            {
-              "pt": "Escritas que falham também são registradas, com resultado de falha, fora da transação que falhou.",
-              "en": "Failed writes are also recorded, with a failure result, outside the failed transaction."
-            },
-            {
-              "pt": "Quem chama informa exatamente os campos alterados, então o que é auditado é o que mudou; a exclusão guarda o registro apagado para o histórico dizer o que era.",
-              "en": "The caller states exactly which fields changed, so what is audited is what changed; a deletion keeps the deleted record so the history says what it was."
-            },
-            {
-              "pt": "Cada registro tem versão (1, 2, 3…) por entidade, com \"ver o histórico deste registro\" e \"ver tudo desta pessoa\".",
-              "en": "Each record has a version (1, 2, 3…) per entity, with \"see this record's history\" and \"see everything from this person\"."
-            },
-            {
-              "pt": "A tabela de auditoria só aceita inclusão: o próprio banco recusa UPDATE, DELETE e TRUNCATE (LGPD, art. 37: o registro das operações precisa ser confiável).",
-              "en": "The audit table is append-only: the database itself refuses UPDATE, DELETE and TRUNCATE (LGPD art. 37: the record of operations must be trustworthy)."
-            },
-            {
-              "pt": "Senhas, tokens, CPF, e-mails, IP e dados do paciente são mascarados no diff, porque a trilha não pode ser apagada; pacientes aparecem só pelo código.",
-              "en": "Passwords, tokens, ID numbers, e-mails, IPs and patient data are masked in the diff, because the trail cannot be erased; patients appear only by code."
-            },
-            {
-              "pt": "Todas as tabelas de negócio têm histórico: um teste falha se aparecer INSERT, UPDATE ou DELETE cru fora das exceções. Só registros técnicos (contadores de login, marcas de envio de e-mail e webhook, códigos do OAuth e limpeza de sessões) ficam de fora, com audit: false explícito e justificado.",
-              "en": "All business tables have history: a test fails if a raw INSERT, UPDATE or DELETE shows up outside the exceptions. Only technical records (login counters, e-mail and webhook sent marks, OAuth codes and session cleanup) are left out, with an explicit, justified audit: false."
-            },
-            {
-              "pt": "Os eventos viram frases na linguagem da equipe (por exemplo, \"Consulta reservada pelo paciente no site\" ou \"Login (equipe)\"), cada uma com título, detalhe e um tom (acesso, problema…); a lista mostra só os nomes dos campos alterados, e o diff completo fica a um clique.",
-              "en": "Events become sentences in the team's own words (for example, \"Appointment booked by the patient on the site\" or \"Login (staff)\"), each with a title, a detail and a tone (access, problem…); the list shows only the names of the fields that changed, and the full diff is one click away."
-            },
-            {
-              "pt": "A trilha reúne fontes diferentes numa única linha do tempo: alterações de dados, e-mails enviados, avisos do provedor de pagamento (webhooks) e conversões de anúncios, com falhas de login e de renovação de sessão também registradas como eventos.",
-              "en": "The trail brings different sources into a single timeline: data changes, e-mails sent, payment provider notices (webhooks) and ad conversions, with login failures and session-refresh rejections also recorded as events."
-            },
-            {
-              "pt": "Cada evento é ligado ao que ele toca (médico, consulta e paciente, pelo código), o que permite filtrar por período, origem, entidade, operação, resultado, médico, código do paciente e quem fez (equipe, médico, paciente ou sistema), e agrupar a história por paciente.",
-              "en": "Each event is linked to what it touches (doctor, appointment and patient, by code), which allows filtering by period, source, entity, operation, result, doctor, patient code and who did it (staff, doctor, patient or system), and grouping the history by patient."
-            },
-            {
-              "pt": "Um filtro \"Ocultar\" esconde o que é muito comum (logins, falhas de login, e-mails, webhooks e conversões) para destacar o resto, e entidades novas aparecem na auditoria sozinhas, pelo nome técnico, mesmo antes de ganharem um rótulo no catálogo.",
-              "en": "A \"Hide\" filter hides what is very common (logins, login failures, e-mails, webhooks and conversions) so the rest stands out, and new entities show up in the audit on their own, by technical name, even before they get a label in the catalog."
-            },
-            {
-              "pt": "Futuro: toda gravação passa por um único ponto (writeAuditEvent), hoje síncrono e na mesma transação porque o iPsiq não tem fila. Como a gravação é idempotente por id, esse ponto pode ser trocado por uma emissão de evento (padrão outbox) para levar a auditoria a um microsserviço, sem mexer no código dos repositórios.",
-              "en": "Future: every write goes through a single point (writeAuditEvent), synchronous and in the same transaction today because iPsiq has no queue. Since the write is idempotent by id, that point can be swapped for an event emission (outbox pattern) to move auditing to a microservice, without touching the repositories' code."
-            }
-          ],
           "diagrams": [
             {
               "title": {
@@ -1218,6 +1450,128 @@
                 "en": "Event detail: record version and what changed as JSON, with the IP and token hash masked ([redacted])."
               }
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "BaseRepository",
+                "en": "BaseRepository"
+              },
+              "text": {
+                "pt": "Todos os repositórios herdam de um BaseRepository: toda escrita (criar, alterar, excluir e restaurar) grava o evento de auditoria na mesma transação do negócio, então ou os dois são gravados ou nenhum.",
+                "en": "Every repository extends a BaseRepository: every write (create, update, delete and restore) records its audit event in the same transaction as the business write, so either both are saved or neither is."
+              }
+            },
+            {
+              "title": {
+                "pt": "Falhas registradas",
+                "en": "Failures recorded"
+              },
+              "text": {
+                "pt": "Escritas que falham também são registradas, com resultado de falha, fora da transação que falhou.",
+                "en": "Failed writes are also recorded, with a failure result, outside the failed transaction."
+              }
+            },
+            {
+              "title": {
+                "pt": "Só os campos alterados",
+                "en": "Only the changed fields"
+              },
+              "text": {
+                "pt": "Quem chama informa exatamente os campos alterados, então o que é auditado é o que mudou; a exclusão guarda o registro apagado para o histórico dizer o que era.",
+                "en": "The caller states exactly which fields changed, so what is audited is what changed; a deletion keeps the deleted record so the history says what it was."
+              }
+            },
+            {
+              "title": {
+                "pt": "Versão por registro",
+                "en": "Version per record"
+              },
+              "text": {
+                "pt": "Cada registro tem versão (1, 2, 3…) por entidade, com \"ver o histórico deste registro\" e \"ver tudo desta pessoa\".",
+                "en": "Each record has a version (1, 2, 3…) per entity, with \"see this record's history\" and \"see everything from this person\"."
+              }
+            },
+            {
+              "title": {
+                "pt": "Tabela só de inclusão",
+                "en": "Insert-only table"
+              },
+              "text": {
+                "pt": "A tabela de auditoria só aceita inclusão: o próprio banco recusa UPDATE, DELETE e TRUNCATE (LGPD, art. 37: o registro das operações precisa ser confiável).",
+                "en": "The audit table is append-only: the database itself refuses UPDATE, DELETE and TRUNCATE (LGPD art. 37: the record of operations must be trustworthy)."
+              }
+            },
+            {
+              "title": {
+                "pt": "Dados sensíveis mascarados",
+                "en": "Sensitive data masked"
+              },
+              "text": {
+                "pt": "Senhas, tokens, CPF, e-mails, IP e dados do paciente são mascarados no diff, porque a trilha não pode ser apagada; pacientes aparecem só pelo código.",
+                "en": "Passwords, tokens, ID numbers, e-mails, IPs and patient data are masked in the diff, because the trail cannot be erased; patients appear only by code."
+              }
+            },
+            {
+              "title": {
+                "pt": "Nenhuma tabela fica de fora",
+                "en": "No table is left out"
+              },
+              "text": {
+                "pt": "Todas as tabelas de negócio têm histórico: um teste falha se aparecer INSERT, UPDATE ou DELETE cru fora das exceções. Só registros técnicos (contadores de login, marcas de envio de e-mail e webhook, códigos do OAuth e limpeza de sessões) ficam de fora, com audit: false explícito e justificado.",
+                "en": "All business tables have history: a test fails if a raw INSERT, UPDATE or DELETE shows up outside the exceptions. Only technical records (login counters, e-mail and webhook sent marks, OAuth codes and session cleanup) are left out, with an explicit, justified audit: false."
+              }
+            },
+            {
+              "title": {
+                "pt": "Eventos na linguagem da equipe",
+                "en": "Events in the team's language"
+              },
+              "text": {
+                "pt": "Os eventos viram frases na linguagem da equipe (por exemplo, \"Consulta reservada pelo paciente no site\" ou \"Login (equipe)\"), cada uma com título, detalhe e um tom (acesso, problema…); a lista mostra só os nomes dos campos alterados, e o diff completo fica a um clique.",
+                "en": "Events become sentences in the team's own words (for example, \"Appointment booked by the patient on the site\" or \"Login (staff)\"), each with a title, a detail and a tone (access, problem…); the list shows only the names of the fields that changed, and the full diff is one click away."
+              }
+            },
+            {
+              "title": {
+                "pt": "Uma linha do tempo",
+                "en": "A single timeline"
+              },
+              "text": {
+                "pt": "A trilha reúne fontes diferentes numa única linha do tempo: alterações de dados, e-mails enviados, avisos do provedor de pagamento (webhooks) e conversões de anúncios, com falhas de login e de renovação de sessão também registradas como eventos.",
+                "en": "The trail brings different sources into a single timeline: data changes, e-mails sent, payment provider notices (webhooks) and ad conversions, with login failures and session-refresh rejections also recorded as events."
+              }
+            },
+            {
+              "title": {
+                "pt": "Eventos ligados ao que tocam",
+                "en": "Events linked to what they touch"
+              },
+              "text": {
+                "pt": "Cada evento é ligado ao que ele toca (médico, consulta e paciente, pelo código), o que permite filtrar por período, origem, entidade, operação, resultado, médico, código do paciente e quem fez (equipe, médico, paciente ou sistema), e agrupar a história por paciente.",
+                "en": "Each event is linked to what it touches (doctor, appointment and patient, by code), which allows filtering by period, source, entity, operation, result, doctor, patient code and who did it (staff, doctor, patient or system), and grouping the history by patient."
+              }
+            },
+            {
+              "title": {
+                "pt": "Filtro Ocultar",
+                "en": "Hide filter"
+              },
+              "text": {
+                "pt": "Um filtro \"Ocultar\" esconde o que é muito comum (logins, falhas de login, e-mails, webhooks e conversões) para destacar o resto, e entidades novas aparecem na auditoria sozinhas, pelo nome técnico, mesmo antes de ganharem um rótulo no catálogo.",
+                "en": "A \"Hide\" filter hides what is very common (logins, login failures, e-mails, webhooks and conversions) so the rest stands out, and new entities show up in the audit on their own, by technical name, even before they get a label in the catalog."
+              }
+            },
+            {
+              "title": {
+                "pt": "Futuro: um único ponto de gravação",
+                "en": "Future: a single write point"
+              },
+              "text": {
+                "pt": "Futuro: toda gravação passa por um único ponto (writeAuditEvent), hoje síncrono e na mesma transação porque o iPsiq não tem fila. Como a gravação é idempotente por id, esse ponto pode ser trocado por uma emissão de evento (padrão outbox) para levar a auditoria a um microsserviço, sem mexer no código dos repositórios.",
+                "en": "Future: every write goes through a single point (writeAuditEvent), synchronous and in the same transaction today because iPsiq has no queue. Since the write is idempotent by id, that point can be swapped for an event emission (outbox pattern) to move auditing to a microservice, without touching the repositories' code."
+              }
+            }
           ]
         },
         {
@@ -1229,36 +1583,6 @@
             "pt": "Dados que não podem ser divulgados nem propagados são mascarados em camadas: na trilha de auditoria, nos logs, nas telas, nas respostas da API e nos eventos enviados a terceiros.",
             "en": "Data that must not be disclosed or spread is masked in layers: in the audit trail, in logs, on screens, in API responses and in events sent to third parties."
           },
-          "points": [
-            {
-              "pt": "Uma função central de redação é aplicada a todo diff de auditoria antes de gravar: ela percorre o objeto em qualquer profundidade e troca por [redacted] os campos de credenciais (senhas, tokens, hashes, chaves de API, certificados, campos criptografados) e de dados pessoais (CPF, e-mail, IP, nome, e-mail e telefone do paciente, identificadores de anúncio e de visitante, user agent e link da sala).",
-              "en": "A central redaction function is applied to every audit diff before it is written: it walks the object at any depth and replaces with [redacted] the credential fields (passwords, tokens, hashes, API keys, certificates, encrypted fields) and the personal-data fields (ID number, e-mail, IP, the patient's name, e-mail and phone, ad and visitor identifiers, user agent and room link)."
-            },
-            {
-              "pt": "O motivo é a própria regra da trilha: como ela só aceita inclusão, qualquer dado pessoal gravado ali nunca poderia ser apagado (LGPD). Os ids dos registros bastam para seguir a história.",
-              "en": "The reason is the trail's own rule: since it is append-only, any personal data written there could never be erased (LGPD). The record ids are enough to follow the history."
-            },
-            {
-              "pt": "Quando a lista de campos protegidos ampliou, uma migração aplicou a mesma redação às linhas antigas da auditoria: o gatilho que protege a tabela é desligado só durante essa limpeza pontual e religado logo depois, mesmo em caso de erro.",
-              "en": "When the list of protected fields grew, a migration applied the same redaction to the older audit rows: the trigger that protects the table is switched off only during that one-off cleanup and switched back on right after, even on error."
-            },
-            {
-              "pt": "Logs e telas: e-mails viram, por exemplo, lu***@dominio e o CPF é guardado mascarado, com um hash com chave para busca; tokens de links (agendamento, nota, configuração) viram [token] nos logs, as chaves nunca são registradas e a chave do provedor de pagamento nunca aparece na tela.",
-              "en": "Logs and screens: e-mails become, for example, lu***@domain and the ID number is stored masked, with a keyed hash for lookups; link tokens (booking, invoice, setup) become [token] in logs, keys are never logged, and the payment provider key never appears on screen."
-            },
-            {
-              "pt": "Quem pode ver a identidade do paciente é uma permissão (patients:view-identity): sem ela, a pessoa vê só o código do paciente, os dados pessoais são omitidos das respostas e a busca por nome, e-mail, telefone ou CPF é ignorada; o código é derivado de um hash com chave e não tem como voltar ao CPF.",
-              "en": "Who can see a patient's identity is a permission (patients:view-identity): without it, the person sees only the patient code, personal data is left out of the responses and searching by name, e-mail, phone or ID number is ignored; the code is derived from a keyed hash and cannot be traced back to the ID number."
-            },
-            {
-              "pt": "Um teste percorre todas as rotas do perfil somente leitura com dados reais e falha se algum dado pessoal aparecer.",
-              "en": "A test walks every route of the read-only profile with real data and fails if any personal data shows up."
-            },
-            {
-              "pt": "Terceiros: nada de saúde ou do paciente vai para logs, URLs ou eventos de anúncio; e-mail e telefone em hash não são enviados às plataformas de anúncio sem aval jurídico e consentimento específico; e em produção a mensagem real de erros inesperados fica escondida.",
-              "en": "Third parties: no health or patient data goes into logs, URLs or ad events; hashed e-mail and phone are not sent to ad platforms without legal sign-off and specific consent; and in production the real message of unexpected errors is hidden."
-            }
-          ],
           "snippets": [
             {
               "caption": {
@@ -1267,6 +1591,78 @@
               },
               "language": "text",
               "code": "auditoria   { \"ip\": \"[redacted]\", \"refreshTokenHash\": \"[redacted]\", \"userId\": \"...\" }\ne-mail      lucas@clinica.com            ->  lu***@clinica.com\nlog (URL)   /agendamento/<token longo>   ->  /agendamento/[token]\npaciente    sem patients:view-identity   ->  apenas o código P-XXXX-XXXX"
+            }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Redação central",
+                "en": "Central redaction"
+              },
+              "text": {
+                "pt": "Uma função central de redação é aplicada a todo diff de auditoria antes de gravar: ela percorre o objeto em qualquer profundidade e troca por [redacted] os campos de credenciais (senhas, tokens, hashes, chaves de API, certificados, campos criptografados) e de dados pessoais (CPF, e-mail, IP, nome, e-mail e telefone do paciente, identificadores de anúncio e de visitante, user agent e link da sala).",
+                "en": "A central redaction function is applied to every audit diff before it is written: it walks the object at any depth and replaces with [redacted] the credential fields (passwords, tokens, hashes, API keys, certificates, encrypted fields) and the personal-data fields (ID number, e-mail, IP, the patient's name, e-mail and phone, ad and visitor identifiers, user agent and room link)."
+              }
+            },
+            {
+              "title": {
+                "pt": "Por que na gravação",
+                "en": "Why at write time"
+              },
+              "text": {
+                "pt": "O motivo é a própria regra da trilha: como ela só aceita inclusão, qualquer dado pessoal gravado ali nunca poderia ser apagado (LGPD). Os ids dos registros bastam para seguir a história.",
+                "en": "The reason is the trail's own rule: since it is append-only, any personal data written there could never be erased (LGPD). The record ids are enough to follow the history."
+              }
+            },
+            {
+              "title": {
+                "pt": "Linhas antigas redigidas",
+                "en": "Old rows redacted"
+              },
+              "text": {
+                "pt": "Quando a lista de campos protegidos ampliou, uma migração aplicou a mesma redação às linhas antigas da auditoria: o gatilho que protege a tabela é desligado só durante essa limpeza pontual e religado logo depois, mesmo em caso de erro.",
+                "en": "When the list of protected fields grew, a migration applied the same redaction to the older audit rows: the trigger that protects the table is switched off only during that one-off cleanup and switched back on right after, even on error."
+              }
+            },
+            {
+              "title": {
+                "pt": "Logs e telas",
+                "en": "Logs and screens"
+              },
+              "text": {
+                "pt": "E-mails viram, por exemplo, lu***@dominio e o CPF é guardado mascarado, com um hash com chave para busca; tokens de links (agendamento, nota, configuração) viram [token] nos logs, as chaves nunca são registradas e a chave do provedor de pagamento nunca aparece na tela.",
+                "en": "E-mails become, for example, lu***@domain and the ID number is stored masked, with a keyed hash for lookups; link tokens (booking, invoice, setup) become [token] in logs, keys are never logged, and the payment provider key never appears on screen."
+              }
+            },
+            {
+              "title": {
+                "pt": "Quem vê a identidade",
+                "en": "Who sees identity"
+              },
+              "text": {
+                "pt": "Quem pode ver a identidade do paciente é uma permissão (patients:view-identity): sem ela, a pessoa vê só o código do paciente, os dados pessoais são omitidos das respostas e a busca por nome, e-mail, telefone ou CPF é ignorada; o código é derivado de um hash com chave e não tem como voltar ao CPF.",
+                "en": "Who can see a patient's identity is a permission (patients:view-identity): without it, the person sees only the patient code, personal data is left out of the responses and searching by name, e-mail, phone or ID number is ignored; the code is derived from a keyed hash and cannot be traced back to the ID number."
+              }
+            },
+            {
+              "title": {
+                "pt": "Teste do perfil somente leitura",
+                "en": "Read-only profile test"
+              },
+              "text": {
+                "pt": "Um teste percorre todas as rotas do perfil somente leitura com dados reais e falha se algum dado pessoal aparecer.",
+                "en": "A test walks every route of the read-only profile with real data and fails if any personal data shows up."
+              }
+            },
+            {
+              "title": {
+                "pt": "Terceiros",
+                "en": "Third parties"
+              },
+              "text": {
+                "pt": "Nada de saúde ou do paciente vai para logs, URLs ou eventos de anúncio; e-mail e telefone em hash não são enviados às plataformas de anúncio sem aval jurídico e consentimento específico; e em produção a mensagem real de erros inesperados fica escondida.",
+                "en": "No health or patient data goes into logs, URLs or ad events; hashed e-mail and phone are not sent to ad platforms without legal sign-off and specific consent; and in production the real message of unexpected errors is hidden."
+              }
             }
           ]
         },
@@ -1279,60 +1675,6 @@
             "pt": "O iPsiq integra a API do Asaas para receber no Pix com repasse automático ao profissional (split): uma subconta por profissional, checkout Pix, webhooks, notas fiscais e assinaturas.",
             "en": "iPsiq integrates the Asaas API to take Pix payments with an automatic transfer to the professional (split): one sub-account per professional, Pix checkout, webhooks, invoices and subscriptions."
           },
-          "points": [
-            {
-              "pt": "Subcontas: cada profissional tem uma, aberta pela equipe. O cadastro e os dados bancários são preenchidos direto no Asaas, por um link com validade, e o iPsiq não os guarda; o profissional só fica ativo depois que o Asaas aprova a conta, e o status chega por webhook.",
-              "en": "Sub-accounts: each professional has one, opened by the team. The registration and bank details are filled in directly at Asaas, through a link with an expiry, and iPsiq does not store them; the professional only becomes active once Asaas approves the account, and the status arrives by webhook."
-            },
-            {
-              "pt": "Checkout Pix: a cobrança de cada consulta é um checkout criado na subconta do profissional, com o split para a carteira do iPsiq e a consulta como referência externa; o prazo do checkout acompanha o da reserva temporária do horário.",
-              "en": "Pix checkout: each appointment's charge is a checkout created in the professional's sub-account, with the split going to iPsiq's wallet and the appointment as the external reference; the checkout expiry follows the time slot's temporary hold."
-            },
-            {
-              "pt": "Webhooks por duas portas: a da conta principal (assinaturas e notas do iPsiq) e uma para cada subconta (consultas, notas e aprovação daquele profissional). Cada uma tem o seu token, comparado em tempo constante; o de cada subconta é derivado (HMAC) do segredo mestre.",
-              "en": "Webhooks through two doors: the main account's (iPsiq's subscriptions and invoices) and one for each sub-account (that professional's appointments, invoices and approval). Each has its own token, compared in constant time; each sub-account's is derived (HMAC) from the master secret."
-            },
-            {
-              "pt": "O corpo do webhook é só um aviso: o pagamento, a nota ou o status da conta é lido de novo no Asaas, com a chave da conta certa, antes de qualquer mudança. Um corpo forjado não confirma pagamento.",
-              "en": "The webhook body is only a notice: the payment, invoice or account status is read again at Asaas, with the right account's key, before anything changes. A forged body cannot confirm a payment."
-            },
-            {
-              "pt": "Idempotência: cada evento é reivindicado de forma atômica pelo id do Asaas antes de ser tratado, então entregas repetidas ou simultâneas não repetem efeitos (e-mails, sala de vídeo, conversões). Se o tratamento falha, a reivindicação é devolvida e o Asaas reenvia.",
-              "en": "Idempotency: each event is claimed atomically by its Asaas id before it is handled, so repeated or simultaneous deliveries do not repeat side effects (e-mails, video room, conversions). If handling fails, the claim is released and Asaas retries."
-            },
-            {
-              "pt": "Conciliação de status: o estado do pagamento é aplicado à consulta de forma idempotente. Um pagamento só atualiza consultas do médico da própria subconta, e um pagamento pago nunca volta a falho por causa de um evento atrasado. O \"Já paguei\" do paciente consulta o Asaas direto (por checkout e por referência), com limite de frequência por consulta para não gastar a cota da API.",
-              "en": "Status reconciliation: the payment state is applied to the appointment idempotently. A payment only updates appointments of its own sub-account's doctor, and a paid payment never goes back to failed because of a late event. The patient's \"I already paid\" asks Asaas directly (by checkout and by reference), rate-limited per appointment so it does not burn the API quota."
-            },
-            {
-              "pt": "Registro dos webhooks: o da conta principal é criado ou atualizado a cada deploy, por um comando idempotente, e o de cada subconta é registrado quando ela é criada. Os eventos assinados cobrem pagamento, checkout, notas fiscais e status da conta.",
-              "en": "Webhook registration: the main account's is created or updated on every deploy, by an idempotent command, and each sub-account's is registered when it is created. The subscribed events cover payment, checkout, invoices and account status."
-            },
-            {
-              "pt": "Notas fiscais: as NFS-e aplicáveis são emitidas pelo Asaas de forma automática depois do pagamento confirmado, com o status sincronizado por webhook. Cada nota só é atualizada pela conta que a emitiu, e os arquivos baixados têm limite de tamanho.",
-              "en": "Invoices: the applicable NFS-e are issued through Asaas automatically once the payment is confirmed, with the status synchronized by webhook. Each invoice is only updated by the account that issued it, and downloaded files have a size limit."
-            },
-            {
-              "pt": "Assinaturas: as assinaturas e as cobranças recorrentes dos profissionais correm pela conta principal e são atualizadas pelos webhooks dela.",
-              "en": "Subscriptions: the professionals' subscriptions and recurring charges run through the main account and are updated by its webhooks."
-            },
-            {
-              "pt": "Cliente da API: fino, cada chamada informa em qual conta age (a principal ou a subconta), tem timeout de 15 s para que um Asaas lento não prenda requisições e nunca registra as chaves em log.",
-              "en": "API client: thin, each call states which account it acts on (the main one or a sub-account), has a 15 s timeout so a slow Asaas cannot hold requests, and never logs the keys."
-            },
-            {
-              "pt": "Segredos: a chave fica como segredo na AWS, é lida em tempo de execução e nunca aparece na tela; o ambiente (testes ou produção) é uma configuração.",
-              "en": "Secrets: the key is kept as a secret on AWS, read at run time and never shown on screen; the environment (sandbox or production) is a setting."
-            },
-            {
-              "pt": "Erros: o que o paciente pode corrigir aparece no formulário; um erro de configuração mostra uma mensagem genérica e avisa a equipe com o motivo exato, e a mensagem técnica do provedor nunca vai ao paciente.",
-              "en": "Errors: what the patient can fix appears in the form; a configuration error shows a generic message and alerts the team with the exact reason, and the provider's technical message never reaches the patient."
-            },
-            {
-              "pt": "Testes sem rede: um servidor HTTP que imita o Asaas registra cada chamada e responde conforme o teste, então a integração é verificada sem o provedor.",
-              "en": "Network-free tests: an HTTP server that imitates Asaas records every call and answers as the test defines, so the integration is verified without the provider."
-            }
-          ],
           "diagrams": [
             {
               "title": {
@@ -1456,6 +1798,138 @@
                 "en": "Payment provider integration: the key is configured but never displayed; the webhook is registered automatically."
               }
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Subcontas",
+                "en": "Subaccounts"
+              },
+              "text": {
+                "pt": "Cada profissional tem uma, aberta pela equipe. O cadastro e os dados bancários são preenchidos direto no Asaas, por um link com validade, e o iPsiq não os guarda; o profissional só fica ativo depois que o Asaas aprova a conta, e o status chega por webhook.",
+                "en": "Sub-accounts: each professional has one, opened by the team. The registration and bank details are filled in directly at Asaas, through a link with an expiry, and iPsiq does not store them; the professional only becomes active once Asaas approves the account, and the status arrives by webhook."
+              }
+            },
+            {
+              "title": {
+                "pt": "Checkout Pix",
+                "en": "Pix checkout"
+              },
+              "text": {
+                "pt": "A cobrança de cada consulta é um checkout criado na subconta do profissional, com o split para a carteira do iPsiq e a consulta como referência externa; o prazo do checkout acompanha o da reserva temporária do horário.",
+                "en": "Each appointment's charge is a checkout created in the professional's sub-account, with the split going to iPsiq's wallet and the appointment as the external reference; the checkout expiry follows the time slot's temporary hold."
+              }
+            },
+            {
+              "title": {
+                "pt": "Webhooks por duas portas",
+                "en": "Two webhook doors"
+              },
+              "text": {
+                "pt": "A da conta principal (assinaturas e notas do iPsiq) e uma para cada subconta (consultas, notas e aprovação daquele profissional). Cada uma tem o seu token, comparado em tempo constante; o de cada subconta é derivado (HMAC) do segredo mestre.",
+                "en": "Webhooks through two doors: the main account's (iPsiq's subscriptions and invoices) and one for each sub-account (that professional's appointments, invoices and approval). Each has its own token, compared in constant time; each sub-account's is derived (HMAC) from the master secret."
+              }
+            },
+            {
+              "title": {
+                "pt": "O webhook é só um aviso",
+                "en": "A webhook is only a notice"
+              },
+              "text": {
+                "pt": "O corpo do webhook é só um aviso: o pagamento, a nota ou o status da conta é lido de novo no Asaas, com a chave da conta certa, antes de qualquer mudança. Um corpo forjado não confirma pagamento.",
+                "en": "The webhook body is only a notice: the payment, invoice or account status is read again at Asaas, with the right account's key, before anything changes. A forged body cannot confirm a payment."
+              }
+            },
+            {
+              "title": {
+                "pt": "Idempotência",
+                "en": "Idempotency"
+              },
+              "text": {
+                "pt": "Cada evento é reivindicado de forma atômica pelo id do Asaas antes de ser tratado, então entregas repetidas ou simultâneas não repetem efeitos (e-mails, sala de vídeo, conversões). Se o tratamento falha, a reivindicação é devolvida e o Asaas reenvia.",
+                "en": "Each event is claimed atomically by its Asaas id before it is handled, so repeated or simultaneous deliveries do not repeat side effects (e-mails, video room, conversions). If handling fails, the claim is released and Asaas retries."
+              }
+            },
+            {
+              "title": {
+                "pt": "Conciliação de status",
+                "en": "Status reconciliation"
+              },
+              "text": {
+                "pt": "O estado do pagamento é aplicado à consulta de forma idempotente. Um pagamento só atualiza consultas do médico da própria subconta, e um pagamento pago nunca volta a falho por causa de um evento atrasado. O \"Já paguei\" do paciente consulta o Asaas direto (por checkout e por referência), com limite de frequência por consulta para não gastar a cota da API.",
+                "en": "The payment state is applied to the appointment idempotently. A payment only updates appointments of its own sub-account's doctor, and a paid payment never goes back to failed because of a late event. The patient's \"I already paid\" asks Asaas directly (by checkout and by reference), rate-limited per appointment so it does not burn the API quota."
+              }
+            },
+            {
+              "title": {
+                "pt": "Registro dos webhooks",
+                "en": "Webhook registration"
+              },
+              "text": {
+                "pt": "O da conta principal é criado ou atualizado a cada deploy, por um comando idempotente, e o de cada subconta é registrado quando ela é criada. Os eventos assinados cobrem pagamento, checkout, notas fiscais e status da conta.",
+                "en": "The main account's is created or updated on every deploy, by an idempotent command, and each sub-account's is registered when it is created. The subscribed events cover payment, checkout, invoices and account status."
+              }
+            },
+            {
+              "title": {
+                "pt": "Notas fiscais",
+                "en": "Invoices"
+              },
+              "text": {
+                "pt": "As NFS-e aplicáveis são emitidas pelo Asaas de forma automática depois do pagamento confirmado, com o status sincronizado por webhook. Cada nota só é atualizada pela conta que a emitiu, e os arquivos baixados têm limite de tamanho.",
+                "en": "The applicable NFS-e are issued through Asaas automatically once the payment is confirmed, with the status synchronized by webhook. Each invoice is only updated by the account that issued it, and downloaded files have a size limit."
+              }
+            },
+            {
+              "title": {
+                "pt": "Assinaturas",
+                "en": "Subscriptions"
+              },
+              "text": {
+                "pt": "As assinaturas e as cobranças recorrentes dos profissionais correm pela conta principal e são atualizadas pelos webhooks dela.",
+                "en": "The professionals' subscriptions and recurring charges run through the main account and are updated by its webhooks."
+              }
+            },
+            {
+              "title": {
+                "pt": "Cliente da API",
+                "en": "API client"
+              },
+              "text": {
+                "pt": "Fino, cada chamada informa em qual conta age (a principal ou a subconta), tem timeout de 15 s para que um Asaas lento não prenda requisições e nunca registra as chaves em log.",
+                "en": "Thin, each call states which account it acts on (the main one or a sub-account), has a 15 s timeout so a slow Asaas cannot hold requests, and never logs the keys."
+              }
+            },
+            {
+              "title": {
+                "pt": "Segredos",
+                "en": "Secrets"
+              },
+              "text": {
+                "pt": "A chave fica como segredo na AWS, é lida em tempo de execução e nunca aparece na tela; o ambiente (testes ou produção) é uma configuração.",
+                "en": "The key is kept as a secret on AWS, read at run time and never shown on screen; the environment (sandbox or production) is a setting."
+              }
+            },
+            {
+              "title": {
+                "pt": "Erros",
+                "en": "Errors"
+              },
+              "text": {
+                "pt": "O que o paciente pode corrigir aparece no formulário; um erro de configuração mostra uma mensagem genérica e avisa a equipe com o motivo exato, e a mensagem técnica do provedor nunca vai ao paciente.",
+                "en": "What the patient can fix appears in the form; a configuration error shows a generic message and alerts the team with the exact reason, and the provider's technical message never reaches the patient."
+              }
+            },
+            {
+              "title": {
+                "pt": "Testes sem rede",
+                "en": "Network-free tests"
+              },
+              "text": {
+                "pt": "Um servidor HTTP que imita o Asaas registra cada chamada e responde conforme o teste, então a integração é verificada sem o provedor.",
+                "en": "An HTTP server that imitates Asaas records every call and answers as the test defines, so the integration is verified without the provider."
+              }
+            }
           ]
         },
         {
@@ -1467,16 +1941,6 @@
             "pt": "Valores padrão e integrações da plataforma num só lugar, com busca por tela ou campo; as alterações passam pela mesma trilha de auditoria.",
             "en": "The platform's defaults and integrations in one place, searchable by screen or field; changes go through the same audit trail."
           },
-          "points": [
-            {
-              "pt": "As telas são agrupadas por tema (consultas, financeiro e integrações), e cada alteração fica na trilha de auditoria.",
-              "en": "Screens are grouped by theme (appointments, finance and integrations), and every change goes into the audit trail."
-            },
-            {
-              "pt": "As telas de regras comerciais e fiscais não são mostradas aqui.",
-              "en": "The screens for commercial and tax rules are not shown here."
-            }
-          ],
           "gallery": [
             {
               "src": "projetos/ipsiq/13-config-menu.webp",
@@ -1491,9 +1955,35 @@
                 "en": "Settings: the home menu, with screens by group and the search by screen or field. The descriptions of the commercial and tax screens were hidden."
               }
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Telas por tema",
+                "en": "Screens by theme"
+              },
+              "text": {
+                "pt": "As telas são agrupadas por tema (consultas, financeiro e integrações), e cada alteração fica na trilha de auditoria.",
+                "en": "Screens are grouped by theme (appointments, finance and integrations), and every change goes into the audit trail."
+              }
+            },
+            {
+              "title": {
+                "pt": "O que não é mostrado",
+                "en": "What is not shown"
+              },
+              "text": {
+                "pt": "As telas de regras comerciais e fiscais não são mostradas aqui.",
+                "en": "The screens for commercial and tax rules are not shown here."
+              }
+            }
           ]
         }
-      ]
+      ],
+      "cardText": {
+        "pt": "Plataforma de agendamento e pagamento de consultas em saúde mental, com página própria para cada médico e backoffice da equipe. Back-end em NestJS e front-end em React, com auditoria na mesma transação, pagamento com split via Asaas e LGPD desde o desenho.",
+        "en": "Platform for scheduling and paying for mental health consultations, with a dedicated page for each doctor and a team back office. NestJS back end and React front end, with an audit trail in the same transaction, split payments through Asaas and LGPD by design."
+      }
     },
     {
       "name": "Luhmera",

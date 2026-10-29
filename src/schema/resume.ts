@@ -89,12 +89,15 @@ const diagram = z.strictObject({
   stages: z.array(flowStage).min(2),
 })
 
+/** Blocos com título curto e texto. */
+const topics = z.array(z.strictObject({ title: localized, text: localized })).min(1)
+
 const area = z.strictObject({
   title: localized,
   summary: localized.optional(),
   points: z.array(highlight).optional(),
   /** Blocos com título curto e texto, para explicar a parte em tópicos em vez de marcadores. */
-  topics: z.array(z.strictObject({ title: localized, text: localized })).min(1).optional(),
+  topics: topics.optional(),
   diagrams: z.array(diagram).optional(),
   snippets: z.array(snippet).optional(),
   gallery: z.array(galleryItem).min(1).optional(),
@@ -118,7 +121,7 @@ const project = z
     diagrams: z.array(diagram).optional(),
     highlights: z.array(highlight).min(1),
     /** Seções temáticas, só na página do projeto (o card do currículo mostra apenas `highlights`). */
-    detailSections: z.array(z.strictObject({ title: localized, items: z.array(highlight).min(1) })).optional(),
+    detailSections: z.array(z.strictObject({ title: localized, topics: topics })).optional(),
     /** Nota em destaque na página do projeto (ex.: o alcance do que foi descrito). */
     notice: localized.optional(),
     /** Partes do sistema (barra lateral da página do projeto), cada uma com explicação e telas. */

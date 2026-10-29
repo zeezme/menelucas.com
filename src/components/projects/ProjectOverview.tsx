@@ -2,6 +2,7 @@ import { pick, type Translator } from '../../internationalization'
 import { projectTitle, type Locale, type Project } from '../../schema/resume'
 import { BulletList } from '../BulletList'
 import { FlowDiagram } from './FlowDiagram'
+import { TopicList } from './TopicList'
 
 interface ProjectOverviewProps {
   project: Project
@@ -29,7 +30,7 @@ export const ProjectOverview = ({ project, id, locale, translate }: ProjectOverv
     {(project.detailSections ?? []).map((section) => (
       <div key={section.title.en} className="flex flex-col gap-3">
         <h4 className="text-lg font-semibold leading-snug tracking-title">{pick(section.title, locale)}</h4>
-        <BulletList items={section.items} locale={locale} />
+        <TopicList topics={section.topics} locale={locale} />
       </div>
     ))}
     {project.notice ? (
