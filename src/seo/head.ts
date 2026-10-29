@@ -106,8 +106,8 @@ export const buildHeadMeta = (
   }
 
   return {
-    title: label,
-    description,
+    title: `${basics.name} — ${role}`,
+    description: `${basics.name}: ${description}`,
     keywords: keywords.join(', '),
     canonical: pageUrl(locale),
     alternates,
