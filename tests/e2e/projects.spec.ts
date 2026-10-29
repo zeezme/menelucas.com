@@ -139,13 +139,10 @@ for (const pp of PROJECT_PAGES) {
   test.describe(`projeto confidencial em ${pp.path}`, () => {
     test.use({ locale: pp.locale })
 
-    test('vem depois do primeiro e abre pelo link do currículo', async ({ page }) => {
-      const resumePath = pp.locale === 'pt-BR' ? '/' : '/en/'
-      await page.goto(resumePath)
-      const card = page.locator('section[aria-labelledby="projects-title"] article').nth(1)
-      await card.getByRole('link').click()
-      await expect(page).toHaveURL(new RegExp(`${pp.path}#clinica-overview$`))
+    test('vem depois do primeiro e o link do endereço antigo (com #) continua abrindo a parte certa', async ({ page }) => {
+      await page.goto(`${pp.path}#clinica-overview`)
       await expect(page.locator('#clinica-overview')).toBeVisible()
+      await expect(page.locator('#ipsiq-overview')).toBeHidden()
       await expect(page.locator('#clinica-overview h3')).toBeInViewport()
     })
 

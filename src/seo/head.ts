@@ -1,6 +1,6 @@
 import type { Locale, Resume } from '../schema/resume'
-import { showcaseProjects } from '../schema/resume'
-import { firstSentence, localePath, pagePath, pick, roleOf, type PageId } from '../internationalization'
+import { projectSlug, projectTitle, showcaseProjects } from '../schema/resume'
+import { firstSentence, localePath, pagePath, pick, projectPath, roleOf, type PageId } from '../internationalization'
 import { openGraphImagePath, type SiteConfig } from '../site'
 
 /** Espaço que não quebra linha: mantém o cargo inteiro numa linha só quando o navegador quebra o título (ex.: na dica da aba). */
@@ -47,6 +47,7 @@ const handleOf = (profileUrl: string): string => new URL(profileUrl).pathname.sp
  * @param site Configuração de publicação.
  * @param page Página a descrever.
  * @param pageLabel Nome da página nos títulos que não vêm do currículo (ex.: "Projetos").
+ * @param projectSlugOfPage Quando informado, descreve a página própria desse projeto.
  */
 export const buildHeadMeta = (
   resume: Resume,
@@ -54,13 +55,20 @@ export const buildHeadMeta = (
   site: SiteConfig,
   page: PageId = 'resume',
   pageLabel = '',
+  projectSlugOfPage?: string,
 ): HeadMeta => {
   const { basics } = resume
   const absoluteUrl = (path: string) => `${site.origin}${path}`
   const image = absoluteUrl(`/${openGraphImagePath(site, locale)}`)
   const label = pick(basics.label, locale)
   const role = roleOf(label)
-  const pageUrl = (targetLocale: Locale) => absoluteUrl(pagePath(page, targetLocale, site.base))
+  const standaloneProject = projectSlugOfPage
+    ? showcaseProjects(resume).find((project) => projectSlug(project) === projectSlugOfPage)
+    : undefined
+  const pageUrl = (targetLocale: Locale) =>
+    absoluteUrl(
+      standaloneProject ? projectPath(projectSlug(standaloneProject), targetLocale, site.base) : pagePath(page, targetLocale, site.base),
+    )
   const resumeUrl = (targetLocale: Locale) => absoluteUrl(localePath(targetLocale, site.base))
   const description = firstSentence(pick(basics.summary, locale))
   const keywords = skillKeywords(resume, locale)
@@ -118,6 +126,19 @@ export const buildHeadMeta = (
       : {}),
   }
 
+  if (standaloneProject) {
+    return {
+      title: `${projectTitle(standaloneProject, locale)} | ${pageLabel} | ${basics.name}`,
+      description: pick(standaloneProject.description, locale),
+      keywords: '',
+      canonical: pageUrl(locale),
+      alternates,
+      image,
+      profileLinks,
+      jsonLd: { '@context': 'https://schema.org', '@graph': [person] },
+    }
+  }
+
   if (page === 'projects') {
     const firstProject = showcaseProjects(resume)[0]
     return {
@@ -164,12 +185,22 @@ export const buildHeadMeta = (
  * @param site Configuração de publicação.
  * @param pages Páginas publicadas.
  * @param now Data usada em `lastmod`.
+ * @param projectSlugs Projetos com página própria.
  */
-export const buildSitemap = (site: SiteConfig, pages: PageId[] = ['resume'], now = new Date()): string => {
+export const buildSitemap = (
+  site: SiteConfig,
+  pages: PageId[] = ['resume'],
+  now = new Date(),
+  projectSlugs: string[] = [],
+): string => {
   const lastModified = now.toISOString().slice(0, 10)
-  const entries = pages
-    .flatMap((page) => {
-      const urls = (['pt', 'en'] as const).map((locale) => `${site.origin}${pagePath(page, locale, site.base)}`)
+  const addresses: ((locale: Locale) => string)[] = [
+    ...pages.map((page) => (locale: Locale) => pagePath(page, locale, site.base)),
+    ...projectSlugs.map((slug) => (locale: Locale) => projectPath(slug, locale, site.base)),
+  ]
+  const entries = addresses
+    .flatMap((addressOf) => {
+      const urls = (['pt', 'en'] as const).map((locale) => `${site.origin}${addressOf(locale)}`)
       const alternateLinks = [
         `    <xhtml:link rel="alternate" hreflang="pt" href="${urls[0]}"/>`,
         `    <xhtml:link rel="alternate" hreflang="en" href="${urls[1]}"/>`,

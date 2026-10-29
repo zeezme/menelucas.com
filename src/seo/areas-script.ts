@@ -93,7 +93,7 @@ export const areasScript = `(() => {
         const link = openLink(projects[activeProject]);
         status.textContent = status.getAttribute('data-opened-label') + ': ' + link.textContent;
       }
-      if (moveFocus) target.querySelector('h3')?.focus({ preventScroll: true });
+      if (moveFocus) target.querySelector('h2, h3')?.focus({ preventScroll: true });
       else if (activatedLink) activatedLink.focus({ preventScroll: true });
       moveFocus = false;
       activatedLink = null;

@@ -1,8 +1,9 @@
 import { renderToStaticMarkup } from 'react-dom/server'
-import { createTranslator, pagePath, type PageId } from './internationalization'
+import { createTranslator, pagePath, projectPath, type PageId } from './internationalization'
+import { ProjectPage } from './pages/ProjectPage'
 import { ProjectsPage } from './pages/ProjectsPage'
 import { ResumePage } from './pages/ResumePage'
-import type { InterfaceTexts, Locale, Resume } from './schema/resume'
+import { projectSlug, showcaseProjects, type InterfaceTexts, type Locale, type Resume } from './schema/resume'
 import { buildHeadMeta, openGraphLocale } from './seo/head'
 import { redirectScript } from './seo/redirect-script'
 import { THEME_COLORS, themeScript } from './seo/theme-script'
@@ -16,18 +17,23 @@ interface RenderInput {
   site: SiteConfig
   /** Qual página renderizar (padrão: currículo). */
   page?: PageId
+  /** Com `page: 'projects'`, renderiza só a página própria deste projeto. */
+  projectSlug?: string
   /** CSS já compilado, embutido na página (sem requisição extra). */
   css: string
 }
 
 /** Documento HTML completo: `<head>` com SEO, scripts inline e CSS, e o corpo da página escolhida. */
-const HtmlDocument = ({ resume, interfaceTexts, locale, site, css, page = 'resume' }: RenderInput) => {
-  const meta = buildHeadMeta(resume, locale, site, page, createTranslator(interfaceTexts, locale)('projects'))
+const HtmlDocument = ({ resume, interfaceTexts, locale, site, css, page = 'resume', projectSlug: slug }: RenderInput) => {
+  const meta = buildHeadMeta(resume, locale, site, page, createTranslator(interfaceTexts, locale)('projects'), slug)
+  const standaloneProject = slug ? showcaseProjects(resume).find((project) => projectSlug(project) === slug) : undefined
   const otherLocale: Locale = locale === 'pt' ? 'en' : 'pt'
   return (
     <html
       lang={locale === 'pt' ? 'pt-BR' : 'en'}
-      {...(locale === 'pt' ? { 'data-en-url': pagePath(page, 'en', site.base) } : {})}
+      {...(locale === 'pt'
+        ? { 'data-en-url': standaloneProject ? projectPath(slug ?? '', 'en', site.base) : pagePath(page, 'en', site.base) }
+        : {})}
     >
       <head>
         <meta charSet="utf-8" />
@@ -91,6 +97,8 @@ const HtmlDocument = ({ resume, interfaceTexts, locale, site, css, page = 'resum
       <body>
         {page === 'resume' ? (
           <ResumePage resume={resume} interfaceTexts={interfaceTexts} locale={locale} base={site.base} />
+        ) : standaloneProject ? (
+          <ProjectPage resume={resume} interfaceTexts={interfaceTexts} project={standaloneProject} locale={locale} base={site.base} />
         ) : (
           <ProjectsPage resume={resume} interfaceTexts={interfaceTexts} locale={locale} base={site.base} />
         )}

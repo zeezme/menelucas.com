@@ -4,6 +4,8 @@ import { showcaseProjects, type Locale, type Resume } from '../schema/resume'
 interface TabNavigationProps {
   resume: Resume
   currentPage: PageId
+  /** Na página de um projeto a aba Projetos continua marcada, mas não é a página exata. */
+  isChildPage?: boolean
   locale: Locale
   base: string
   translate: Translator
@@ -13,7 +15,7 @@ interface TabNavigationProps {
  * Abas "Currículo | Projetos" no topo. Só existem se algum projeto tiver partes do sistema:
  * tirar o projeto de `resume.json` remove a aba e a página.
  */
-export const TabNavigation = ({ resume, currentPage, locale, base, translate }: TabNavigationProps) => {
+export const TabNavigation = ({ resume, currentPage, isChildPage = false, locale, base, translate }: TabNavigationProps) => {
   if (showcaseProjects(resume).length === 0) return null
   const tabs: { page: PageId; label: string }[] = [
     { page: 'resume', label: translate('tabResume') },
@@ -29,7 +31,7 @@ export const TabNavigation = ({ resume, currentPage, locale, base, translate }: 
             <li key={tab.page}>
               <a
                 href={pagePath(tab.page, locale, base)}
-                aria-current={isCurrent ? 'page' : undefined}
+                aria-current={isCurrent ? (isChildPage ? 'true' : 'page') : undefined}
                 className={`inline-flex min-h-[42px] items-center justify-center px-3 text-sm sm:px-4 font-medium transition-colors ${cornerClass} ${
                   isCurrent ? 'bg-surface-3 text-ink' : 'text-ink-subtle hover:text-ink'
                 }`}

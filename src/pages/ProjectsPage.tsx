@@ -1,7 +1,7 @@
 import { PageShell } from '../components/PageShell'
 import { ProjectDetail } from '../components/projects/ProjectDetail'
 import { ProjectTabs } from '../components/projects/ProjectTabs'
-import { createTranslator } from '../internationalization'
+import { createTranslator, pagePath } from '../internationalization'
 import { projectSlug, showcaseProjects, type InterfaceTexts, type Locale, type Resume } from '../schema/resume'
 import { areasScript } from '../seo/areas-script'
 
@@ -19,7 +19,14 @@ export const ProjectsPage = ({ resume, interfaceTexts, locale, base }: ProjectsP
   const projects = showcaseProjects(resume)
   const hasTabs = projects.length > 1
   return (
-    <PageShell resume={resume} currentPage="projects" locale={locale} base={base} translate={translate}>
+    <PageShell
+      resume={resume}
+      currentPage="projects"
+      hrefForLocale={(targetLocale) => pagePath('projects', targetLocale, base)}
+      locale={locale}
+      base={base}
+      translate={translate}
+    >
       <main id="content" tabIndex={-1} className="flex flex-col gap-10 outline-none">
         <h1 className="text-balance text-[1.75rem] font-semibold leading-[1.1] tracking-display sm:text-[2.25rem]">
           {translate('projects')}

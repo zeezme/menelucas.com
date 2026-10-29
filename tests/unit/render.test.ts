@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { interfaceTexts, resume } from '../../src/content'
 import { detectLocale, firstSentence, formatYearMonth, localePath } from '../../src/internationalization'
 import { renderPage } from '../../src/render'
+import { projectSlug, projectTitle } from '../../src/schema/resume'
 import { buildHeadMeta, buildRobots, buildSitemap, skillKeywords } from '../../src/seo/head'
 import { siteConfig } from '../../src/site'
 
@@ -136,7 +137,7 @@ describe('seção Projetos', () => {
     const project = resume.projects?.[0]
     expect(section).toContain(project?.name ?? '')
     expect(section).toContain(`<time datetime="${project?.startDate}">`)
-    expect(section).toContain(locale === 'pt' ? 'href="/projetos/"' : 'href="/en/projects/"')
+    expect(section).toContain(`href="${locale === 'pt' ? '/projetos/' : '/en/projects/'}${project ? projectSlug(project) : ''}/"`)
     const order = ['experience-title', 'projects-title', 'education-title'].map((id) => out.indexOf(`id="${id}"`))
     expect(order).toEqual([...order].sort((a, b) => a - b))
     expect(order.every((i) => i > 0)).toBe(true)
@@ -248,10 +249,10 @@ describe('projeto confidencial', () => {
     expect(showcase.indexOf(secret[0] as (typeof showcase)[number])).toBeGreaterThan(0)
   })
 
-  it('o card no currículo leva à seção do projeto em /projetos/ e /en/projects/', () => {
+  it('o card no currículo leva à página própria do projeto, em /projetos/<projeto>/ e /en/projects/<projeto>/', () => {
     for (const [locale, base] of [['pt', '/projetos/'], ['en', '/en/projects/']] as const) {
       const out = html(locale)
-      for (const p of secret) expect(out).toContain(`href="${base}#${p.slug}-overview"`)
+      for (const p of secret) expect(out).toContain(`href="${base}${projectSlug(p)}/"`)
     }
   })
 
@@ -273,5 +274,61 @@ describe('termos do projeto confidencial', () => {
     for (const text of [...pages, JSON.stringify(resume), JSON.stringify(interfaceTexts)]) {
       expect(text.replaceAll('Luhmera', '')).not.toMatch(/luhmera|LM Solutions/i)
     }
+  })
+})
+
+describe('página própria de um projeto', () => {
+  const slugs = showcase.map(projectSlug)
+  const projectPage = (locale: 'pt' | 'en', slug: string) =>
+    renderPage({ resume, interfaceTexts, locale, site, css: '', page: 'projects', projectSlug: slug })
+
+  it('tem um único h1 com o título do projeto, o caminho de volta para a lista e as partes como h2', () => {
+    for (const slug of slugs) {
+      const project = showcase.find((candidate) => projectSlug(candidate) === slug)
+      for (const locale of ['pt', 'en'] as const) {
+        const out = projectPage(locale, slug)
+        expect(out.match(/<h1[ >]/g)).toHaveLength(1)
+        expect(out).toContain(`>${project ? projectTitle(project, locale) : ''}</h1>`)
+        expect(out).toContain(`href="${locale === 'pt' ? '/projetos/' : '/en/projects/'}"`)
+        expect(out).not.toMatch(/<h4[ >]/)
+        expect((out.match(/<h2[ >]/g) ?? []).length).toBeGreaterThan(5)
+      }
+    }
+  })
+
+  it('tem título, descrição, canonical e hreflang próprios, e redireciona PT → EN para a própria página', () => {
+    for (const slug of slugs) {
+      const project = showcase.find((candidate) => projectSlug(candidate) === slug)
+      const pt = projectPage('pt', slug)
+      const meta = buildHeadMeta(resume, 'pt', site, 'projects', 'Projetos', slug)
+      expect(meta.title).toBe(`${project ? projectTitle(project, 'pt') : ''} | Projetos | ${resume.basics.name}`)
+      expect(meta.description).toBe(project?.description.pt)
+      expect(pt).toContain(`<link rel="canonical" href="https://menelucas.com/projetos/${slug}/"/>`)
+      expect(pt).toContain(`hreflang="en" href="https://menelucas.com/en/projects/${slug}/"`)
+      expect(pt).toMatch(new RegExp(`<html[^>]*data-en-url="/en/projects/${slug}/"`))
+      expect(projectPage('en', slug)).not.toMatch(/<html[^>]*data-en-url/)
+    }
+  })
+
+  it('entra no sitemap, em PT e EN, com as alternativas de idioma', () => {
+    const xml = buildSitemap(site, ['resume', 'projects'], new Date('2026-10-29T12:00:00Z'), slugs)
+    for (const slug of slugs) {
+      expect(xml).toContain(`<loc>https://menelucas.com/projetos/${slug}/</loc>`)
+      expect(xml).toContain(`<loc>https://menelucas.com/en/projects/${slug}/</loc>`)
+    }
+    expect(xml.match(/<url>/g)).toHaveLength(4 + slugs.length * 2)
+  })
+
+  it('não coloca nada do projeto nos dados estruturados', () => {
+    for (const slug of slugs) {
+      const project = showcase.find((candidate) => projectSlug(candidate) === slug)
+      const { jsonLd } = buildHeadMeta(resume, 'pt', site, 'projects', 'Projetos', slug)
+      const text = JSON.stringify(jsonLd)
+      for (const value of [project?.name, project?.title?.pt, project?.cardText?.pt]) if (value) expect(text).not.toContain(value)
+    }
+  })
+
+  it('um endereço de projeto desconhecido cai na página de projetos, sem quebrar', () => {
+    expect(() => projectPage('pt', 'nao-existe')).not.toThrow()
   })
 })

@@ -4,9 +4,9 @@ import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } fr
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { interfaceTexts, resume } from '../src/content'
-import { pageFile, type PageId } from '../src/internationalization'
+import { pageFile, projectFile, type PageId } from '../src/internationalization'
 import { renderPage } from '../src/render'
-import { LOCALES, showcaseProjects } from '../src/schema/resume'
+import { LOCALES, projectSlug, showcaseProjects } from '../src/schema/resume'
 import { buildRobots, buildSitemap } from '../src/seo/head'
 import { isIndexable, openGraphImagePath, openGraphImageSource, siteConfig } from '../src/site'
 
@@ -60,8 +60,16 @@ export const build = (): void => {
       writeFileSync(file, renderPage({ resume, interfaceTexts, locale, site, css, page }))
     }
   }
+  const projectSlugs = showcaseProjects(resume).map(projectSlug)
+  for (const slug of projectSlugs) {
+    for (const locale of LOCALES) {
+      const file = join(distDir, projectFile(slug, locale))
+      mkdirSync(dirname(file), { recursive: true })
+      writeFileSync(file, renderPage({ resume, interfaceTexts, locale, site, css, page: 'projects', projectSlug: slug }))
+    }
+  }
   if (isIndexable(site)) {
-    writeFileSync(join(distDir, 'sitemap.xml'), buildSitemap(site, pages))
+    writeFileSync(join(distDir, 'sitemap.xml'), buildSitemap(site, pages, new Date(), projectSlugs))
     writeFileSync(join(distDir, 'robots.txt'), buildRobots(site))
   }
   const sizeInKilobytes = (path: string) => (readFileSync(join(distDir, path)).length / 1024).toFixed(1)
