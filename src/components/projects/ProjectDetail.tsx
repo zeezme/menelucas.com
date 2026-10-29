@@ -1,4 +1,4 @@
-import { pick, projectPath, type Translator } from '../../internationalization'
+import { pick, type Translator } from '../../internationalization'
 import { projectSlug, projectTitle, toSlug, type Locale, type Project } from '../../schema/resume'
 import { DateRange } from '../DateRange'
 import { Heading, type HeadingLevel } from '../Heading'
@@ -38,34 +38,22 @@ export const ProjectDetail = ({ project, hasTabs, standalone = false, locale, ba
       data-project={slug}
       className={`flex flex-col gap-8 ${hasTabs ? 'pt-2' : 'border-t border-hairline pt-8'}`}
     >
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-        <div>
-          <Heading
-            level={levels.project}
-            id={`${slug}-title`}
-            translate={project.title ? undefined : 'no'}
-            className="text-2xl font-semibold leading-tight tracking-title sm:text-[1.75rem]"
-          >
-            {title}
-          </Heading>
-          <p className="mt-2 text-sm text-ink-muted">
-            <span className="font-medium text-ink">{pick(project.roles, locale)}</span>
-            <span aria-hidden="true"> · </span>
-            <span className="tabular-nums">
-              <DateRange startDate={project.startDate} endDate={project.endDate} locale={locale} presentLabel={translate('present')} />
-            </span>
-          </p>
-        </div>
-        {standalone ? null : (
-          <a
-            href={projectPath(slug, locale, base)}
-            className="inline-flex min-h-touch shrink-0 items-center gap-1 text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"
-          >
-            {translate('openProjectPage')}
-            <span className="sr-only">: {title}</span>
-            <span aria-hidden="true">→</span>
-          </a>
-        )}
+      <header>
+        <Heading
+          level={levels.project}
+          id={`${slug}-title`}
+          translate={project.title ? undefined : 'no'}
+          className="text-2xl font-semibold leading-tight tracking-title sm:text-[1.75rem]"
+        >
+          {title}
+        </Heading>
+        <p className="mt-2 text-sm text-ink-muted">
+          <span className="font-medium text-ink">{pick(project.roles, locale)}</span>
+          <span aria-hidden="true"> · </span>
+          <span className="tabular-nums">
+            <DateRange startDate={project.startDate} endDate={project.endDate} locale={locale} presentLabel={translate('present')} />
+          </span>
+        </p>
       </header>
 
       <div className="grid gap-8 md:grid-cols-[13.5rem_minmax(0,1fr)] md:items-start">

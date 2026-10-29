@@ -123,22 +123,3 @@ for (const { locale, projects, resume, otherProjects, switchTo } of LOCALES) {
     })
   })
 }
-
-for (const { locale, projects } of LOCALES) {
-  test.describe(`a lista de projetos em ${projects} leva às páginas próprias`, () => {
-    test.use({ locale })
-
-    test('cada projeto tem o link "Abrir a página do projeto" para o seu endereço', async ({ page }) => {
-      await page.goto(projects)
-      for (const { slug, title } of PROJECTS) {
-        const link = page.locator(`article[data-project="${slug}"] a[href="${projects}${slug}/"]`)
-        await expect(link).toHaveCount(1)
-        await expect(link).toContainText(title)
-        await expect(link).toContainText(locale === 'pt-BR' ? 'Abrir a página do projeto' : 'Open the project page')
-      }
-      const first = page.locator(`article[data-project="${PROJECTS[0]?.slug}"] a[href$="/"]`).filter({ hasText: /página do projeto|project page/ })
-      await first.click()
-      await expect(page).toHaveURL(new RegExp(`${projects}${PROJECTS[0]?.slug}/$`))
-    })
-  })
-}
