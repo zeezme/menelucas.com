@@ -26,7 +26,7 @@ export const PageShell = ({ resume, currentPage, locale, base, translate, childr
   <>
     <SkipLink translate={translate} />
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-[max(1rem,env(safe-area-inset-left))] pb-[max(4rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))] sm:pt-16">
-      <header className="flex items-center justify-between gap-2 print:hidden sm:gap-4">
+      <header className="flex items-center justify-between gap-2 print:hidden max-[359px]:flex-wrap max-[359px]:gap-y-3 sm:gap-4">
         <TabNavigation resume={resume} currentPage={currentPage} locale={locale} base={base} translate={translate} />
         <div className="flex items-center gap-2 sm:gap-3">
           <LanguageToggle
