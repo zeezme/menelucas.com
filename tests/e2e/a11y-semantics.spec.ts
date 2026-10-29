@@ -76,7 +76,7 @@ test.describe('nomes acessíveis específicos', () => {
   })
 
   test('blocos planejados dos diagramas têm texto para leitores de tela, além do tracejado', async ({ page }) => {
-    await page.goto('/projetos/#clinica-audit-trail')
+    await page.goto('/projetos/clinica/#clinica-audit-trail')
     const planned = page.locator('article [class*="border-dashed"]')
     const count = await planned.count()
     expect(count).toBeGreaterThan(0)

@@ -155,17 +155,39 @@ describe('seção Projetos', () => {
 
 describe('página Projetos', () => {
   const projectsHtml = (locale: 'pt' | 'en', r = resume) => renderPage({ resume: r, interfaceTexts, locale, site, css: '', page: 'projects' })
+  const projectPages = (locale: 'pt' | 'en') =>
+    showcase.map((project) =>
+      renderPage({ resume, interfaceTexts, locale, site, css: '', page: 'projects', projectSlug: projectSlug(project) }),
+    )
 
   it.each([
     ['pt', 'Projetos', 'Currículo'],
     ['en', 'Projects', 'Resume'],
-  ] as const)('%s: h1, abas e imagens acessíveis', (locale, title, tab) => {
+  ] as const)('%s: a lista é um menu de links, um por projeto, para a página própria dele', (locale, title, tab) => {
     const out = projectsHtml(locale)
     expect(out.match(/<h1[ >]/g)).toHaveLength(1)
     expect(out).toContain(`>${title}</h1>`)
     expect(out).toContain('aria-current="page"')
     expect(out).toContain(`>${tab}</a>`)
-    const imgs = out.match(/<img [^>]*>/g) ?? []
+    const base = locale === 'pt' ? '/projetos/' : '/en/projects/'
+    const menuLabel = locale === 'pt' ? 'Menu de projetos' : 'Projects menu'
+    const menu = new RegExp(`<nav aria-label="${menuLabel}">.*?</nav>`, 's').exec(out)?.[0] ?? ''
+    for (const project of showcase) {
+      expect(menu).toContain(`href="${base}${projectSlug(project)}/"`)
+      expect(menu).toContain(`>${projectTitle(project, locale)}</a>`)
+    }
+    expect(out).not.toContain('data-areas-nav')
+    expect(out).not.toMatch(/<img /)
+  })
+
+  it('o endereço antigo com # (ex.: /projetos/#clinica-overview) leva à página do projeto', () => {
+    const out = projectsHtml('pt')
+    expect(out).toContain('data-project-slug="clinica"')
+    expect(out).toContain("hash.startsWith(candidate.getAttribute('data-project-slug') + '-')")
+  })
+
+  it.each(['pt', 'en'] as const)('%s: as imagens de cada projeto são acessíveis e as partes aparecem nas páginas próprias', (locale) => {
+    const imgs = projectPages(locale).flatMap((out) => out.match(/<img [^>]*>/g) ?? [])
     expect(imgs).toHaveLength(galleryItems.length)
     for (const img of imgs) {
       expect(img).toMatch(/ alt="[^"]{10,}"/)
@@ -176,32 +198,34 @@ describe('página Projetos', () => {
     }
   })
 
-  it.each(['pt', 'en'] as const)('%s: barra lateral com as partes do sistema, cada uma com seu painel', (locale) => {
-    const out = projectsHtml(locale)
-    const h3 = [...out.matchAll(/<h3[^>]*>(.*?)<\/h3>/g)].map((m) => m[1])
-    expect(h3).toHaveLength(allAreas.length + showcase.length)
-    const navs = [...out.matchAll(/<nav[^>]*data-areas-nav[^>]*>.*?<\/nav>/gs)].map((m) => m[0])
-    expect(navs).toHaveLength(showcase.length)
-    const links = navs.flatMap((nav) => [...nav.matchAll(/<a href="#([a-z0-9-]+)"[^>]*>(.*?)<\/a>/g)])
-    expect(links.map((m) => m[2])).toEqual(h3)
-    for (const m of links) expect(out).toContain(`<section id="${m[1]}"`)
+  it.each(['pt', 'en'] as const)('%s: cada página tem a barra lateral com as partes do sistema, cada uma com seu painel', (locale) => {
+    for (const [index, out] of projectPages(locale).entries()) {
+      const project = showcase[index]
+      const h2 = [...out.matchAll(/<h2[^>]*>(.*?)<\/h2>/g)].map((m) => m[1])
+      expect(h2).toHaveLength((project?.areas?.length ?? 0) + 1)
+      const navs = [...out.matchAll(/<nav[^>]*data-areas-nav[^>]*>.*?<\/nav>/gs)].map((m) => m[0])
+      expect(navs).toHaveLength(1)
+      const links = [...(navs[0] ?? '').matchAll(/<a href="#([a-z0-9-]+)"[^>]*>(.*?)<\/a>/g)]
+      expect(links.map((m) => m[2])).toEqual(h2)
+      for (const m of links) expect(out).toContain(`<section id="${m[1]}"`)
+    }
   })
 
   it.each(['pt', 'en'] as const)('%s: visão geral com as seções temáticas e a nota', (locale) => {
-    const out = projectsHtml(locale)
-    const h4 = [...out.matchAll(/<h4[^>]*>(.*?)<\/h4>/g)].map((m) => m[1])
-    expect(h4).toHaveLength(showcase.flatMap((p) => p.detailSections ?? []).length)
-    const asides = out.match(/<aside[ >]/g) ?? []
+    const pages = projectPages(locale)
+    const h3 = pages.flatMap((out) => [...out.matchAll(/<h3[^>]*>(.*?)<\/h3>/g)].map((m) => m[1]))
+    expect(h3).toHaveLength(showcase.flatMap((p) => p.detailSections ?? []).length)
+    const asides = pages.flatMap((out) => out.match(/<aside[ >]/g) ?? [])
     expect(asides).toHaveLength(showcase.filter((p) => p.notice).length)
   })
 
   it.each(['pt', 'en'] as const)('%s: blocos de código rolam com teclado e cada diagrama vira uma lista ordenada', (locale) => {
-    const out = projectsHtml(locale)
+    const joined = projectPages(locale).join('')
     const snippets = allAreas.flatMap((a) => a.snippets ?? []).length
     const diagrams = allAreas.flatMap((a) => a.diagrams ?? []).length + showcase.flatMap((p) => p.diagrams ?? []).length
-    expect(out.match(/<pre[ >]/g) ?? []).toHaveLength(snippets)
-    expect(out.match(/<pre tabindex="0"/g) ?? []).toHaveLength(snippets)
-    expect(out.match(/<figure[^>]*><div[^>]*><p[^>]*>[^<]*<\/p><ol/g) ?? []).toHaveLength(diagrams)
+    expect(joined.match(/<pre[ >]/g) ?? []).toHaveLength(snippets)
+    expect(joined.match(/<pre tabindex="0"/g) ?? []).toHaveLength(snippets)
+    expect(joined.match(/<figure[^>]*><div[^>]*><p[^>]*>[^<]*<\/p><ol/g) ?? []).toHaveLength(diagrams)
   })
 
   it('tem hreflang, canonical próprio e redireciona PT→EN só na versão PT', () => {

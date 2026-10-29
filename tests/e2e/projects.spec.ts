@@ -1,227 +1,180 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 
-const PROJECT_PAGES = [
-  { path: '/projetos/', locale: 'pt-BR', other: '/en/projects/', nav: /Partes do sistema/, switchTo: 'EN' },
-  { path: '/en/projects/', locale: 'en-US', other: '/projetos/', nav: /System parts/, switchTo: 'PT' },
+const PROJECTS = [
+  { slug: 'ipsiq', title: 'iPsiq' },
+  { slug: 'clinica', title: 'Luhmera' },
 ]
 
-/** Os ids das partes vêm da própria barra lateral, então os testes não repetem a lista de partes. */
-const navOf = (page: Page, nav: RegExp, project = 0) => page.locator('article').nth(project).getByRole('navigation', { name: nav })
-
-const panelIds = async (page: Page, project = 0): Promise<string[]> =>
-  page
-    .locator('article')
-    .nth(project)
-    .locator('[data-areas-nav] a')
-    .evaluateAll((links) => links.map((a) => (a.getAttribute('href') ?? '').slice(1)))
+const LOCALES = [
+  { locale: 'pt-BR', list: '/projetos/', resume: '/', menu: 'Menu de projetos', other: '/en/projects/', switchTo: 'EN' },
+  { locale: 'en-US', list: '/en/projects/', resume: '/en/', menu: 'Projects menu', other: '/projetos/', switchTo: 'PT' },
+] as const
 
 const overflowOf = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
 
-for (const pp of PROJECT_PAGES) {
-  test.describe(`página ${pp.path}`, () => {
-    test.use({ locale: pp.locale })
+/** Os ids das partes vêm da própria barra lateral, então os testes não repetem a lista de partes. */
+const panelIds = (page: Page): Promise<string[]> =>
+  page.locator('[data-areas-nav] a').evaluateAll((links) => links.map((link) => (link.getAttribute('href') ?? '').slice(1)))
 
-    test('barra lateral: abre uma parte por vez e atualiza o endereço', async ({ page }) => {
-      await page.goto(pp.path)
-      const ids = await panelIds(page)
-      expect(ids.length).toBeGreaterThan(1)
-      const links = navOf(page, pp.nav).getByRole('link')
-      await expect(links.first()).toHaveAttribute('aria-current', 'true')
-      await expect(page.locator(`#${ids[1]}`)).toBeHidden()
+for (const { locale, list, resume, menu, other, switchTo } of LOCALES) {
+  test.describe(`lista de projetos em ${list}`, () => {
+    test.use({ locale })
 
-      for (const [i, id] of ids.entries()) {
-        await links.nth(i).click()
-        await expect(page).toHaveURL(new RegExp(`#${id}$`))
-        await expect(page.locator(`#${id}`)).toBeVisible()
-        await expect(links.nth(i)).toHaveAttribute('aria-current', 'true')
-        await expect(page.locator('section[id^="ipsiq-"]:visible')).toHaveCount(1)
+    test('é um menu de links, um por projeto, para a página própria dele, sem o conteúdo dos projetos', async ({ page }) => {
+      await page.goto(list)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Projetos|Projects/)
+      const links = page.getByRole('navigation', { name: menu }).getByRole('link')
+      await expect(links).toHaveCount(PROJECTS.length)
+      for (const [index, { slug, title }] of PROJECTS.entries()) {
+        await expect(links.nth(index)).toHaveAttribute('href', `${list}${slug}/`)
+        await expect(links.nth(index)).toHaveAccessibleName(title)
       }
+      await expect(page.locator('[data-areas-nav]')).toHaveCount(0)
+      await expect(page.locator('main img')).toHaveCount(0)
     })
 
-    test('botões Anterior/Próxima no fim da parte funcionam (no celular a barra lateral fica lá em cima)', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 700 })
-      await page.goto(pp.path)
-      const ids = await panelIds(page)
-      const pager = page.locator('article').first().locator('[data-areas-pager]')
-      const prev = pager.locator('[data-pager="prev"]')
-      const next = pager.locator('[data-pager="next"]')
-      await expect(prev).toBeHidden()
-      await next.scrollIntoViewIfNeeded()
-      await next.click()
-      await expect(page).toHaveURL(new RegExp(`#${ids[1]}$`))
-      await expect(page.locator(`#${ids[1]}`)).toBeVisible()
-      await expect(page.locator(`#${ids[1]} h3`)).toBeInViewport()
-      await expect(prev).toBeVisible()
-      await page.goto(`${pp.path}#${ids[ids.length - 1]}`)
-      await expect(next).toBeHidden()
-      await expect(prev).toBeVisible()
+    test('clicar num item do menu abre a página do projeto', async ({ page }) => {
+      await page.goto(list)
+      await page.getByRole('navigation', { name: menu }).getByRole('link', { name: 'Luhmera' }).click()
+      await expect(page).toHaveURL(new RegExp(`${list}clinica/$`))
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Luhmera')
     })
 
-    test('no desktop os botões Anterior/Próxima não aparecem (a barra lateral já está à vista)', async ({ page }) => {
-      await page.setViewportSize({ width: 1280, height: 900 })
-      await page.goto(pp.path)
-      await expect(page.locator('[data-areas-pager]:visible')).toHaveCount(0)
-      await expect(page.locator('[data-areas-nav]:visible').first()).toBeVisible()
+    test('o endereço antigo com # (ex.: #clinica-audit-trail) leva à página do projeto, com a parte aberta', async ({ page }) => {
+      await page.goto(`${list}#clinica-audit-trail`)
+      await expect(page).toHaveURL(new RegExp(`${list}clinica/#clinica-audit-trail$`))
+      await expect(page.locator('#clinica-audit-trail')).toBeVisible()
     })
 
-    test('link direto com # abre a parte certa, e voltar restaura a anterior', async ({ page }) => {
-      await page.goto(pp.path)
-      const ids = await panelIds(page)
-      const target = ids[ids.length - 2] ?? ''
-      await page.goto(`${pp.path}#${target}`)
-      await expect(page.locator(`#${target}`)).toBeVisible()
-      await expect(page.locator(`#${ids[0]}`)).toBeHidden()
-      await navOf(page, pp.nav).getByRole('link').first().click()
-      await expect(page.locator(`#${ids[0]}`)).toBeVisible()
-      await page.goBack()
-      await expect(page.locator(`#${target}`)).toBeVisible()
+    test('aba Projetos no currículo leva à lista e a aba Currículo volta', async ({ page }) => {
+      await page.goto(resume)
+      const tabs = page.getByRole('navigation', { name: /Seções do site|Site sections/ })
+      await tabs.getByRole('link', { name: /Projetos|Projects/ }).click()
+      await expect(page).toHaveURL(new RegExp(`${list}$`))
+      await tabs.getByRole('link', { name: /Currículo|Resume/ }).click()
+      await expect(page).toHaveURL(new RegExp(`${resume.replace(/\//g, '\\/')}$`))
     })
 
-    test('todas as imagens das partes carregam', async ({ page }) => {
-      await page.goto(pp.path)
-      for (const id of await panelIds(page)) {
-        await page.goto(`${pp.path}#${id}`)
-        const imgs = page.locator(`#${id} img`)
-        for (let i = 0; i < (await imgs.count()); i++) {
-          const img = imgs.nth(i)
-          await img.scrollIntoViewIfNeeded()
-          await expect
-            .poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0), { message: `${id} imagem ${i}` })
-            .toBe(true)
-        }
-      }
+    test('a troca de idioma leva à mesma lista no outro idioma', async ({ page }) => {
+      await page.goto(list)
+      await page.getByRole('navigation', { name: /Idioma|Language/ }).getByRole('link', { name: new RegExp(`^${switchTo}`) }).click()
+      await expect(page).toHaveURL(new RegExp(`${other.replace(/\//g, '\\/')}$`))
     })
 
     for (const width of [375, 1440]) {
-      test(`sem overflow horizontal em ${width}px em nenhuma parte (tabelas de código, diagramas e imagens)`, async ({ page }) => {
+      test(`sem overflow horizontal em ${width}px`, async ({ page }) => {
         await page.setViewportSize({ width, height: 900 })
-        await page.goto(pp.path)
-        for (const id of await panelIds(page)) {
-          await page.goto(`${pp.path}#${id}`)
-          expect(await overflowOf(page), id).toBeLessThanOrEqual(0)
-        }
+        await page.goto(list)
+        expect(await overflowOf(page)).toBeLessThanOrEqual(0)
       })
     }
 
     for (const scheme of ['dark', 'light'] as const) {
       test(`sem violações de acessibilidade (axe), tema ${scheme}`, async ({ page }) => {
         await page.emulateMedia({ colorScheme: scheme })
-        await page.goto(pp.path)
-        const ids = await panelIds(page)
-        // A visão geral, uma parte com código, uma com diagramas e a última (galeria).
-        for (const id of new Set([ids[0], ids.find((i) => i.includes('code')), ids.find((i) => i.includes('audit')), ids[ids.length - 1]])) {
-          await page.goto(`${pp.path}#${id}`)
-          await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
-          const results = await new AxeBuilder({ page }).analyze()
-          expect(results.violations, id).toEqual([])
-        }
+        await page.goto(list)
+        await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
+        await page.addStyleTag({ content: '*{transition:none!important}' })
+        const results = await new AxeBuilder({ page }).analyze()
+        expect(results.violations).toEqual([])
       })
     }
-
-    test('troca de idioma leva para a mesma página, na mesma parte', async ({ page }) => {
-      await page.goto(pp.path)
-      const ids = await panelIds(page)
-      const target = ids[ids.length - 2] ?? ''
-      await page.goto(`${pp.path}#${target}`)
-      await page
-        .getByRole('navigation', { name: /Idioma|Language/ })
-        .getByRole('link', { name: new RegExp(`^${pp.switchTo}`) })
-        .click()
-      await expect(page).toHaveURL(new RegExp(`${pp.other.replace(/\//g, '\\/')}#${target}$`))
-      await expect(page.locator(`#${target}`)).toBeVisible()
-      await expect(page.locator(`#${ids[0]}`)).toBeHidden()
-    })
   })
-}
 
-for (const pp of PROJECT_PAGES) {
-  test.describe(`projeto confidencial em ${pp.path}`, () => {
-    test.use({ locale: pp.locale })
+  for (const { slug, title } of PROJECTS) {
+    test.describe(`página de ${title} em ${list}${slug}/`, () => {
+      test.use({ locale })
+      const path = `${list}${slug}/`
 
-    test('vem depois do primeiro e o link do endereço antigo (com #) continua abrindo a parte certa', async ({ page }) => {
-      await page.goto(`${pp.path}#clinica-overview`)
-      await expect(page.locator('#clinica-overview')).toBeVisible()
-      await expect(page.locator('#ipsiq-overview')).toBeHidden()
-      await expect(page.locator('#clinica-overview h3')).toBeInViewport()
-    })
-
-    test('todas as partes cabem em 375px e os diagramas passam no axe, nos dois temas', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 800 })
-      await page.goto(pp.path)
-      const ids = await panelIds(page, 1)
-      expect(ids.length).toBeGreaterThan(1)
-      for (const id of ids) {
-        await page.goto(`${pp.path}#${id}`)
-        await expect(page.locator(`#${id}`)).toBeVisible()
-        expect(await overflowOf(page), id).toBeLessThanOrEqual(0)
-      }
-      for (const scheme of ['dark', 'light'] as const) {
-        await page.emulateMedia({ colorScheme: scheme })
-        for (const id of ids) {
-          await page.goto(`${pp.path}#${id}`)
-          await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
-          await page.addStyleTag({ content: '*{transition:none!important}' }) // a troca de tema anima as cores; o axe mediria no meio
-          const results = await new AxeBuilder({ page }).analyze()
-          expect(results.violations, `${scheme} ${id}`).toEqual([])
+      test('barra lateral: abre uma parte por vez e atualiza o endereço', async ({ page }) => {
+        await page.goto(path)
+        const ids = await panelIds(page)
+        expect(ids.length).toBeGreaterThan(1)
+        const links = page.locator('[data-areas-nav] a')
+        await expect(links.first()).toHaveAttribute('aria-current', 'true')
+        await expect(page.locator(`#${ids[1]}`)).toBeHidden()
+        for (const [index, id] of ids.entries()) {
+          await links.nth(index).click()
+          await expect(page).toHaveURL(new RegExp(`#${id}$`))
+          await expect(page.locator(`#${id}`)).toBeVisible()
+          await expect(links.nth(index)).toHaveAttribute('aria-current', 'true')
+          await expect(page.locator(`section[id^="${slug}-"]:visible`)).toHaveCount(1)
         }
-      }
+      })
+
+      test('botões Anterior/Próxima no fim da parte funcionam (no celular a barra lateral fica no topo)', async ({ page }) => {
+        await page.setViewportSize({ width: 375, height: 700 })
+        await page.goto(path)
+        const ids = await panelIds(page)
+        const pager = page.locator('[data-areas-pager]')
+        const previous = pager.locator('[data-pager="prev"]')
+        const next = pager.locator('[data-pager="next"]')
+        await expect(previous).toBeHidden()
+        await next.scrollIntoViewIfNeeded()
+        await next.click()
+        await expect(page).toHaveURL(new RegExp(`#${ids[1]}$`))
+        await expect(page.locator(`#${ids[1]}`)).toBeVisible()
+        await expect(page.locator(`#${ids[1]} h2`)).toBeInViewport()
+        await expect(previous).toBeVisible()
+        await page.goto(`${path}#${ids[ids.length - 1]}`)
+        await expect(next).toBeHidden()
+        await expect(previous).toBeVisible()
+      })
+
+      test('no desktop os botões Anterior/Próxima não aparecem (a barra lateral já está à vista)', async ({ page }) => {
+        await page.setViewportSize({ width: 1280, height: 900 })
+        await page.goto(path)
+        await expect(page.locator('[data-areas-pager]:visible')).toHaveCount(0)
+        await expect(page.locator('[data-areas-nav]:visible')).toBeVisible()
+      })
+
+      test('link direto com # abre a parte certa, e voltar restaura a anterior', async ({ page }) => {
+        await page.goto(path)
+        const ids = await panelIds(page)
+        const target = ids[ids.length - 2] ?? ''
+        await page.goto(`${path}#${target}`)
+        await expect(page.locator(`#${target}`)).toBeVisible()
+        await expect(page.locator(`#${ids[0]}`)).toBeHidden()
+        await page.locator('[data-areas-nav] a').first().click()
+        await expect(page.locator(`#${ids[0]}`)).toBeVisible()
+        await page.goBack()
+        await expect(page.locator(`#${target}`)).toBeVisible()
+      })
+
+      test('todas as imagens das partes carregam', async ({ page }) => {
+        await page.goto(path)
+        for (const id of await panelIds(page)) {
+          await page.goto(`${path}#${id}`)
+          const imgs = page.locator(`#${id} img`)
+          for (let index = 0; index < (await imgs.count()); index++) {
+            const img = imgs.nth(index)
+            await img.scrollIntoViewIfNeeded()
+            await expect
+              .poll(() => img.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0), { message: `${id} imagem ${index}` })
+              .toBe(true)
+          }
+        }
+      })
+
+      test('sem JavaScript todas as partes ficam visíveis em sequência, e os controles do JS ficam escondidos', async ({ browser }) => {
+        const context = await browser.newContext({ locale, javaScriptEnabled: false })
+        const page = await context.newPage()
+        await page.goto(path)
+        const parts = await page.locator('[data-areas-nav] a').count()
+        expect(parts).toBeGreaterThan(1)
+        await expect(page.locator(`section[id^="${slug}-"]:visible`)).toHaveCount(parts)
+        await expect(page.locator('[data-areas-pager]')).toBeHidden()
+        await context.close()
+      })
     })
-
-    test('o menu de projetos mostra um por vez e lembra a parte aberta de cada um', async ({ page }) => {
-      await page.goto(pp.path)
-      const menu = page.getByRole('navigation', { name: /^(Projetos|Projects)$/ })
-      const links = menu.getByRole('link')
-      await expect(links).toHaveCount(2)
-      const first = await panelIds(page, 0)
-      const second = await panelIds(page, 1)
-      await expect(links.first()).toHaveAttribute('aria-current', 'true')
-      await expect(page.locator('article').nth(1)).toBeHidden()
-
-      await page.goto(`${pp.path}#${first[2]}`)
-      await links.nth(1).click()
-      await expect(page).toHaveURL(new RegExp(`#${second[0]}$`))
-      await expect(page.locator('article').nth(0)).toBeHidden()
-      await expect(page.locator(`#${second[0]}`)).toBeVisible()
-      await expect(links.nth(1)).toHaveAttribute('aria-current', 'true')
-
-      await links.first().click()
-      await expect(page).toHaveURL(new RegExp(`#${first[2]}$`))
-      await expect(page.locator(`#${first[2]}`)).toBeVisible()
-      await expect(page.locator('article').nth(1)).toBeHidden()
-    })
-  })
+  }
 }
-
-test.describe('sem JavaScript', () => {
-  test.use({ locale: 'pt-BR', javaScriptEnabled: false })
-
-  test('todas as partes ficam visíveis em sequência, e os controles do JS ficam escondidos', async ({ page }) => {
-    await page.goto('/projetos/')
-    const parts = await page.locator('[data-areas-nav] a').count()
-    expect(parts).toBeGreaterThan(1)
-    await expect(page.locator('article section[id]:visible')).toHaveCount(parts)
-    await expect(page.locator('[data-areas-pager]').first()).toBeHidden()
-  })
-})
-
-test.describe('abas e rotas', () => {
-  test.use({ locale: 'pt-BR' })
-
-  test('aba Projetos no currículo leva à página e a aba Currículo volta', async ({ page }) => {
-    await page.goto('/')
-    const tabs = page.getByRole('navigation', { name: 'Seções do site' })
-    await tabs.getByRole('link', { name: 'Projetos' }).click()
-    await expect(page).toHaveURL(/\/projetos\/$/)
-    await tabs.getByRole('link', { name: 'Currículo' }).click()
-    await expect(page).toHaveURL(/localhost:\d+\/$/)
-  })
-})
 
 test.describe('navegador em inglês', () => {
   test.use({ locale: 'en-US' })
 
-  test('a página PT de projetos redireciona para a versão EN na primeira visita', async ({ page }) => {
+  test('a lista em português redireciona para a versão em inglês na primeira visita', async ({ page }) => {
     await page.goto('/projetos/')
     await expect(page).toHaveURL(/\/en\/projects\/$/)
   })

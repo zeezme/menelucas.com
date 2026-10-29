@@ -4,18 +4,16 @@
  *
  * - Cada projeto tem a sua barra lateral e a sua parte aberta; o `#id` da URL escolhe a parte (e o projeto).
  *   Voltar e avançar funcionam pelo evento `hashchange`.
- * - Com mais de um projeto, o menu de abas mostra um por vez e lembra a parte aberta de cada um.
  * - No fim de cada parte, os botões Anterior e Próxima ajudam no celular, onde a barra lateral fica no topo.
  * - A parte aberta recebe `aria-current` no link; as demais ganham o atributo `hidden`.
  * - Os links de idioma levam o `#` da parte aberta para a outra versão da página.
  * - Acessibilidade: ao trocar de parte pelo teclado ou pelos botões Anterior e Próxima, o foco vai para o título da
- *   parte aberta (o botão que recebeu o clique muda de destino); nos links da barra lateral e das abas o foco volta
+ *   parte aberta (o botão que recebeu o clique muda de destino); nos links da barra lateral o foco volta
  *   ao link (a navegação por `#` o tiraria dele), e uma região `role="status"` anuncia a troca.
  */
 export const areasScript = `(() => {
   const navigations = [...document.querySelectorAll('[data-areas-nav]')];
   if (!navigations.length) return;
-  const projectLinks = [...document.querySelectorAll('[data-project-link]')];
   const projects = navigations.map((navigation) => {
     const article = navigation.closest('article');
     const links = [...navigation.querySelectorAll('a[href^="#"]')];
@@ -76,14 +74,6 @@ export const areasScript = `(() => {
         activeProject = projectIndex;
       }
     });
-    projects.forEach((project, projectIndex) => {
-      project.article.hidden = projectLinks.length > 0 && projectIndex !== activeProject;
-      const projectLink = projectLinks[projectIndex];
-      if (!projectLink) return;
-      projectLink.setAttribute('href', openLink(project).getAttribute('href'));
-      if (projectIndex === activeProject) projectLink.setAttribute('aria-current', 'true');
-      else projectLink.removeAttribute('aria-current');
-    });
     const hash = openLink(projects[activeProject]).getAttribute('href');
     document.querySelectorAll('a[data-lang]').forEach((link) => {
       link.setAttribute('href', link.getAttribute('href').split('#')[0] + hash);
@@ -104,7 +94,7 @@ export const areasScript = `(() => {
 
   document.addEventListener('click', (event) => {
     if (event.target?.closest?.('[data-areas-pager] a')) moveFocus = true;
-    activatedLink = event.target?.closest?.('[data-areas-nav] a, [data-projects-nav] a') ?? null;
+    activatedLink = event.target?.closest?.('[data-areas-nav] a') ?? null;
   });
   window.addEventListener('hashchange', () => show(currentHash(), true));
   show(currentHash(), currentHash() !== '');
