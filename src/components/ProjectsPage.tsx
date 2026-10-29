@@ -171,7 +171,7 @@ function ProjectDetail({ project, locale, base, t }: { project: Project; locale:
             {(['prev', 'next'] as const).map((dir) => (
               <a
                 key={dir}
-                href="#"
+                href={`#${(dir === 'prev' ? panels[0] : panels[1])?.id ?? panels[0]?.id}`}
                 data-pager={dir}
                 className={`flex min-h-touch min-w-0 max-w-[48%] flex-col justify-center gap-0.5 rounded-xl border border-hairline bg-surface-1 px-4 py-3 transition-colors hover:bg-surface-2 ${dir === 'next' ? 'ml-auto text-right' : ''}`}
               >
