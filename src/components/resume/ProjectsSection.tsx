@@ -24,9 +24,9 @@ const ProjectCard = ({ project, isFirstShowcase, locale, base, translate }: Proj
   const hasScreens = project.areas?.some((area) => area.gallery) ?? false
   const detailsAnchor = isFirstShowcase ? '' : `#${projectSlug(project)}-overview`
   return (
-    <article className="grid gap-5 rounded-xl border border-hairline bg-surface-1 p-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-10">
-      <div className="flex flex-col gap-3">
-        <header>
+    <article className="flex flex-col gap-3 rounded-xl border border-hairline bg-surface-1 p-5">
+      <header className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <div>
           <h3 translate={project.title ? undefined : 'no'} className="text-lg font-semibold leading-snug tracking-title">
             {projectTitle(project, locale)}
           </h3>
@@ -42,22 +42,22 @@ const ProjectCard = ({ project, isFirstShowcase, locale, base, translate }: Proj
               />
             </span>
           </p>
-        </header>
-        <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">
-          {pick(project.cardText ?? project.description, locale)}
-        </p>
+        </div>
         {(project.areas?.length ?? 0) > 0 ? (
           <a
             href={`${pagePath('projects', locale, base)}${detailsAnchor}`}
-            className="inline-flex min-h-touch items-center gap-1 self-start text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"
+            className="inline-flex min-h-touch shrink-0 items-center gap-1 text-sm font-medium text-ink underline decoration-hairline-strong underline-offset-4 transition-colors hover:decoration-accent"
           >
             {translate(hasScreens ? 'projectDetails' : 'projectDetailsEngineering')}
             <span className="sr-only">: {projectTitle(project, locale)}</span>
             <span aria-hidden="true">→</span>
           </a>
         ) : null}
-      </div>
-      {project.cardText ? null : <BulletList items={project.highlights} locale={locale} />}
+      </header>
+      <p className="max-w-[80ch] text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">
+        {pick(project.cardText ?? project.description, locale)}
+      </p>
+      {project.cardText ? null : <BulletList items={project.highlights} locale={locale} className="max-w-[80ch]" />}
     </article>
   )
 }
