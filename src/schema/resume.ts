@@ -93,6 +93,8 @@ const area = z.strictObject({
   title: localized,
   summary: localized.optional(),
   points: z.array(highlight).optional(),
+  /** Blocos com título curto e texto, para explicar a parte em tópicos em vez de marcadores. */
+  topics: z.array(z.strictObject({ title: localized, text: localized })).min(1).optional(),
   diagrams: z.array(diagram).optional(),
   snippets: z.array(snippet).optional(),
   gallery: z.array(galleryItem).min(1).optional(),
@@ -114,6 +116,8 @@ const project = z
     cardText: localized.optional(),
     /** Aviso fixo no topo do projeto (ex.: confidencialidade). */
     banner: localized.optional(),
+    /** Números em destaque na visão geral. */
+    facts: z.array(z.strictObject({ value: z.string().min(1), label: localized })).min(1).optional(),
     /** Diagramas da visão geral. */
     diagrams: z.array(diagram).optional(),
     highlights: z.array(highlight).min(1),

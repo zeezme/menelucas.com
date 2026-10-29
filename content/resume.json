@@ -1530,10 +1530,6 @@
         {
           "pt": "Eventos entregues de forma confiável com outbox transacional e filas BullMQ.",
           "en": "Reliable event delivery with a transactional outbox and BullMQ queues."
-        },
-        {
-          "pt": "Cerca de 315 endpoints HTTP em 37 módulos Nest, 62 migrations versionadas e cerca de 730 casos de teste no back-end, mais um front-end com mais de 100 rotas.",
-          "en": "About 315 HTTP endpoints across 37 Nest modules, 62 versioned migrations and about 730 test cases on the back end, plus a front end with over 100 routes."
         }
       ],
       "diagrams": [
@@ -1647,22 +1643,46 @@
             "pt": "Multi-tenant e isolamento",
             "en": "Multi-tenancy and isolation"
           },
-          "points": [
+          "topics": [
             {
-              "pt": "Cada clínica é um tenant, com os dados isolados por tenant_id e verificação em guards na entrada de cada requisição.",
-              "en": "Each clinic is a tenant, with data isolated by tenant_id and enforced by guards at the start of every request."
+              "title": {
+                "pt": "Um tenant por clínica",
+                "en": "One tenant per clinic"
+              },
+              "text": {
+                "pt": "Cada clínica é um tenant, com os dados isolados por tenant_id e verificação em guards na entrada de cada requisição.",
+                "en": "Each clinic is a tenant, with data isolated by tenant_id and enforced by guards at the start of every request."
+              }
             },
             {
-              "pt": "Uma suíte de testes de integração passa pela pilha HTTP real (guards, pipes e filtros) sobre Postgres e Redis reais e prova que uma clínica nunca lê nem altera dados de outra.",
-              "en": "An integration suite goes through the real HTTP stack (guards, pipes, filters) on real Postgres and Redis and proves that one clinic can never read or change another's data."
+              "title": {
+                "pt": "Isolamento provado",
+                "en": "Proven isolation"
+              },
+              "text": {
+                "pt": "Uma suíte de testes de integração passa pela pilha HTTP real (guards, pipes e filtros) sobre Postgres e Redis reais e prova que uma clínica nunca lê nem altera dados de outra.",
+                "en": "An integration suite goes through the real HTTP stack (guards, pipes, filters) on real Postgres and Redis and proves that one clinic can never read or change another's data."
+              }
             },
             {
-              "pt": "Remover ou rebaixar um usuário vale já na requisição seguinte, sem esperar o token expirar.",
-              "en": "Removing or demoting a user takes effect on the very next request, without waiting for the token to expire."
+              "title": {
+                "pt": "Acesso revogado na hora",
+                "en": "Access revoked instantly"
+              },
+              "text": {
+                "pt": "Remover ou rebaixar um usuário vale já na requisição seguinte, sem esperar o token expirar.",
+                "en": "Removing or demoting a user takes effect on the very next request, without waiting for the token to expire."
+              }
             },
             {
-              "pt": "O time da plataforma tem uma área própria de administração dos tenants, com acesso controlado.",
-              "en": "Platform staff have a separate tenant-administration area with controlled access."
+              "title": {
+                "pt": "Administração da plataforma",
+                "en": "Platform administration"
+              },
+              "text": {
+                "pt": "O time da plataforma tem uma área própria de administração dos tenants, com acesso controlado.",
+                "en": "Platform staff have a separate tenant-administration area with controlled access."
+              }
             }
           ]
         },
@@ -1671,36 +1691,6 @@
             "pt": "Eventos, outbox e filas",
             "en": "Events, outbox and queues"
           },
-          "points": [
-            {
-              "pt": "Outbox transacional: a mensagem é gravada na mesma transação da operação de negócio, então nada é publicado se a transação falhar.",
-              "en": "Transactional outbox: the message is written in the same transaction as the business operation, so nothing is published if it fails."
-            },
-            {
-              "pt": "Um relay leva as mensagens para o BullMQ, acordado por LISTEN/NOTIFY do Postgres e com polling de segurança a cada segundo.",
-              "en": "A relay moves messages to BullMQ, woken by Postgres LISTEN/NOTIFY, with a one-second safety poll."
-            },
-            {
-              "pt": "Lotes travados com FOR UPDATE SKIP LOCKED: várias instâncias podem rodar o relay ao mesmo tempo sem publicar a mesma mensagem duas vezes.",
-              "en": "Batches locked with FOR UPDATE SKIP LOCKED, so several instances can relay at once without double-publishing."
-            },
-            {
-              "pt": "Publicação idempotente (o id do job é o id da mensagem), ordem preservada e retentativa automática em caso de falha.",
-              "en": "Idempotent publishing (job id = message id), preserved ordering and automatic retry on failure."
-            },
-            {
-              "pt": "Filas BullMQ separadas por domínio (auditoria, documentos fiscais, notificações etc.), com workers que rodam em processos dedicados.",
-              "en": "Per-domain BullMQ queues (audit, invoices, notifications, etc.), processed by workers in dedicated processes."
-            },
-            {
-              "pt": "Cinco workers BullMQ (auditoria, atendimentos, dicionário, documentos fiscais e notificações). Uma flag liga ou desliga workers e relay por processo, o que permite réplicas só de API.",
-              "en": "Five BullMQ workers (audit, encounters, dictionary, invoices and notifications). A flag turns workers and the relay on or off per process, allowing API-only replicas."
-            },
-            {
-              "pt": "O worker de emissão de documentos fiscais usa o id do documento como chave de idempotência no provedor, então uma nova tentativa do job nunca emite duas vezes; o provedor é injetável, com uma versão falsa para testes.",
-              "en": "The invoice worker uses the document id as the idempotency key at the provider, so a job retry never issues twice; the provider is injectable, with a fake one for tests."
-            }
-          ],
           "diagrams": [
             {
               "title": {
@@ -1807,6 +1797,78 @@
                 }
               ]
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Outbox transacional",
+                "en": "Transactional outbox"
+              },
+              "text": {
+                "pt": "Outbox transacional: a mensagem é gravada na mesma transação da operação de negócio, então nada é publicado se a transação falhar.",
+                "en": "Transactional outbox: the message is written in the same transaction as the business operation, so nothing is published if it fails."
+              }
+            },
+            {
+              "title": {
+                "pt": "Relay acordado pelo Postgres",
+                "en": "Relay woken by Postgres"
+              },
+              "text": {
+                "pt": "Um relay leva as mensagens para o BullMQ, acordado por LISTEN/NOTIFY do Postgres e com polling de segurança a cada segundo.",
+                "en": "A relay moves messages to BullMQ, woken by Postgres LISTEN/NOTIFY, with a one-second safety poll."
+              }
+            },
+            {
+              "title": {
+                "pt": "Várias instâncias, sem duplicar",
+                "en": "Several instances, no duplicates"
+              },
+              "text": {
+                "pt": "Lotes travados com FOR UPDATE SKIP LOCKED: várias instâncias podem rodar o relay ao mesmo tempo sem publicar a mesma mensagem duas vezes.",
+                "en": "Batches locked with FOR UPDATE SKIP LOCKED, so several instances can relay at once without double-publishing."
+              }
+            },
+            {
+              "title": {
+                "pt": "Publicação idempotente",
+                "en": "Idempotent publishing"
+              },
+              "text": {
+                "pt": "Publicação idempotente (o id do job é o id da mensagem), ordem preservada e retentativa automática em caso de falha.",
+                "en": "Idempotent publishing (job id = message id), preserved ordering and automatic retry on failure."
+              }
+            },
+            {
+              "title": {
+                "pt": "Filas por domínio",
+                "en": "Per-domain queues"
+              },
+              "text": {
+                "pt": "Filas BullMQ separadas por domínio (auditoria, documentos fiscais, notificações etc.), com workers que rodam em processos dedicados.",
+                "en": "Per-domain BullMQ queues (audit, invoices, notifications, etc.), processed by workers in dedicated processes."
+              }
+            },
+            {
+              "title": {
+                "pt": "Cinco workers",
+                "en": "Five workers"
+              },
+              "text": {
+                "pt": "Cinco workers BullMQ (auditoria, atendimentos, dicionário, documentos fiscais e notificações). Uma flag liga ou desliga workers e relay por processo, o que permite réplicas só de API.",
+                "en": "Five BullMQ workers (audit, encounters, dictionary, invoices and notifications). A flag turns workers and the relay on or off per process, allowing API-only replicas."
+              }
+            },
+            {
+              "title": {
+                "pt": "Sem emissão em duplicidade",
+                "en": "No double issuing"
+              },
+              "text": {
+                "pt": "O worker de emissão de documentos fiscais usa o id do documento como chave de idempotência no provedor, então uma nova tentativa do job nunca emite duas vezes; o provedor é injetável, com uma versão falsa para testes.",
+                "en": "The invoice worker uses the document id as the idempotency key at the provider, so a job retry never issues twice; the provider is injectable, with a fake one for tests."
+              }
+            }
           ]
         },
         {
@@ -1814,60 +1876,6 @@
             "pt": "Auditoria",
             "en": "Audit trail"
           },
-          "points": [
-            {
-              "pt": "Toda escrita (criar, alterar, excluir, restaurar) passa por um repositório base que grava o evento de auditoria no outbox, na mesma transação da operação: o evento existe se, e somente se, a escrita foi confirmada, e sobrevive a uma queda ou a uma falha do Redis antes de chegar à fila.",
-              "en": "Every write (create, update, delete, restore) goes through a base repository that enqueues the audit event in the outbox, in the same transaction as the operation: the event exists if, and only if, the write committed, and it survives a crash or a Redis outage before reaching the queue."
-            },
-            {
-              "pt": "O evento guarda quem fez (usuário ou sistema), qual registro, a operação, o que mudou, quando a mudança aconteceu (não quando foi processada) e um id de correlação compartilhado por todas as escritas de uma mesma ação do usuário.",
-              "en": "The event records who did it (a user or the system), which record, the operation, what changed, when the change happened (not when it was processed) and a correlation id shared by every write of one user action."
-            },
-            {
-              "pt": "Na alteração, o delta é exatamente o que o chamador informou; na criação, o retrato inicial. Não há diff calculado nem leitura extra do registro.",
-              "en": "On update the delta is exactly what the caller passed; on create, the initial snapshot. There is no computed diff and no extra read of the record."
-            },
-            {
-              "pt": "Escritas que falham também deixam rastro: um evento com success=false e a mensagem do erro, gravado em uma conexão própria (a transação original já foi abortada pelo Postgres) e sem esconder o erro verdadeiro. Dá para desligar por chamada.",
-              "en": "Failed writes leave a trace too: an event with success=false and the error message, written on its own connection (Postgres has already aborted the original transaction) without hiding the real error. It can be turned off per call."
-            },
-            {
-              "pt": "A exportação dos dados da clínica também é um ato auditado (operação EXPORT): o evento guarda o autor e as contagens, nunca os dados exportados.",
-              "en": "Exporting the clinic data is an audited act too (EXPORT operation): the event stores the author and the counts, never the exported data."
-            },
-            {
-              "pt": "O worker de auditoria roda com concorrência 1, para a versão de cada registro (MAX + 1) seguir a ordem do commit, e o INSERT é idempotente por (id, occurred_at): uma reentrega da fila não duplica nada.",
-              "en": "The audit worker runs with concurrency 1, so each record version (MAX + 1) follows commit order, and the INSERT is idempotent on (id, occurred_at): a queue redelivery duplicates nothing."
-            },
-            {
-              "pt": "A tabela é append-only: sem exclusão lógica, nunca editada nem apagada. É particionada por mês em occurred_at (chave primária (id, occurred_at)), com partição default como rede de segurança e uma rotina idempotente, sob advisory lock, que garante o mês atual e os três seguintes. A migração converteu a tabela existente copiando os dados e tem reversão.",
-              "en": "The table is append-only: no soft delete, never edited or removed. It is partitioned by month on occurred_at (primary key (id, occurred_at)), with a default partition as a safety net and an idempotent job, under an advisory lock, that guarantees the current month and the next three. The migration converted the existing table by copying the data and has a rollback."
-            },
-            {
-              "pt": "Segredos (senhas, hashes, tokens, certificados, credenciais) são mascarados em qualquer profundidade do JSON na gravação e mascarados de novo na leitura, para cobrir eventos antigos.",
-              "en": "Secrets (passwords, hashes, tokens, certificates, credentials) are masked at any depth of the JSON on write and masked again on read, to cover older events."
-            },
-            {
-              "pt": "Leitura em duas formas: o histórico de um registro, que repete as mudanças em ordem para mostrar o valor anterior de cada campo, e a lista das últimas mudanças de um tipo, com paginação por cursor (occurred_at, id) e filtros de período (padrão: 90 dias no calendário da clínica, o que limita as partições lidas), operação e autor.",
-              "en": "Reading comes in two forms: the history of one record, which replays the changes in order to show the previous value of each field, and the list of the latest changes of a type, with (occurred_at, id) cursor pagination and filters for period (default: 90 days in the clinic calendar, which limits the partitions read), operation and author."
-            },
-            {
-              "pt": "A consulta só devolve eventos bem-sucedidos da própria clínica e de 30 tipos de registro de uma lista explícita; qualquer outro tipo é recusado. Os nomes dos registros vêm do retrato de criação, mesmo os excluídos depois, e os ids de papel viram nomes de papel.",
-              "en": "The query only returns successful events of the caller clinic and for 30 record types from an explicit list; any other type is rejected. Record names come from the creation snapshot, even for records deleted later, and role ids become role names."
-            },
-            {
-              "pt": "O conteúdo é protegido por permissão: quem tem audit.read vê quem fez o quê e quando, mas os campos dos registros sensíveis só aparecem para quem também pode ler o próprio registro. Um usuário e o vínculo dele com a clínica formam uma só linha do tempo.",
-              "en": "Content is protected by permission: whoever has audit.read sees who did what and when, but the fields of sensitive records only show for whoever may also read the record itself. A user and their membership in the clinic form a single timeline."
-            },
-            {
-              "pt": "No front, um botão Histórico (relógio) nas listas e nas linhas abre um painel com filtros de período e de operação, o valor anterior riscado ao lado do novo, um cadeado quando o conteúdo está oculto e o carregamento de mais itens. O botão só aparece para quem tem audit.read.",
-              "en": "On the front end, a History button (clock) on lists and rows opens a panel with period and operation filters, the previous value struck through next to the new one, a lock when content is hidden and loading of more items. The button only shows for whoever has audit.read."
-            },
-            {
-              "pt": "Testes de integração contra Postgres real cobrem a reconstrução do valor anterior, a ocultação de escritas com falha, o isolamento entre clínicas, a permissão por tipo de registro, o cursor, a linha do tempo do usuário, as partições e o worker pela fila; um teste unitário cobre o mascaramento.",
-              "en": "Integration tests against real Postgres cover the previous-value rebuild, hiding failed writes, isolation between clinics, per-record-type permission, the cursor, the user timeline, partitions and the worker through the queue; a unit test covers masking."
-            }
-          ],
           "diagrams": [
             {
               "title": {
@@ -2079,6 +2087,138 @@
                 }
               ]
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Gravada junto com a escrita",
+                "en": "Written together with the write"
+              },
+              "text": {
+                "pt": "Toda escrita (criar, alterar, excluir, restaurar) passa por um repositório base que grava o evento de auditoria no outbox, na mesma transação da operação: o evento existe se, e somente se, a escrita foi confirmada, e sobrevive a uma queda ou a uma falha do Redis antes de chegar à fila.",
+                "en": "Every write (create, update, delete, restore) goes through a base repository that enqueues the audit event in the outbox, in the same transaction as the operation: the event exists if, and only if, the write committed, and it survives a crash or a Redis outage before reaching the queue."
+              }
+            },
+            {
+              "title": {
+                "pt": "O que cada evento guarda",
+                "en": "What each event stores"
+              },
+              "text": {
+                "pt": "O evento guarda quem fez (usuário ou sistema), qual registro, a operação, o que mudou, quando a mudança aconteceu (não quando foi processada) e um id de correlação compartilhado por todas as escritas de uma mesma ação do usuário.",
+                "en": "The event records who did it (a user or the system), which record, the operation, what changed, when the change happened (not when it was processed) and a correlation id shared by every write of one user action."
+              }
+            },
+            {
+              "title": {
+                "pt": "Delta, não diff",
+                "en": "A delta, not a diff"
+              },
+              "text": {
+                "pt": "Na alteração, o delta é exatamente o que o chamador informou; na criação, o retrato inicial. Não há diff calculado nem leitura extra do registro.",
+                "en": "On update the delta is exactly what the caller passed; on create, the initial snapshot. There is no computed diff and no extra read of the record."
+              }
+            },
+            {
+              "title": {
+                "pt": "Falhas também deixam rastro",
+                "en": "Failures leave a trace too"
+              },
+              "text": {
+                "pt": "Escritas que falham também deixam rastro: um evento com success=false e a mensagem do erro, gravado em uma conexão própria (a transação original já foi abortada pelo Postgres) e sem esconder o erro verdadeiro. Dá para desligar por chamada.",
+                "en": "Failed writes leave a trace too: an event with success=false and the error message, written on its own connection (Postgres has already aborted the original transaction) without hiding the real error. It can be turned off per call."
+              }
+            },
+            {
+              "title": {
+                "pt": "Exportação auditada",
+                "en": "Audited export"
+              },
+              "text": {
+                "pt": "A exportação dos dados da clínica também é um ato auditado (operação EXPORT): o evento guarda o autor e as contagens, nunca os dados exportados.",
+                "en": "Exporting the clinic data is an audited act too (EXPORT operation): the event stores the author and the counts, never the exported data."
+              }
+            },
+            {
+              "title": {
+                "pt": "Worker ordenado e idempotente",
+                "en": "Ordered, idempotent worker"
+              },
+              "text": {
+                "pt": "O worker de auditoria roda com concorrência 1, para a versão de cada registro (MAX + 1) seguir a ordem do commit, e o INSERT é idempotente por (id, occurred_at): uma reentrega da fila não duplica nada.",
+                "en": "The audit worker runs with concurrency 1, so each record version (MAX + 1) follows commit order, and the INSERT is idempotent on (id, occurred_at): a queue redelivery duplicates nothing."
+              }
+            },
+            {
+              "title": {
+                "pt": "Tabela append-only e particionada",
+                "en": "Append-only, partitioned table"
+              },
+              "text": {
+                "pt": "A tabela é append-only: sem exclusão lógica, nunca editada nem apagada. É particionada por mês em occurred_at (chave primária (id, occurred_at)), com partição default como rede de segurança e uma rotina idempotente, sob advisory lock, que garante o mês atual e os três seguintes. A migração converteu a tabela existente copiando os dados e tem reversão.",
+                "en": "The table is append-only: no soft delete, never edited or removed. It is partitioned by month on occurred_at (primary key (id, occurred_at)), with a default partition as a safety net and an idempotent job, under an advisory lock, that guarantees the current month and the next three. The migration converted the existing table by copying the data and has a rollback."
+              }
+            },
+            {
+              "title": {
+                "pt": "Segredos mascarados duas vezes",
+                "en": "Secrets masked twice"
+              },
+              "text": {
+                "pt": "Segredos (senhas, hashes, tokens, certificados, credenciais) são mascarados em qualquer profundidade do JSON na gravação e mascarados de novo na leitura, para cobrir eventos antigos.",
+                "en": "Secrets (passwords, hashes, tokens, certificates, credentials) are masked at any depth of the JSON on write and masked again on read, to cover older events."
+              }
+            },
+            {
+              "title": {
+                "pt": "Duas formas de leitura",
+                "en": "Two ways to read"
+              },
+              "text": {
+                "pt": "Leitura em duas formas: o histórico de um registro, que repete as mudanças em ordem para mostrar o valor anterior de cada campo, e a lista das últimas mudanças de um tipo, com paginação por cursor (occurred_at, id) e filtros de período (padrão: 90 dias no calendário da clínica, o que limita as partições lidas), operação e autor.",
+                "en": "Reading comes in two forms: the history of one record, which replays the changes in order to show the previous value of each field, and the list of the latest changes of a type, with (occurred_at, id) cursor pagination and filters for period (default: 90 days in the clinic calendar, which limits the partitions read), operation and author."
+              }
+            },
+            {
+              "title": {
+                "pt": "Só o que pode ser auditado",
+                "en": "Only what may be audited"
+              },
+              "text": {
+                "pt": "A consulta só devolve eventos bem-sucedidos da própria clínica e de 30 tipos de registro de uma lista explícita; qualquer outro tipo é recusado. Os nomes dos registros vêm do retrato de criação, mesmo os excluídos depois, e os ids de papel viram nomes de papel.",
+                "en": "The query only returns successful events of the caller clinic and for 30 record types from an explicit list; any other type is rejected. Record names come from the creation snapshot, even for records deleted later, and role ids become role names."
+              }
+            },
+            {
+              "title": {
+                "pt": "Conteúdo protegido por permissão",
+                "en": "Content protected by permission"
+              },
+              "text": {
+                "pt": "O conteúdo é protegido por permissão: quem tem audit.read vê quem fez o quê e quando, mas os campos dos registros sensíveis só aparecem para quem também pode ler o próprio registro. Um usuário e o vínculo dele com a clínica formam uma só linha do tempo.",
+                "en": "Content is protected by permission: whoever has audit.read sees who did what and when, but the fields of sensitive records only show for whoever may also read the record itself. A user and their membership in the clinic form a single timeline."
+              }
+            },
+            {
+              "title": {
+                "pt": "Painel Histórico no front",
+                "en": "History panel on the front end"
+              },
+              "text": {
+                "pt": "No front, um botão Histórico (relógio) nas listas e nas linhas abre um painel com filtros de período e de operação, o valor anterior riscado ao lado do novo, um cadeado quando o conteúdo está oculto e o carregamento de mais itens. O botão só aparece para quem tem audit.read.",
+                "en": "On the front end, a History button (clock) on lists and rows opens a panel with period and operation filters, the previous value struck through next to the new one, a lock when content is hidden and loading of more items. The button only shows for whoever has audit.read."
+              }
+            },
+            {
+              "title": {
+                "pt": "Testes com Postgres real",
+                "en": "Tests on real Postgres"
+              },
+              "text": {
+                "pt": "Testes de integração contra Postgres real cobrem a reconstrução do valor anterior, a ocultação de escritas com falha, o isolamento entre clínicas, a permissão por tipo de registro, o cursor, a linha do tempo do usuário, as partições e o worker pela fila; um teste unitário cobre o mascaramento.",
+                "en": "Integration tests against real Postgres cover the previous-value rebuild, hiding failed writes, isolation between clinics, per-record-type permission, the cursor, the user timeline, partitions and the worker through the queue; a unit test covers masking."
+              }
+            }
           ]
         },
         {
@@ -2086,20 +2226,6 @@
             "pt": "Tempo real",
             "en": "Real time"
           },
-          "points": [
-            {
-              "pt": "Atualizações em tempo real com Socket.io organizadas por namespaces e salas.",
-              "en": "Real-time updates with Socket.io, organized by namespaces and rooms."
-            },
-            {
-              "pt": "Com o adaptador Redis, um evento emitido em qualquer instância da API chega aos usuários conectados em todas as outras, o que permite escalar horizontalmente.",
-              "en": "With the Redis adapter, an event emitted on any API instance reaches users connected to every other instance, enabling horizontal scaling."
-            },
-            {
-              "pt": "Qualquer serviço emite para uma sala sem depender do módulo do gateway.",
-              "en": "Any service can emit to a room without depending on the gateway module."
-            }
-          ],
           "diagrams": [
             {
               "title": {
@@ -2166,6 +2292,38 @@
                 }
               ]
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "Namespaces e salas",
+                "en": "Namespaces and rooms"
+              },
+              "text": {
+                "pt": "Atualizações em tempo real com Socket.io organizadas por namespaces e salas.",
+                "en": "Real-time updates with Socket.io, organized by namespaces and rooms."
+              }
+            },
+            {
+              "title": {
+                "pt": "Escala horizontal",
+                "en": "Horizontal scaling"
+              },
+              "text": {
+                "pt": "Com o adaptador Redis, um evento emitido em qualquer instância da API chega aos usuários conectados em todas as outras, o que permite escalar horizontalmente.",
+                "en": "With the Redis adapter, an event emitted on any API instance reaches users connected to every other instance, enabling horizontal scaling."
+              }
+            },
+            {
+              "title": {
+                "pt": "Emissão desacoplada",
+                "en": "Decoupled emitting"
+              },
+              "text": {
+                "pt": "Qualquer serviço emite para uma sala sem depender do módulo do gateway.",
+                "en": "Any service can emit to a room without depending on the gateway module."
+              }
+            }
           ]
         },
         {
@@ -2173,34 +2331,76 @@
             "pt": "Segurança",
             "en": "Security"
           },
-          "points": [
+          "topics": [
             {
-              "pt": "Autenticação com JWT, MFA por TOTP (app autenticador, com QR code) e senhas com Argon2.",
-              "en": "Authentication with JWT, TOTP-based MFA (authenticator app with QR code) and Argon2 password hashing."
+              "title": {
+                "pt": "Identidade",
+                "en": "Identity"
+              },
+              "text": {
+                "pt": "Autenticação com JWT, MFA por TOTP (app autenticador, com QR code) e senhas com Argon2.",
+                "en": "Authentication with JWT, TOTP-based MFA (authenticator app with QR code) and Argon2 password hashing."
+              }
             },
             {
-              "pt": "Segredos de MFA e credenciais de integrações criptografados no banco com AES-256-GCM.",
-              "en": "MFA secrets and integration credentials encrypted at rest with AES-256-GCM."
+              "title": {
+                "pt": "Segredos em repouso",
+                "en": "Secrets at rest"
+              },
+              "text": {
+                "pt": "Segredos de MFA e credenciais de integrações criptografados no banco com AES-256-GCM.",
+                "en": "MFA secrets and integration credentials encrypted at rest with AES-256-GCM."
+              }
             },
             {
-              "pt": "RBAC com permissões por recurso e ação, e um teste que falha se alguma rota da API ficar sem permissão declarada.",
-              "en": "Resource/action RBAC, plus a test that fails if any API route lacks a declared permission."
+              "title": {
+                "pt": "RBAC verificado por teste",
+                "en": "RBAC checked by a test"
+              },
+              "text": {
+                "pt": "RBAC com permissões por recurso e ação, e um teste que falha se alguma rota da API ficar sem permissão declarada.",
+                "en": "Resource/action RBAC, plus a test that fails if any API route lacks a declared permission."
+              }
             },
             {
-              "pt": "Rate limiting distribuído em Redis, Helmet e validação de entrada com Zod; configuração validada na inicialização.",
-              "en": "Redis-backed distributed rate limiting, Helmet and Zod input validation; configuration validated at startup."
+              "title": {
+                "pt": "Proteção da borda",
+                "en": "Edge protection"
+              },
+              "text": {
+                "pt": "Rate limiting distribuído em Redis, Helmet e validação de entrada com Zod; configuração validada na inicialização.",
+                "en": "Redis-backed distributed rate limiting, Helmet and Zod input validation; configuration validated at startup."
+              }
             },
             {
-              "pt": "Anti-força-bruta em duas camadas: um limite por par IP + conta e outro, mais alto, só por conta, para o dono legítimo não ser bloqueado por quem ataca de outro IP.",
-              "en": "Brute-force protection in two layers: one limit per IP + account pair and a higher one per account alone, so the legitimate owner is not locked out by someone attacking from another IP."
+              "title": {
+                "pt": "Força bruta em duas camadas",
+                "en": "Brute force in two layers"
+              },
+              "text": {
+                "pt": "Anti-força-bruta em duas camadas: um limite por par IP + conta e outro, mais alto, só por conta, para o dono legítimo não ser bloqueado por quem ataca de outro IP.",
+                "en": "Brute-force protection in two layers: one limit per IP + account pair and a higher one per account alone, so the legitimate owner is not locked out by someone attacking from another IP."
+              }
             },
             {
-              "pt": "Sessões em Redis guardam só o hash do refresh token e têm idade máxima absoluta: renovar não prolonga a sessão para sempre. O access token leva apenas ids; as permissões vêm de uma consulta à sessão viva.",
-              "en": "Sessions in Redis store only the refresh-token hash and have an absolute maximum age: refreshing does not extend a session forever. The access token carries only ids; permissions come from a lookup of the live session."
+              "title": {
+                "pt": "Sessões em Redis",
+                "en": "Sessions in Redis"
+              },
+              "text": {
+                "pt": "Sessões em Redis guardam só o hash do refresh token e têm idade máxima absoluta: renovar não prolonga a sessão para sempre. O access token leva apenas ids; as permissões vêm de uma consulta à sessão viva.",
+                "en": "Sessions in Redis store only the refresh-token hash and have an absolute maximum age: refreshing does not extend a session forever. The access token carries only ids; permissions come from a lookup of the live session."
+              }
             },
             {
-              "pt": "O token viaja só no cabeçalho Authorization, nunca em cookie, o que elimina a superfície de CSRF por desenho. CORS por ambiente e CSP via Helmet.",
-              "en": "The token travels only in the Authorization header, never in a cookie, which removes the CSRF surface by design. Per-environment CORS and CSP through Helmet."
+              "title": {
+                "pt": "Token só no cabeçalho",
+                "en": "Token in the header only"
+              },
+              "text": {
+                "pt": "O token viaja só no cabeçalho Authorization, nunca em cookie, o que elimina a superfície de CSRF por desenho. CORS por ambiente e CSP via Helmet.",
+                "en": "The token travels only in the Authorization header, never in a cookie, which removes the CSRF surface by design. Per-environment CORS and CSP through Helmet."
+              }
             }
           ]
         },
@@ -2209,36 +2409,6 @@
             "pt": "Front-end",
             "en": "Front-end"
           },
-          "points": [
-            {
-              "pt": "SPA em React com Vite e React Router, com cadeia de guards por rota: sessão, área da plataforma, clínica e permissão.",
-              "en": "React SPA with Vite and React Router, with a per-route guard chain: session, platform area, clinic and permission."
-            },
-            {
-              "pt": "Dados do servidor com TanStack Query, com cache e política de retentativa configuradas; estado global leve com Jotai.",
-              "en": "Server state with TanStack Query (tuned caching and retry policy); light global state with Jotai."
-            },
-            {
-              "pt": "Formulários com react-hook-form e Zod sobre um hook próprio, que padroniza carregamento, validação e envio.",
-              "en": "Forms built on react-hook-form + Zod through an in-house hook that standardizes loading, validation and submission."
-            },
-            {
-              "pt": "Design system com Radix/shadcn e Tailwind, com temas visuais configuráveis por clínica.",
-              "en": "Design system on Radix/shadcn and Tailwind, with per-clinic configurable visual themes."
-            },
-            {
-              "pt": "Detalhes de UX: paleta de comandos, exclusão com desfazer, aviso de alterações não salvas e listas paginadas.",
-              "en": "UX details: command palette, delete with undo, unsaved-changes guard and paginated lists."
-            },
-            {
-              "pt": "Roteamento declarativo: uma tabela de rotas, um executor de guards e um de layouts, com guards compostos (sessão, plataforma, clínica, permissão). Usa o roteador de dados do React Router para bloquear a navegação com alterações não salvas.",
-              "en": "Declarative routing: a route table, a guard runner and a layout runner, with composed guards (session, platform, clinic, permission). It uses the React Router data router to block navigation with unsaved changes."
-            },
-            {
-              "pt": "O estado do token fica fora do React, em um store com subscribe lido por useSyncExternalStore, para o interceptor do axios não depender de hooks. Hooks próprios padronizam lista paginada, debounce, carga de formulário e a proteção contra perda de edição.",
-              "en": "Token state lives outside React, in a subscribable store read through useSyncExternalStore, so the axios interceptor does not depend on hooks. In-house hooks standardize paginated lists, debounce, form loading and edit-loss protection."
-            }
-          ],
           "diagrams": [
             {
               "title": {
@@ -2328,6 +2498,78 @@
                 }
               ]
             }
+          ],
+          "topics": [
+            {
+              "title": {
+                "pt": "SPA com cadeia de guards",
+                "en": "SPA with a guard chain"
+              },
+              "text": {
+                "pt": "SPA em React com Vite e React Router, com cadeia de guards por rota: sessão, área da plataforma, clínica e permissão.",
+                "en": "React SPA with Vite and React Router, with a per-route guard chain: session, platform area, clinic and permission."
+              }
+            },
+            {
+              "title": {
+                "pt": "Estado do servidor e global",
+                "en": "Server and global state"
+              },
+              "text": {
+                "pt": "Dados do servidor com TanStack Query, com cache e política de retentativa configuradas; estado global leve com Jotai.",
+                "en": "Server state with TanStack Query (tuned caching and retry policy); light global state with Jotai."
+              }
+            },
+            {
+              "title": {
+                "pt": "Formulários padronizados",
+                "en": "Standardized forms"
+              },
+              "text": {
+                "pt": "Formulários com react-hook-form e Zod sobre um hook próprio, que padroniza carregamento, validação e envio.",
+                "en": "Forms built on react-hook-form + Zod through an in-house hook that standardizes loading, validation and submission."
+              }
+            },
+            {
+              "title": {
+                "pt": "Design system e temas",
+                "en": "Design system and themes"
+              },
+              "text": {
+                "pt": "Design system com Radix/shadcn e Tailwind, com temas visuais configuráveis por clínica.",
+                "en": "Design system on Radix/shadcn and Tailwind, with per-clinic configurable visual themes."
+              }
+            },
+            {
+              "title": {
+                "pt": "Detalhes de UX",
+                "en": "UX details"
+              },
+              "text": {
+                "pt": "Detalhes de UX: paleta de comandos, exclusão com desfazer, aviso de alterações não salvas e listas paginadas.",
+                "en": "UX details: command palette, delete with undo, unsaved-changes guard and paginated lists."
+              }
+            },
+            {
+              "title": {
+                "pt": "Roteamento declarativo",
+                "en": "Declarative routing"
+              },
+              "text": {
+                "pt": "Roteamento declarativo: uma tabela de rotas, um executor de guards e um de layouts, com guards compostos (sessão, plataforma, clínica, permissão). Usa o roteador de dados do React Router para bloquear a navegação com alterações não salvas.",
+                "en": "Declarative routing: a route table, a guard runner and a layout runner, with composed guards (session, platform, clinic, permission). It uses the React Router data router to block navigation with unsaved changes."
+              }
+            },
+            {
+              "title": {
+                "pt": "Token fora do React",
+                "en": "Token outside React"
+              },
+              "text": {
+                "pt": "O estado do token fica fora do React, em um store com subscribe lido por useSyncExternalStore, para o interceptor do axios não depender de hooks. Hooks próprios padronizam lista paginada, debounce, carga de formulário e a proteção contra perda de edição.",
+                "en": "Token state lives outside React, in a subscribable store read through useSyncExternalStore, so the axios interceptor does not depend on hooks. In-house hooks standardize paginated lists, debounce, form loading and edit-loss protection."
+              }
+            }
           ]
         },
         {
@@ -2335,44 +2577,128 @@
             "pt": "Qualidade e entrega",
             "en": "Quality and delivery"
           },
-          "points": [
+          "topics": [
             {
-              "pt": "Testes de integração com Testcontainers (PostgreSQL e Redis), Supertest e dados gerados com Faker; testes e2e do front com Cypress.",
-              "en": "Integration tests with Testcontainers (PostgreSQL and Redis), Supertest and Faker-generated data; front-end e2e tests with Cypress."
+              "title": {
+                "pt": "Testes com contêineres reais",
+                "en": "Tests on real containers"
+              },
+              "text": {
+                "pt": "Testes de integração com Testcontainers (PostgreSQL e Redis), Supertest e dados gerados com Faker; testes e2e do front com Cypress.",
+                "en": "Integration tests with Testcontainers (PostgreSQL and Redis), Supertest and Faker-generated data; front-end e2e tests with Cypress."
+              }
             },
             {
-              "pt": "Teste que garante que as migrations estão sempre em sincronia com as entidades.",
-              "en": "A test that keeps migrations in sync with the entities."
+              "title": {
+                "pt": "Migrations sempre em sincronia",
+                "en": "Migrations always in sync"
+              },
+              "text": {
+                "pt": "Teste que garante que as migrations estão sempre em sincronia com as entidades.",
+                "en": "A test that keeps migrations in sync with the entities."
+              }
             },
             {
-              "pt": "Documentação da API em OpenAPI, publicada com Scalar; health checks de banco e Redis com Terminus.",
-              "en": "OpenAPI docs published with Scalar; database and Redis health checks with Terminus."
+              "title": {
+                "pt": "API documentada e monitorada",
+                "en": "Documented, monitored API"
+              },
+              "text": {
+                "pt": "Documentação da API em OpenAPI, publicada com Scalar; health checks de banco e Redis com Terminus.",
+                "en": "OpenAPI docs published with Scalar; database and Redis health checks with Terminus."
+              }
             },
             {
-              "pt": "Geração de PDFs no servidor com Puppeteer e arquivos no S3 com URLs pré-assinadas.",
-              "en": "Server-side PDF generation with Puppeteer and S3 storage via presigned URLs."
+              "title": {
+                "pt": "PDFs e arquivos",
+                "en": "PDFs and files"
+              },
+              "text": {
+                "pt": "Geração de PDFs no servidor com Puppeteer e arquivos no S3 com URLs pré-assinadas.",
+                "en": "Server-side PDF generation with Puppeteer and S3 storage via presigned URLs."
+              }
             },
             {
-              "pt": "Docker e deploy na AWS com CloudFormation.",
-              "en": "Docker, and AWS deployment with CloudFormation."
+              "title": {
+                "pt": "Docker e AWS",
+                "en": "Docker and AWS"
+              },
+              "text": {
+                "pt": "Docker e deploy na AWS com CloudFormation.",
+                "en": "Docker, and AWS deployment with CloudFormation."
+              }
             },
             {
-              "pt": "Um teste cruza a documentação OpenAPI com o código: cada rota precisa estar documentada, e a permissão declarada no documento tem de ser igual à do decorator do handler; rota sem permissão nem exceção explícita falha o teste.",
-              "en": "A test cross-checks the OpenAPI docs against the code: every route must be documented, and the permission declared in the document must equal the handler decorator; a route with neither a permission nor an explicit opt-out fails the test."
+              "title": {
+                "pt": "OpenAPI cruzada com o código",
+                "en": "OpenAPI cross-checked with the code"
+              },
+              "text": {
+                "pt": "Um teste cruza a documentação OpenAPI com o código: cada rota precisa estar documentada, e a permissão declarada no documento tem de ser igual à do decorator do handler; rota sem permissão nem exceção explícita falha o teste.",
+                "en": "A test cross-checks the OpenAPI docs against the code: every route must be documented, and the permission declared in the document must equal the handler decorator; a route with neither a permission nor an explicit opt-out fails the test."
+              }
             },
             {
-              "pt": "CI com lint, typecheck, build, testes de isolamento e de migrations e varredura de segredos (gitleaks fixado por hash), com cancelamento de execuções antigas e permissões mínimas. O deploy usa GitHub OIDC e SSM, sem credenciais estáticas.",
-              "en": "CI with lint, typecheck, build, isolation and migration tests and secret scanning (gitleaks pinned by hash), cancelling stale runs and with minimal permissions. Deploy uses GitHub OIDC and SSM, with no static credentials."
+              "title": {
+                "pt": "CI e entrega",
+                "en": "CI and delivery"
+              },
+              "text": {
+                "pt": "CI com lint, typecheck, build, testes de isolamento e de migrations e varredura de segredos (gitleaks fixado por hash), com cancelamento de execuções antigas e permissões mínimas. O deploy usa GitHub OIDC e SSM, sem credenciais estáticas.",
+                "en": "CI with lint, typecheck, build, isolation and migration tests and secret scanning (gitleaks pinned by hash), cancelling stale runs and with minimal permissions. Deploy uses GitHub OIDC and SSM, with no static credentials."
+              }
             },
             {
-              "pt": "Git hooks versionados: no commit, lint só dos arquivos alterados e varredura de segredos; no push, typecheck do projeto e só os testes relacionados ao que mudou.",
-              "en": "Versioned Git hooks: on commit, lint of the changed files only and secret scanning; on push, project typecheck and only the tests related to what changed."
+              "title": {
+                "pt": "Git hooks versionados",
+                "en": "Versioned Git hooks"
+              },
+              "text": {
+                "pt": "Git hooks versionados: no commit, lint só dos arquivos alterados e varredura de segredos; no push, typecheck do projeto e só os testes relacionados ao que mudou.",
+                "en": "Versioned Git hooks: on commit, lint of the changed files only and secret scanning; on push, project typecheck and only the tests related to what changed."
+              }
             },
             {
-              "pt": "Operação: encerramento limpo (shutdown hooks), variáveis de ambiente validadas na subida, migrations e seed idempotentes antes de a API iniciar, e um comando para remover e restaurar uma clínica com confirmação explícita.",
-              "en": "Operations: graceful shutdown hooks, environment variables validated at startup, idempotent migrations and seeds before the API starts, and a command to remove and restore a clinic with explicit confirmation."
+              "title": {
+                "pt": "Operação",
+                "en": "Operations"
+              },
+              "text": {
+                "pt": "Operação: encerramento limpo (shutdown hooks), variáveis de ambiente validadas na subida, migrations e seed idempotentes antes de a API iniciar, e um comando para remover e restaurar uma clínica com confirmação explícita.",
+                "en": "Operations: graceful shutdown hooks, environment variables validated at startup, idempotent migrations and seeds before the API starts, and a command to remove and restore a clinic with explicit confirmation."
+              }
             }
           ]
+        }
+      ],
+      "facts": [
+        {
+          "value": "~1.200",
+          "label": {
+            "pt": "commits desde setembro de 2026",
+            "en": "commits since September 2026"
+          }
+        },
+        {
+          "value": "~315",
+          "label": {
+            "pt": "endpoints HTTP em 37 módulos",
+            "en": "HTTP endpoints in 37 modules"
+          }
+        },
+        {
+          "value": "62",
+          "label": {
+            "pt": "migrations versionadas",
+            "en": "versioned migrations"
+          }
+        },
+        {
+          "value": "~730",
+          "label": {
+            "pt": "casos de teste no back-end",
+            "en": "back-end test cases"
+          }
         }
       ]
     }

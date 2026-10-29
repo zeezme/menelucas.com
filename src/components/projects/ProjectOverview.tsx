@@ -1,6 +1,7 @@
 import { pick, type Translator } from '../../internationalization'
 import { projectTitle, type Locale, type Project } from '../../schema/resume'
 import { BulletList } from '../BulletList'
+import { FactStrip } from './FactStrip'
 import { FlowDiagram } from './FlowDiagram'
 
 interface ProjectOverviewProps {
@@ -21,6 +22,7 @@ export const ProjectOverview = ({ project, id, locale, translate }: ProjectOverv
       <p className="text-pretty text-base leading-relaxed text-ink-muted">{pick(project.description, locale)}</p>
       <BulletList items={project.highlights} locale={locale} />
     </div>
+    {project.facts ? <FactStrip facts={project.facts} locale={locale} /> : null}
     {(project.diagrams ?? []).map((diagram) => (
       <FlowDiagram key={diagram.title.en} diagram={diagram} locale={locale} />
     ))}
