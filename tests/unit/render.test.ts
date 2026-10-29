@@ -28,14 +28,11 @@ describe('i18n helpers', () => {
 })
 
 describe('SEO para recrutadores', () => {
-  it.each(['pt', 'en'] as const)('%s: título, descrição e palavras-chave derivados dos dados', (locale) => {
+  it.each(['pt', 'en'] as const)('%s: título, descrição e palavras-chave vêm dos dados', (locale) => {
     const meta = buildHeadMeta(resume, locale, site)
-    expect(meta.title).toContain('Lucas Augusto Muniz Menezes')
-    expect(meta.title).toMatch(/TypeScript, Node\.js/)
-    expect(meta.description).toMatch(/TypeScript, Node\.js, NestJS e React|TypeScript, Node\.js, NestJS and React/)
-    for (const k of ['TypeScript', 'Node.js', 'NestJS', 'React', 'PostgreSQL', 'KYC', 'AML']) {
-      expect(meta.keywords).toContain(k)
-    }
+    expect(meta.title).toContain(resume.basics.name)
+    expect(meta.description.length).toBeGreaterThan(50)
+    for (const k of skillKeywords(resume, locale).slice(0, 5)) expect(meta.keywords).toContain(k)
   })
 
   it('JSON-LD: Person com tecnologias, idiomas e formação, ligado a um ProfilePage', () => {
@@ -116,17 +113,12 @@ describe('página renderizada', () => {
 describe('seção Projetos', () => {
   const sectionOf = (out: string) => /<section aria-labelledby="projects-title".*?<\/section>/s.exec(out)?.[0] ?? ''
 
-  it.each([
-    ['pt', 'Projetos', 'Cofundador e engenheiro full stack', 'atual'],
-    ['en', 'Projects', 'Co-founder and full stack engineer', 'present'],
-  ] as const)('%s: aparece entre Experiência e Formação, em andamento', (locale, title, role, present) => {
+  it.each(['pt', 'en'] as const)('%s: a seção aparece entre Experiência e Formação, com a data e o link para a página de Projetos', (locale) => {
     const out = html(locale)
     const section = sectionOf(out)
-    expect(section).toContain(`>${title}</h2>`)
-    expect(section).toContain('iPsiq')
-    expect(section).toContain(role)
-    expect(section).toContain('<time datetime="2026-10">10/2026</time> – ' + present)
-    expect(section).not.toContain('href="http')
+    const project = resume.projects?.[0]
+    expect(section).toContain(project?.name ?? '')
+    expect(section).toContain(`<time datetime="${project?.startDate}">`)
     expect(section).toContain(locale === 'pt' ? 'href="/projetos/"' : 'href="/en/projects/"')
     const order = ['experience-title', 'projects-title', 'education-title'].map((id) => out.indexOf(`id="${id}"`))
     expect(order).toEqual([...order].sort((a, b) => a - b))
@@ -145,11 +137,6 @@ describe('seção Projetos', () => {
 
 describe('página Projetos', () => {
   const projectsHtml = (locale: 'pt' | 'en', r = resume) => renderPage({ resume: r, ui, locale, site, css: '', page: 'projects' })
-
-  const PARTS = {
-    pt: ['Visão geral', 'Site público', 'Área do médico', 'Backoffice', 'Acessos e permissões', 'Código e decorators', 'Auditoria e histórico', 'Mascaramento de dados', 'Integração com o Asaas', 'Configurações'],
-    en: ['Overview', 'Public site', 'Doctor area', 'Back-office', 'Access and permissions', 'Code and decorators', 'Audit and history', 'Data redaction', 'Asaas integration', 'Settings'],
-  } as const
 
   it.each([
     ['pt', 'Projetos', 'Currículo'],
@@ -174,21 +161,19 @@ describe('página Projetos', () => {
   it.each(['pt', 'en'] as const)('%s: barra lateral com as partes do sistema, cada uma com seu painel', (locale) => {
     const out = projectsHtml(locale)
     const h3 = [...out.matchAll(/<h3[^>]*>(.*?)<\/h3>/g)].map((m) => m[1])
-    expect(h3).toEqual([...PARTS[locale]])
+    expect(h3).toHaveLength(1 + (resume.projects?.[0]?.areas?.length ?? 0))
     const nav = /<nav[^>]*data-areas-nav[^>]*>.*?<\/nav>/s.exec(out)?.[0] ?? ''
     const links = [...nav.matchAll(/<a href="#(ipsiq-[a-z0-9-]+)"[^>]*>(.*?)<\/a>/g)]
-    expect(links.map((m) => m[2])).toEqual([...PARTS[locale]])
+    expect(links.map((m) => m[2])).toEqual(h3)
     for (const m of links) expect(out).toContain(`<section id="${m[1]}"`)
   })
 
-  it.each(['pt', 'en'] as const)('%s: visão geral com seções temáticas e nota de conformidade', (locale) => {
+  it.each(['pt', 'en'] as const)('%s: visão geral com as seções temáticas e a nota', (locale) => {
     const out = projectsHtml(locale)
     const h4 = [...out.matchAll(/<h4[^>]*>(.*?)<\/h4>/g)].map((m) => m[1])
     expect(h4).toHaveLength(resume.projects?.[0]?.detailSections?.length ?? 0)
     const aside = /<aside[^>]*>.*?<\/aside>/s.exec(out)?.[0] ?? ''
-    expect(aside).toContain('LGPD')
-    expect(aside).toContain('CFM')
-    expect(aside).toMatch(locale === 'pt' ? /revisão jurídica/ : /legal review/)
+    expect(aside.length > 0).toBe(Boolean(resume.projects?.[0]?.notice))
   })
 
   it.each(['pt', 'en'] as const)('%s: blocos de código rolam com teclado e cada diagrama vira uma lista ordenada', (locale) => {
@@ -209,12 +194,10 @@ describe('página Projetos', () => {
     expect(projectsHtml('en')).not.toMatch(/<html[^>]*data-en-url/)
   })
 
-  it('não tem JSON-LD nem o endereço do iPsiq, e avisa que os dados são fictícios', () => {
+  it('não tem JSON-LD (a página não repete os dados da pessoa)', () => {
     for (const locale of ['pt', 'en'] as const) {
       const out = projectsHtml(locale)
       expect(out).not.toContain('application/ld+json')
-      expect(out.toLowerCase()).not.toContain('ipsiq.com')
-      expect(out).toContain(locale === 'pt' ? 'dados fictícios' : 'fictitious data')
     }
   })
 

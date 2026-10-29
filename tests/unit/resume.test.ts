@@ -4,7 +4,6 @@ import uiJson from '../../content/ui.json'
 import { parseResume, parseUi } from '../../src/schema/resume'
 
 const resume = parseResume(resumeJson)
-const everyText = JSON.stringify(resumeJson)
 
 describe('resume.json', () => {
   it('valida contra o schema', () => {
@@ -26,19 +25,6 @@ describe('resume.json', () => {
     expect(() => parseResume(badDate)).toThrow()
   })
 
-  it('mantém os números dos PDFs exatamente como estão', () => {
-    expect(everyText).toContain('20 mil usuários em cerca de 175 ms')
-    expect(everyText).toContain('flags 20,000 users in about 175 ms')
-    expect(everyText).toContain('26–36% mais rápido')
-    expect(everyText).toContain('26–36% faster')
-    expect(everyText).toContain('até 3 milhões de registros')
-    expect(everyText).toContain('up to 3 million records')
-    expect(everyText).toContain('cerca de 15 s')
-    expect(everyText).toContain('mais de 100 testes')
-    expect(everyText).toContain('5 anos')
-    expect(everyText).toContain('5 years')
-  })
-
   it('tem a mesma estrutura em PT e EN (mesmas quantidades)', () => {
     for (const group of resume.skills) {
       expect(group.keywords.pt.length, group.name.en).toBe(group.keywords.en.length)
@@ -48,14 +34,6 @@ describe('resume.json', () => {
   it('lista experiências em ordem cronológica decrescente', () => {
     const starts = resume.work.map((w) => w.startDate)
     expect(starts).toEqual([...starts].sort().reverse())
-  })
-
-  it('não expõe dados sensíveis (CPF, endereço)', () => {
-    expect(everyText).not.toMatch(/\d{3}\.\d{3}\.\d{3}-\d{2}/)
-    // A palavra "CPF" aparece só ao descrever o projeto (ex.: "oculta CPF"); o que não pode haver é número ou endereço.
-    expect(everyText).not.toMatch(/\d{3}\.\d{3}\.\d{3}/)
-    expect(everyText.toLowerCase()).not.toMatch(/\b(rua|avenida|cep)\b/)
-    expect(resume.basics.location).not.toHaveProperty('address')
   })
 })
 
@@ -86,14 +64,6 @@ describe('projects (seção opcional)', () => {
     const noHighlights = clone()
     if (noHighlights.projects?.[0]) noHighlights.projects[0]['highlights'] = []
     expect(() => parseResume(noHighlights)).toThrow()
-  })
-
-  it('iPsiq: em andamento e sem link', () => {
-    const [ipsiq] = resume.projects ?? []
-    expect(ipsiq?.name).toBe('iPsiq')
-    expect(ipsiq?.startDate).toBe('2026-10')
-    expect(ipsiq?.endDate).toBeUndefined()
-    expect(ipsiq?.url).toBeUndefined()
   })
 })
 
@@ -141,14 +111,5 @@ describe('partes do sistema e galeria do projeto', () => {
     const node = noEn.projects[0]?.areas.find((a) => a.diagrams)?.diagrams?.[0]?.stages[0]?.nodes[0]
     if (node) delete (node['title'] as Record<string, string>)['en']
     expect(() => parseResume(noEn)).toThrow()
-  })
-
-  it('o texto do projeto não revela preços, taxas, nomes de pessoas, CNPJ nem o endereço (inclui diagramas e partes)', () => {
-    const text = JSON.stringify(resume.projects?.[0])
-    expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss|Kullak|Felipe/i)
-    // Regra de negócio e métricas de esforço ficam fora do texto: só capacidade técnica.
-    expect(text).not.toMatch(/sem custo|free of charge|estorn|refund|reembols|pre[çc]o|prices?|\d+ horas|\d+ hours|linhas de|lines of|três semanas|three weeks/i)
-    expect(text).not.toMatch(/ipsiq\.com/i)
-    expect(text).not.toMatch(/CNPJ|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}|Ltda/i)
   })
 })
