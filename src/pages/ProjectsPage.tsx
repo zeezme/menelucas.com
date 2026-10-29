@@ -43,6 +43,7 @@ export const ProjectsPage = ({ resume, interfaceTexts, locale, base }: ProjectsP
           />
         ))}
       </main>
+      <div role="status" aria-live="polite" className="sr-only" data-areas-status data-opened-label={translate('partOpened')} />
       <script dangerouslySetInnerHTML={{ __html: areasScript }} />
     </PageShell>
   )

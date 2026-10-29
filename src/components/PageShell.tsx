@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 import { pagePath, type PageId, type Translator } from '../internationalization'
 import type { Locale, Resume } from '../schema/resume'
+import { controlsScript } from '../seo/controls-script'
+import { BackToTop } from './BackToTop'
 import { LanguageToggle } from './LanguageToggle'
 import { GitHubIcon } from './icons'
 import { SkipLink } from './SkipLink'
@@ -48,6 +50,8 @@ export const PageShell = ({ resume, currentPage, locale, base, translate, childr
           </a>
         </footer>
       ) : null}
+      <BackToTop translate={translate} />
     </div>
+    <script dangerouslySetInnerHTML={{ __html: controlsScript }} />
   </>
 )

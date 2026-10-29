@@ -17,7 +17,9 @@ const HEADING_CLASS = 'text-xl font-semibold leading-snug tracking-title'
 export const ProjectOverview = ({ project, id, locale, translate }: ProjectOverviewProps) => (
   <section id={id} aria-label={`${translate('overview')}: ${projectTitle(project, locale)}`} className="flex flex-col gap-8 scroll-mt-6">
     <div className="flex flex-col gap-4">
-      <h3 className={HEADING_CLASS}>{translate('overview')}</h3>
+      <h3 tabIndex={-1} className={`${HEADING_CLASS} outline-none`}>
+        {translate('overview')}
+      </h3>
       <p className="text-pretty text-base leading-relaxed text-ink-muted">{pick(project.description, locale)}</p>
       <BulletList items={project.highlights} locale={locale} />
     </div>

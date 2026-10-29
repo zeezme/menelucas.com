@@ -6,7 +6,7 @@ export const THEME_COLORS = { dark: '#010102', light: '#ffffff' } as const
  * - usa a escolha salva em `localStorage.theme` ou, sem ela, o tema do sistema;
  * - acompanha as mudanças do sistema enquanto a pessoa não escolheu um tema manualmente;
  * - o botão `[data-theme-toggle]` alterna o tema e salva a escolha (em `try/catch`, para o armazenamento bloqueado);
- * - mantém a `<meta name="theme-color">` igual ao fundo do tema ativo;
+ * - mantém a `<meta name="theme-color">` igual ao fundo do tema ativo e o `aria-pressed` do botão em dia;
  * - desliga as transições durante a troca (`data-theme-switching`), para que os itens selecionados não pisquem.
  */
 export const themeScript = `(() => {
@@ -22,6 +22,10 @@ export const themeScript = `(() => {
     }
   };
   const systemTheme = () => (systemPrefersLight.matches ? 'light' : 'dark');
+  const syncToggles = (theme) => {
+    document.querySelectorAll('[data-theme-toggle]').forEach((toggle) => toggle.setAttribute('aria-pressed', String(theme === 'dark')));
+  };
+  document.addEventListener('DOMContentLoaded', () => syncToggles(root.getAttribute('data-theme')));
   const applyTheme = (theme) => {
     root.setAttribute('data-theme-switching', '');
     root.setAttribute('data-theme', theme);
@@ -30,6 +34,7 @@ export const themeScript = `(() => {
       meta.setAttribute('content', color);
       meta.removeAttribute('media');
     });
+    syncToggles(theme);
     getComputedStyle(root).color;
     requestAnimationFrame(() => requestAnimationFrame(() => root.removeAttribute('data-theme-switching')));
   };

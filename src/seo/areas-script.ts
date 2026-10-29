@@ -8,6 +8,9 @@
  * - No fim de cada parte, os botões Anterior e Próxima ajudam no celular, onde a barra lateral fica no topo.
  * - A parte aberta recebe `aria-current` no link; as demais ganham o atributo `hidden`.
  * - Os links de idioma levam o `#` da parte aberta para a outra versão da página.
+ * - Acessibilidade: ao trocar de parte pelo teclado ou pelos botões Anterior e Próxima, o foco vai para o título da
+ *   parte aberta (o botão que recebeu o clique muda de destino); nos links da barra lateral e das abas o foco volta
+ *   ao link (a navegação por `#` o tiraria dele), e uma região `role="status"` anuncia a troca.
  */
 export const areasScript = `(() => {
   const navigations = [...document.querySelectorAll('[data-areas-nav]')];
@@ -24,6 +27,9 @@ export const areasScript = `(() => {
     };
   });
   let activeProject = 0;
+  let moveFocus = false;
+  let activatedLink = null;
+  const status = document.querySelector('[data-areas-status]');
 
   const currentHash = () => {
     try { return decodeURIComponent(location.hash.slice(1)); } catch (error) { return ''; }
@@ -83,11 +89,23 @@ export const areasScript = `(() => {
       link.setAttribute('href', link.getAttribute('href').split('#')[0] + hash);
     });
     if (target && scroll) {
+      if (status) {
+        const link = openLink(projects[activeProject]);
+        status.textContent = status.getAttribute('data-opened-label') + ': ' + link.textContent;
+      }
+      if (moveFocus) target.querySelector('h3')?.focus({ preventScroll: true });
+      else if (activatedLink) activatedLink.focus({ preventScroll: true });
+      moveFocus = false;
+      activatedLink = null;
       const top = target.getBoundingClientRect().top + window.pageYOffset - 24;
       if (window.pageYOffset > top) window.scrollTo(0, top);
     }
   };
 
+  document.addEventListener('click', (event) => {
+    if (event.target?.closest?.('[data-areas-pager] a')) moveFocus = true;
+    activatedLink = event.target?.closest?.('[data-areas-nav] a, [data-projects-nav] a') ?? null;
+  });
   window.addEventListener('hashchange', () => show(currentHash(), true));
   show(currentHash(), currentHash() !== '');
 })();`

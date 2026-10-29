@@ -19,7 +19,7 @@ interface AreaPanelProps {
 export const AreaPanel = ({ area, id, project, locale, base }: AreaPanelProps) => (
   <section id={id} aria-labelledby={`${id}-title`} className="flex flex-col gap-6 scroll-mt-6">
     <div className="flex flex-col gap-4">
-      <h3 id={`${id}-title`} className="text-xl font-semibold leading-snug tracking-title">
+      <h3 id={`${id}-title`} tabIndex={-1} className="text-xl font-semibold leading-snug tracking-title outline-none">
         {pick(area.title, locale)}
       </h3>
       {area.summary ? (
