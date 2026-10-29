@@ -67,10 +67,31 @@ const snippet = z.strictObject({
   code: z.string().min(1),
 })
 
+/** Diagrama de fluxo: etapas empilhadas, cada uma com um ou mais blocos lado a lado (HTML, não imagem). */
+const flowNode = z.strictObject({
+  title: localized,
+  detail: localized.optional(),
+  /** accent = ponto central; future = caminho futuro (tracejado). */
+  tone: z.enum(['accent', 'future']).optional(),
+})
+const flowStage = z.strictObject({
+  /** Rótulo da caixa que agrupa os blocos da etapa. */
+  title: localized.optional(),
+  /** Texto na seta que liga a etapa anterior a esta. */
+  connector: localized.optional(),
+  nodes: z.array(flowNode).min(1).max(4),
+})
+const diagram = z.strictObject({
+  title: localized,
+  caption: localized,
+  stages: z.array(flowStage).min(2),
+})
+
 const area = z.strictObject({
   title: localized,
   summary: localized,
   points: z.array(highlight).optional(),
+  diagrams: z.array(diagram).optional(),
   snippets: z.array(snippet).optional(),
   gallery: z.array(galleryItem).min(1).optional(),
 })
@@ -143,6 +164,7 @@ export type Work = Resume['work'][number]
 export type Project = NonNullable<Resume['projects']>[number]
 export type Area = NonNullable<Project['areas']>[number]
 export type GalleryItem = NonNullable<Area['gallery']>[number]
+export type Diagram = NonNullable<Area['diagrams']>[number]
 export type Snippet = NonNullable<Area['snippets']>[number]
 
 /** A aba/página Projetos só existe se algum projeto tiver partes do sistema (tirar o item do JSON remove tudo). */

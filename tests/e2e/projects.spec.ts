@@ -97,6 +97,26 @@ for (const pp of PROJECT_PAGES) {
       await expect(prev).toContainText(pp.parts[pp.parts.length - 2] ?? '')
     })
 
+    test('diagramas de fluxo: lista ordenada, sem overflow e sem imagem', async ({ page }) => {
+      const expected: Record<string, { title: string; stages: number }> = {
+        'ipsiq-code-and-decorators': { title: pp.lang === 'en' ? 'The path of a request' : 'O caminho de uma requisição', stages: 5 },
+        'ipsiq-audit-and-history': { title: pp.lang === 'en' ? 'How a write becomes history' : 'Como uma escrita vira histórico', stages: 5 },
+        'ipsiq-asaas-integration': { title: pp.lang === 'en' ? 'From payment to webhook' : 'Do pagamento ao webhook', stages: 5 },
+      }
+      for (const width of [375, 1280]) {
+        await page.setViewportSize({ width, height: 900 })
+        for (const [id, info] of Object.entries(expected)) {
+          await page.goto(`${pp.path}#${id}`)
+          const ol = page.locator(`#${id} figure ol`).first()
+          await expect(ol).toBeVisible()
+          await expect(ol.locator('> li')).toHaveCount(info.stages)
+          await expect(page.locator(`#${id} figure`).first()).toContainText(info.title)
+          const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
+          expect(overflow, `${id} @${width}`).toBeLessThanOrEqual(0)
+        }
+      }
+    })
+
     test('link direto com # abre a parte certa, e voltar restaura a anterior', async ({ page }) => {
       await page.goto(`${pp.path}#ipsiq-audit-and-history`)
       await expect(page.locator('#ipsiq-audit-and-history')).toBeVisible()
@@ -149,7 +169,7 @@ for (const pp of PROJECT_PAGES) {
     for (const scheme of ['dark', 'light'] as const) {
       test(`sem violações de acessibilidade (axe), tema ${scheme}`, async ({ page }) => {
         await page.emulateMedia({ colorScheme: scheme })
-        for (const id of ['ipsiq-overview', 'ipsiq-code-and-decorators', 'ipsiq-audit-and-history']) {
+        for (const id of ['ipsiq-overview', 'ipsiq-code-and-decorators', 'ipsiq-audit-and-history', 'ipsiq-asaas-integration']) {
           await page.goto(`${pp.path}#${id}`)
           await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
           const results = await new AxeBuilder({ page }).analyze()
@@ -189,6 +209,7 @@ test.describe('sem JavaScript', () => {
     await expect(page.locator('section[id^="ipsiq-"]:visible')).toHaveCount(10)
     await expect(page.locator('figure img')).toHaveCount(17)
     await expect(page.locator('pre')).toHaveCount(3)
+    await expect(page.locator('figure ol')).toHaveCount(3)
   })
 })
 

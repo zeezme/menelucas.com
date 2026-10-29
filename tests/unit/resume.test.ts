@@ -147,6 +147,29 @@ describe('partes do sistema e galeria do projeto', () => {
     expect(() => parseResume(empty)).toThrow()
   })
 
+  it('tem 3 diagramas de fluxo, com 2+ etapas e textos nos dois idiomas', () => {
+    const diagrams = (resume.projects?.[0]?.areas ?? []).flatMap((a) => a.diagrams ?? [])
+    expect(diagrams).toHaveLength(3)
+    for (const d of diagrams) {
+      expect(d.stages.length).toBeGreaterThanOrEqual(2)
+      expect(d.caption.pt.length).toBeGreaterThan(20)
+      expect(d.caption.en.length).toBeGreaterThan(20)
+    }
+  })
+
+  it('rejeita diagrama com etapa sem blocos ou bloco sem idioma', () => {
+    type Raw = { projects: { areas: { diagrams?: { stages: { nodes: Record<string, unknown>[] }[] }[] }[] }[] }
+    const noNodes = structuredClone(resumeJson) as unknown as Raw
+    const first = noNodes.projects[0]?.areas.find((a) => a.diagrams)?.diagrams?.[0]
+    if (first?.stages[0]) first.stages[0].nodes = []
+    expect(() => parseResume(noNodes)).toThrow()
+
+    const noEn = structuredClone(resumeJson) as unknown as Raw
+    const node = noEn.projects[0]?.areas.find((a) => a.diagrams)?.diagrams?.[0]?.stages[0]?.nodes[0]
+    if (node) delete (node['title'] as Record<string, string>)['en']
+    expect(() => parseResume(noEn)).toThrow()
+  })
+
   it('o texto do projeto não revela preços, taxas, nomes de pessoas, CNPJ nem o endereço', () => {
     const text = JSON.stringify(resume.projects?.[0])
     expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss|Kullak|Felipe/i)
