@@ -33,7 +33,7 @@ const JobCard = ({ job, locale, translate }: JobCardProps) => (
       </p>
     </header>
     {job.summary ? (
-      <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">{pick(job.summary, locale)}</p>
+      <p className="max-w-[75ch] text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">{pick(job.summary, locale)}</p>
     ) : null}
     {job.keywords ? (
       <p className="text-sm text-ink-muted">
@@ -44,10 +44,10 @@ const JobCard = ({ job, locale, translate }: JobCardProps) => (
     {job.sections?.map((section) => (
       <div key={section.title.en} className="flex flex-col gap-2">
         <h4 className="text-pretty text-sm font-medium text-ink">{pick(section.title, locale)}</h4>
-        <BulletList items={section.highlights} locale={locale} />
+        <BulletList items={section.highlights} locale={locale} className="max-w-[75ch]" />
       </div>
     ))}
-    {job.highlights ? <BulletList items={job.highlights} locale={locale} /> : null}
+    {job.highlights ? <BulletList items={job.highlights} locale={locale} className="max-w-[75ch]" /> : null}
   </article>
 )
 

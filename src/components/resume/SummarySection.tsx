@@ -11,6 +11,6 @@ interface SummarySectionProps {
 /** Resumo profissional. */
 export const SummarySection = ({ resume, locale, translate }: SummarySectionProps) => (
   <Section id="summary" title={translate('summary')}>
-    <p className="text-pretty text-base leading-relaxed text-ink-muted">{pick(resume.basics.summary, locale)}</p>
+    <p className="max-w-[75ch] text-pretty text-base leading-relaxed text-ink-muted">{pick(resume.basics.summary, locale)}</p>
   </Section>
 )

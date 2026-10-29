@@ -42,10 +42,10 @@ const ProjectCard = ({ project, isFirstShowcase, locale, base, translate }: Proj
           </span>
         </p>
       </header>
-      <p className="text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">
+      <p className="max-w-[75ch] text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">
         {pick(project.cardText ?? project.description, locale)}
       </p>
-      {project.cardText ? null : <BulletList items={project.highlights} locale={locale} />}
+      {project.cardText ? null : <BulletList items={project.highlights} locale={locale} className="max-w-[75ch]" />}
       {(project.areas?.length ?? 0) > 0 ? (
         <a
           href={`${pagePath('projects', locale, base)}${detailsAnchor}`}
