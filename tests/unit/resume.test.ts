@@ -146,6 +146,8 @@ describe('partes do sistema e galeria do projeto', () => {
   it('o texto do projeto não revela preços, taxas, nomes de pessoas, CNPJ nem o endereço (inclui diagramas e partes)', () => {
     const text = JSON.stringify(resume.projects?.[0])
     expect(text).not.toMatch(/R\$|\d\s?%|\btaxas?\b|\bfees?\b|mensalidade|comiss|Kullak|Felipe/i)
+    // Regra de negócio e métricas de esforço ficam fora do texto: só capacidade técnica.
+    expect(text).not.toMatch(/sem custo|free of charge|estorn|refund|reembols|pre[çc]o|prices?|\d+ horas|\d+ hours|linhas de|lines of|três semanas|three weeks/i)
     expect(text).not.toMatch(/ipsiq\.com/i)
     expect(text).not.toMatch(/CNPJ|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}|Ltda/i)
   })
