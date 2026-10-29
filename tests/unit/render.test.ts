@@ -32,9 +32,24 @@ describe('i18n helpers', () => {
 describe('SEO para recrutadores', () => {
   it.each(['pt', 'en'] as const)('%s: título, descrição e palavras-chave vêm dos dados', (locale) => {
     const meta = buildHeadMeta(resume, locale, site)
-    expect(meta.title).toBe(resume.basics.label[locale])
+    expect(meta.title.replaceAll(' ', ' ')).toBe(`${resume.basics.name} ${resume.basics.label[locale].split(' | ')[0]}`)
+    expect(meta.title).toContain(' ')
+    expect(meta.description.startsWith(`${resume.basics.name}:`)).toBe(true)
     expect(meta.description.length).toBeGreaterThan(50)
     for (const k of skillKeywords(resume, locale).slice(0, 5)) expect(meta.keywords).toContain(k)
+  })
+
+  it('os perfis públicos viram sameAs, <link rel="me"> e nomes alternativos (o usuário de cada rede)', () => {
+    const publicProfiles = resume.basics.profiles.filter((profile) => profile.network !== 'WhatsApp')
+    for (const locale of ['pt', 'en'] as const) {
+      const meta = buildHeadMeta(resume, locale, site)
+      const person = (meta.jsonLd as { '@graph': Record<string, unknown>[] })['@graph'].find((node) => node['@type'] === 'Person')
+      expect(person?.['sameAs']).toEqual(publicProfiles.map((profile) => profile.url))
+      const handles = publicProfiles.map((profile) => new URL(profile.url).pathname.split('/').filter(Boolean).pop())
+      for (const handle of handles) expect(person?.['alternateName']).toContain(handle)
+      const out = html(locale)
+      for (const profile of publicProfiles) expect(out).toContain(`<link rel="me" href="${profile.url}"/>`)
+    }
   })
 
   it('JSON-LD: Person com tecnologias, idiomas e formação, ligado a um ProfilePage', () => {

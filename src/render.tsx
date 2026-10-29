@@ -46,6 +46,9 @@ const HtmlDocument = ({ resume, interfaceTexts, locale, site, css, page = 'resum
         <meta name="color-scheme" content="dark light" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="canonical" href={meta.canonical} />
+        {meta.profileLinks.map((profileLink) => (
+          <link key={profileLink} rel="me" href={profileLink} />
+        ))}
         {meta.alternates.map((alternate) => (
           <link key={alternate.locale} rel="alternate" hrefLang={alternate.locale} href={alternate.href} />
         ))}

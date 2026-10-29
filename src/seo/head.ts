@@ -3,6 +3,9 @@ import { showcaseProjects } from '../schema/resume'
 import { firstSentence, localePath, pagePath, pick, roleOf, type PageId } from '../internationalization'
 import { openGraphImagePath, type SiteConfig } from '../site'
 
+/** Espaço que não quebra linha: mantém o cargo inteiro numa linha só quando o navegador quebra o título (ex.: na dica da aba). */
+const NO_BREAK_SPACE = ' '
+
 const OPEN_GRAPH_LOCALES: Record<Locale, string> = { pt: 'pt_BR', en: 'en_US' }
 
 /** Metadados de uma página para o `<head>`. */
@@ -13,6 +16,8 @@ export interface HeadMeta {
   canonical: string
   alternates: { locale: Locale | 'x-default'; href: string }[]
   image: string
+  /** Perfis públicos (LinkedIn, GitHub) que apontam para esta pessoa; viram `<link rel="me">`. */
+  profileLinks: string[]
   /** Dados estruturados (schema.org) da pessoa; nunca incluem projetos. */
   jsonLd: Record<string, unknown>
 }
@@ -24,6 +29,9 @@ export const skillKeywords = (resume: Resume, locale: Locale): string[] => [
 
 /** Locale do Open Graph (`pt_BR`, `en_US`) para o idioma. */
 export const openGraphLocale = (locale: Locale): string => OPEN_GRAPH_LOCALES[locale]
+
+/** Último trecho do endereço de um perfil, que é o usuário na rede (`.../in/meneluca` → `meneluca`). */
+const handleOf = (profileUrl: string): string => new URL(profileUrl).pathname.split('/').filter(Boolean).pop() ?? ''
 
 /**
  * Monta os metadados de SEO de uma página, todos derivados de `resume.json`.
@@ -58,17 +66,21 @@ export const buildHeadMeta = (
     { locale: 'x-default', href: pageUrl('pt') },
   ]
 
+  const publicProfiles = basics.profiles.filter((profile) => profile.network !== 'WhatsApp')
+  const profileLinks = publicProfiles.map((profile) => profile.url)
+  const alternateNames = [...new Set([...(basics.alternateNames ?? []), ...publicProfiles.map((profile) => handleOf(profile.url))])]
+
   const person = {
     '@type': 'Person',
     '@id': personId,
     name: basics.name,
-    ...(basics.alternateNames ? { alternateName: basics.alternateNames } : {}),
+    alternateName: alternateNames,
     jobTitle: role,
     description,
     url: resumeUrl(locale),
     email: `mailto:${basics.email}`,
     image: absoluteUrl(`${site.base}avatar.webp`),
-    sameAs: basics.profiles.filter((profile) => profile.network !== 'WhatsApp').map((profile) => profile.url),
+    sameAs: profileLinks,
     address: {
       '@type': 'PostalAddress',
       addressLocality: basics.location.city,
@@ -101,17 +113,19 @@ export const buildHeadMeta = (
       canonical: pageUrl(locale),
       alternates,
       image,
+      profileLinks,
       jsonLd: { '@context': 'https://schema.org', '@graph': [person] },
     }
   }
 
   return {
-    title: label,
-    description,
+    title: `${basics.name} ${role.replaceAll(' ', NO_BREAK_SPACE)}`,
+    description: `${basics.name}: ${description}`,
     keywords: keywords.join(', '),
     canonical: pageUrl(locale),
     alternates,
     image,
+    profileLinks,
     jsonLd: {
       '@context': 'https://schema.org',
       '@graph': [
@@ -120,7 +134,7 @@ export const buildHeadMeta = (
           '@type': 'ProfilePage',
           '@id': `${pageUrl(locale)}#profile`,
           url: pageUrl(locale),
-          name: `${basics.name} — ${role}`,
+          name: `${basics.name} ${role}`,
           description,
           inLanguage: locale === 'pt' ? 'pt-BR' : 'en',
           mainEntity: { '@id': personId },
