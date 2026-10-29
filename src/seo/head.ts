@@ -116,7 +116,7 @@ export const buildHeadMeta = (
   }
 
   return {
-    title: `${basics.name} — ${role}`,
+    title: `${basics.name} ${role}`,
     description: `${basics.name}: ${description}`,
     keywords: keywords.join(', '),
     canonical: pageUrl(locale),
@@ -131,7 +131,7 @@ export const buildHeadMeta = (
           '@type': 'ProfilePage',
           '@id': `${pageUrl(locale)}#profile`,
           url: pageUrl(locale),
-          name: `${basics.name} — ${role}`,
+          name: `${basics.name} ${role}`,
           description,
           inLanguage: locale === 'pt' ? 'pt-BR' : 'en',
           mainEntity: { '@id': personId },
