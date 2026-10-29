@@ -16,8 +16,8 @@
       "Lucas Menezes"
     ],
     "label": {
-      "pt": "Engenheiro de Software Sênior | TypeScript, Node.js, React | Sistemas Distribuídos, Segurança, AML/KYC",
-      "en": "Senior Software Engineer | TypeScript, Node.js, NestJS, React | Distributed Systems & Security"
+      "pt": "Engenheiro de Software Sênior | TypeScript, Node.js, NestJS | Sistemas Distribuídos e Segurança",
+      "en": "Senior Software Engineer | TypeScript, Node.js, NestJS | Distributed Systems & Security"
     },
     "email": "lukascass@gmail.com",
     "phone": "+55 11 96175-0560",
@@ -31,8 +31,8 @@
       }
     },
     "summary": {
-      "pt": "Engenheiro de Software Sênior com 5 anos de experiência profissional, especializado em criar do zero sistemas críticos com TypeScript, Node.js, NestJS e React. Na Blaze (iGaming regulado), arquitetei e implementei o core multi-tenant de validação de identidade de uma plataforma de KYC e a refatoração do backoffice e do monitoramento de risco com regras de AML, da modelagem de dados à segurança, observabilidade e testes, além de conduzir os code reviews do time. Antes, desenvolvi ERPs fiscais com emissão de NF-e.",
-      "en": "Senior Software Engineer with 5 years of professional experience, specialized in building critical systems from scratch with TypeScript, Node.js, NestJS and React. At Blaze (regulated iGaming), I designed and built the multi-tenant identity verification core of a KYC platform and led the redesign of the back-office and risk monitoring with AML rules, from data modeling to security, observability and testing, while leading code reviews for the team. Previously built tax-compliance ERPs with electronic invoicing (NF-e)."
+      "pt": "Engenheiro de Software Sênior focado em sistemas backend com TypeScript, Node.js e NestJS. Na Blaze (iGaming regulado), fui o principal engenheiro da plataforma de KYC multi-tenant criada do zero, responsável por arquitetura, autenticação, autorização, auditoria, observabilidade e testes. Também atuei nos sistemas de AML e monitoramento de risco sobre uma base de cerca de 3 milhões de usuários, com ganhos de performance de até 36%. Experiência com sistemas distribuídos, arquitetura orientada a eventos, PostgreSQL, Redis, Kafka e AWS. Antes, desenvolvi ERPs fiscais com emissão de NF-e.",
+      "en": "Senior Software Engineer building backend-heavy systems with TypeScript, Node.js and NestJS. At Blaze (regulated iGaming), I was the primary engineer behind a multi-tenant KYC platform built from scratch, owning architecture, authentication, authorization, auditability, observability and testing. Also worked on AML and risk-monitoring systems over a base of ~3M users, improving performance by up to 36%. Experienced with distributed systems, event-driven architecture, PostgreSQL, Redis, Kafka and AWS. Previously built tax-compliance ERPs with electronic invoicing (NF-e)."
     },
     "profiles": [
       {
@@ -98,8 +98,8 @@
           "padrão outbox",
           "multi-tenant",
           "TypeORM",
-          "MikroORM",
-          "Drizzle"
+          "Drizzle",
+          "MCP (IA)"
         ],
         "en": [
           "REST APIs",
@@ -111,8 +111,8 @@
           "multi-tenancy",
           "outbox pattern",
           "TypeORM",
-          "MikroORM",
-          "Drizzle"
+          "Drizzle",
+          "MCP (AI)"
         ]
       }
     },
@@ -123,28 +123,26 @@
       },
       "keywords": {
         "pt": [
-          "OAuth 2.0/PKCE",
+          "OAuth 2.0",
           "JWT",
           "MFA",
           "RBAC",
-          "CSP",
           "Docker",
           "GitHub Actions",
           "CI/CD",
           "AWS (EC2, S3, SNS, SQS)",
-          "observabilidade"
+          "observabilidade (Datadog)"
         ],
         "en": [
-          "OAuth 2.0/PKCE",
+          "OAuth 2.0",
           "JWT",
           "MFA",
           "RBAC",
-          "CSP",
           "Docker",
           "GitHub Actions",
           "CI/CD",
           "AWS (EC2, S3, SNS, SQS)",
-          "observability"
+          "observability (Datadog)"
         ]
       }
     },
@@ -162,8 +160,7 @@
           "TanStack Query",
           "Tailwind CSS",
           "Storybook",
-          "Electron",
-          "MCP (IA)"
+          "Electron"
         ],
         "en": [
           "Jest",
@@ -173,8 +170,7 @@
           "TanStack Query",
           "Tailwind CSS",
           "Storybook",
-          "Electron",
-          "MCP (AI)"
+          "Electron"
         ]
       }
     },
@@ -216,50 +212,63 @@
         "en": "Remote (contractor)"
       },
       "summary": {
-        "pt": "Responsável pela arquitetura e implementação de serviços críticos de identidade, compliance e risco, da modelagem de domínio e dados até segurança, observabilidade e testes, além de code reviews frequentes do time.",
-        "en": "Owned the architecture and implementation of critical identity, compliance and risk services, from domain and data modeling to security, observability and testing, and performed frequent code reviews for the team."
+        "pt": "Responsável pela arquitetura e implementação de serviços críticos de identidade, compliance e risco em NestJS, da modelagem de domínio e dados até segurança, observabilidade (Datadog) e testes. Em um time de 5 desenvolvedores (3 seniores e 2 júnior) e um PM, contribuí para a direção técnica por meio de code reviews, decomposição de tarefas junto ao PM e mentoria dos 2 desenvolvedores júnior.",
+        "en": "Owned the architecture and implementation of critical identity, compliance and risk services in NestJS, from domain and data modeling to security, observability (Datadog) and testing. On a team of 5 developers (3 senior, 2 junior) and a PM, contributed to technical direction through code reviews, task breakdown with the PM and mentoring of the 2 junior developers."
       },
       "sections": [
         {
           "title": {
-            "pt": "Plataforma de KYC: validação de identidade multi-tenant | criada do zero; principal autor",
-            "en": "KYC platform: multi-tenant identity verification | built from scratch; main author"
+            "pt": "Plataforma de KYC multi-tenant (criada do zero; principal autor)",
+            "en": "Multi-tenant KYC platform (built from scratch; primary author)"
           },
           "highlights": [
             {
-              "pt": "Projetei o core da plataforma: um serviço modular de validação de identidade multi-tenant, que atende todos os clientes com isolamento de dados no PostgreSQL e trilha de auditoria imutável.",
-              "en": "Designed the platform core: a modular, multi-tenant identity verification service serving every client with isolated PostgreSQL data and an immutable audit trail."
+              "pt": "Projetei o core da plataforma: um serviço modular de validação de identidade multi-tenant, estruturado para ser comercializado a outras empresas, com isolamento de dados por cliente no PostgreSQL (TypeORM) e trilha de auditoria imutável publicada via SNS/SQS com padrão outbox.",
+              "en": "Designed the platform core: a modular, multi-tenant identity verification service built to be sold to other companies, with per-tenant data isolation in PostgreSQL (TypeORM) and an immutable audit trail published through SNS/SQS using the outbox pattern."
             },
             {
-              "pt": "Desenvolvi a autenticação (login, MFA, sessões JWT e chaves de API) e o controle de acesso por perfis (RBAC) entre empresas clientes com cache em Redis, protegido contra roubo de sessão e força bruta e coberto por testes unitários, de integração e e2e.",
-              "en": "Built authentication (login, MFA, JWT sessions, API keys) and role-based access control (RBAC) across client companies with Redis caching, hardened against session hijacking and brute force and covered by unit, integration and end-to-end tests."
+              "pt": "Desenvolvi a autenticação (login, MFA, sessões JWT e chaves de API) e o controle de acesso por perfis (RBAC) entre empresas clientes com cache em Redis, protegido contra roubo de sessão e força bruta e coberto por testes unitários, de integração (Testcontainers) e e2e.",
+              "en": "Built authentication (login, MFA, JWT sessions, API keys) and role-based access control (RBAC) for client companies, with Redis caching, hardened against session hijacking and brute force, and covered by unit, integration (Testcontainers) and end-to-end tests."
             }
           ]
         },
         {
           "title": {
-            "pt": "Backoffice, monitoramento de risco e AML da plataforma Blaze (iGaming regulado)",
-            "en": "Back-office, risk monitoring and AML for the Blaze platform (regulated iGaming)"
+            "pt": "Backoffice, monitoramento de risco e AML",
+            "en": "Back-office, risk monitoring and AML"
           },
           "highlights": [
             {
-              "pt": "Implementei regras antifraude de AML (ganhos excessivos, múltiplas contas bancárias, origem de fundos) com processamento orientado a eventos; a rotina diária sinaliza 20 mil usuários em cerca de 175 ms.",
-              "en": "Implemented anti-fraud AML rules (excessive winnings, multiple bank accounts, source of funds) with event-driven processing; the daily routine flags 20,000 users in about 175 ms."
+              "pt": "Implementei regras antifraude de AML (ganhos excessivos, múltiplas contas bancárias, origem de fundos), acionadas por eventos da plataforma e por uma rotina diária sobre uma base de cerca de 3 milhões de usuários, com eventos de auditoria publicados no Kafka e gravados por um microsserviço de auditoria.",
+              "en": "Implemented anti-fraud AML rules (excessive winnings, multiple bank accounts, source of funds), triggered by platform events and by a daily routine over a base of about 3 million users, with audit events published to Kafka and stored by an audit microservice."
             },
             {
-              "pt": "Refatorei o backoffice e o painel de monitoramento de risco com melhorias de design e performance: endpoint de monitoramento 26–36% mais rápido e dashboard que levava cerca de 15 s acelerado com chamadas paralelas, validado com benchmarks de até 3 milhões de registros.",
-              "en": "Refactored the back-office and risk monitoring dashboard with design and performance improvements: monitoring endpoint 26–36% faster and a dashboard that took about 15 s sped up with parallel requests, validated with benchmarks of up to 3 million records."
+              "pt": "Refatorei o endpoint de monitoramento de risco, reduzindo o tempo de resposta em 26–36% em benchmarks com até 3 milhões de registros, e acelerei o carregamento do painel do backoffice paralelizando as chamadas.",
+              "en": "Refactored the risk-monitoring endpoint, reducing response time by 26–36% in benchmarks over datasets of up to 3M records, and sped up the back-office dashboard by parallelizing requests."
             },
             {
-              "pt": "Criei do zero o painel usado pela equipe de compliance para acompanhar jogadores, alertas e transações (MFA, acesso por permissões, design system no Storybook) e escrevi mais de 100 testes unitários e e2e.",
-              "en": "Built from scratch the dashboard the compliance team uses to monitor players, alerts and transactions (MFA, role-based access, Storybook design system) and wrote over 100 unit and end-to-end tests."
+              "pt": "Criei do zero um novo painel para a equipe de compliance acompanhar jogadores, alertas e transações (MFA, acesso por permissões, design system no Storybook) e escrevi mais de 100 testes unitários e e2e.",
+              "en": "Built a new dashboard for the compliance team from scratch to monitor players, alerts and transactions (MFA, role-based access, Storybook design system), with over 100 unit and end-to-end tests."
             },
             {
-              "pt": "Criei ferramentas internas: app Electron de saúde dos serviços e deploys na AWS e ferramenta de demandas de DevOps integrada ao Jira e a assistentes de IA via MCP.",
-              "en": "Built internal tools: an Electron app for service health and AWS deployments, and a DevOps request tool integrated with Jira and AI assistants via MCP."
+              "pt": "Criei ferramentas internas: app Electron de saúde dos serviços e deploys na AWS e ferramenta de demandas de DevOps integrada ao Jira via OAuth 2.0 e a assistentes de IA via MCP.",
+              "en": "Built internal tools: an Electron app for service health and AWS deployments, and a DevOps request tool integrated with Jira via OAuth 2.0 and with AI assistants via MCP."
             }
           ]
         }
+      ],
+      "keywords": [
+        "TypeScript",
+        "NestJS",
+        "Next.js",
+        "React",
+        "PostgreSQL",
+        "Drizzle",
+        "Redis",
+        "Kafka",
+        "GraphQL",
+        "AWS (EC2, S3, SNS, SQS)",
+        "Datadog"
       ]
     },
     {
@@ -267,7 +276,7 @@
       "name": "Windel Sistemas",
       "position": {
         "pt": "Desenvolvedor Full Stack Pleno",
-        "en": "Full Stack Developer"
+        "en": "Mid-level Full Stack Developer"
       },
       "startDate": "2025-02",
       "endDate": "2026-01",
@@ -278,12 +287,21 @@
       "highlights": [
         {
           "pt": "Participei da definição da arquitetura de microsserviços do ERP e integrei o sistema com Nuvemshop e APIs fiscais, ampliando a automação de vendas e emissão fiscal.",
-          "en": "Took part in defining the ERP microservices architecture and integrated it with Nuvemshop and tax APIs, expanding sales and invoicing automation."
+          "en": "Contributed to the ERP microservices architecture and integrated it with Nuvemshop and tax APIs, expanding sales and invoicing automation."
         },
         {
-          "pt": "Estruturei testes unitários do backend (Jest, Postman), DTOs validados com Zod e plugin de ESLint para remover dependências obsoletas.",
-          "en": "Set up backend unit tests (Jest, Postman), Zod-validated DTOs and a custom ESLint plugin to remove deprecated dependencies."
+          "pt": "Estruturei testes unitários (Jest) e de API (Postman) do backend e DTOs validados com Zod.",
+          "en": "Set up backend unit tests (Jest), API tests (Postman) and Zod-validated DTOs."
         }
+      ],
+      "keywords": [
+        "TypeScript",
+        "Node.js",
+        "Next.js",
+        "React",
+        "Zod",
+        "Jest",
+        "AWS (EC2, S3)"
       ]
     },
     {
@@ -301,9 +319,17 @@
       },
       "highlights": [
         {
-          "pt": "Desenvolvi ERP fiscal com Node.js, React, PostgreSQL e Sequelize, automatizando emissão de NF-e, cálculo de tributos e integrações com APIs fiscais, com testes automatizados em Jest.",
-          "en": "Built a tax-compliance ERP with Node.js, React, PostgreSQL and Sequelize, automating electronic invoicing (NF-e), tax calculation and tax API integrations, with automated tests in Jest."
+          "pt": "Desenvolvi ERP fiscal com Node.js, React, PostgreSQL e Sequelize, automatizando cálculo de tributos, emissão de NF-e e controle de obrigações fiscais, com integrações a APIs fiscais e a outros sistemas de gestão e testes automatizados em Jest.",
+          "en": "Built a tax-compliance ERP with Node.js, React, PostgreSQL and Sequelize, automating tax calculation, electronic invoicing (NF-e) and tax obligation tracking, with integrations to tax APIs and other management systems and automated tests in Jest."
         }
+      ],
+      "keywords": [
+        "Node.js",
+        "Next.js",
+        "React",
+        "PostgreSQL",
+        "Sequelize",
+        "Jest"
       ]
     },
     {
@@ -324,6 +350,13 @@
           "pt": "Desenvolvi plataforma unificada de integração de sistemas internos com React, Node.js, Express e Redux Toolkit.",
           "en": "Built a unified platform integrating internal systems with React, Node.js, Express and Redux Toolkit."
         }
+      ],
+      "keywords": [
+        "Node.js",
+        "Express",
+        "Next.js",
+        "React",
+        "Redux Toolkit"
       ]
     },
     {
@@ -344,6 +377,13 @@
           "pt": "Desenvolvi plataforma de chatbots em tempo real com React, TypeScript, Socket.io e Docker.",
           "en": "Built a real-time chatbot platform with React, TypeScript, Socket.io and Docker."
         }
+      ],
+      "keywords": [
+        "TypeScript",
+        "Next.js",
+        "React",
+        "Socket.io",
+        "Docker"
       ]
     }
   ],

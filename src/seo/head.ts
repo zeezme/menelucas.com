@@ -1,5 +1,5 @@
 import type { Locale, Resume } from '../schema/resume'
-import { firstSentence, labelTags, localePath, pagePath, pick, roleOf, type PageId } from '../i18n'
+import { firstSentence, localePath, pagePath, pick, roleOf, type PageId } from '../i18n'
 import { showcaseProjects } from '../schema/resume'
 import { ogImagePath, type SiteConfig } from '../site'
 
@@ -35,7 +35,6 @@ export function buildHeadMeta(
   const ogImage = abs(`/${ogImagePath(site, locale)}`)
   const label = pick(basics.label, locale)
   const role = roleOf(label)
-  const techs = labelTags(label).split(' | ')[0] ?? ''
   const url = (l: Locale) => abs(pagePath(page, l, site.base))
   const resumeUrl = (l: Locale) => abs(localePath(l, site.base))
   const description = firstSentence(pick(basics.summary, locale))
@@ -51,7 +50,7 @@ export function buildHeadMeta(
     ...(basics.alternateNames ? { alternateName: basics.alternateNames } : {}),
     jobTitle: role,
     description,
-    url: url(locale),
+    url: resumeUrl(locale),
     email: `mailto:${basics.email}`,
     image: abs(`${site.base}avatar.webp`),
     sameAs: basics.profiles.filter((p) => p.network !== 'WhatsApp').map((p) => p.url),
@@ -91,12 +90,12 @@ export function buildHeadMeta(
         { locale: 'x-default', href: url('pt') },
       ],
       image: ogImage,
-      jsonLd: null,
+      jsonLd: { '@context': 'https://schema.org', '@graph': [person] },
     }
   }
 
   return {
-    title: `${basics.name} — ${role}${techs ? ` | ${techs}` : ''}`,
+    title: label,
     description,
     keywords: keywords.join(', '),
     canonical: url(locale),

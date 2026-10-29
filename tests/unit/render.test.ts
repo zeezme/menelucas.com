@@ -30,7 +30,7 @@ describe('i18n helpers', () => {
 describe('SEO para recrutadores', () => {
   it.each(['pt', 'en'] as const)('%s: título, descrição e palavras-chave vêm dos dados', (locale) => {
     const meta = buildHeadMeta(resume, locale, site)
-    expect(meta.title).toContain(resume.basics.name)
+    expect(meta.title).toBe(resume.basics.label[locale])
     expect(meta.description.length).toBeGreaterThan(50)
     for (const k of skillKeywords(resume, locale).slice(0, 5)) expect(meta.keywords).toContain(k)
   })
@@ -194,10 +194,12 @@ describe('página Projetos', () => {
     expect(projectsHtml('en')).not.toMatch(/<html[^>]*data-en-url/)
   })
 
-  it('não tem JSON-LD (a página não repete os dados da pessoa)', () => {
+  it('tem JSON-LD da pessoa no idioma da página', () => {
     for (const locale of ['pt', 'en'] as const) {
       const out = projectsHtml(locale)
-      expect(out).not.toContain('application/ld+json')
+      const json = /<script type="application\/ld\+json">(.*?)<\/script>/s.exec(out)?.[1] ?? ''
+      const person = (JSON.parse(json) as { '@graph': { '@type': string; jobTitle: string }[] })['@graph'].find((n) => n['@type'] === 'Person')
+      expect(person?.jobTitle).toBe(resume.basics.label[locale].split(' | ')[0])
     }
   })
 
