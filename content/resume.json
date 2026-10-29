@@ -1496,15 +1496,11 @@
       ]
     },
     {
-      "name": "Luhmera: SaaS de gestão clínica (projeto confidencial)",
+      "name": "Luhmera",
       "slug": "clinica",
-      "title": {
-        "pt": "Luhmera: SaaS de gestão clínica (projeto confidencial)",
-        "en": "Luhmera: Clinic management SaaS (confidential project)"
-      },
       "roles": {
-        "pt": "Engenheiro full stack",
-        "en": "Full stack engineer"
+        "pt": "Sócio, arquiteto e único desenvolvedor",
+        "en": "Partner, architect and sole developer"
       },
       "startDate": "2026-09",
       "description": {

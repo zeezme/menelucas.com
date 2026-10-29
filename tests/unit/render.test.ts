@@ -254,7 +254,7 @@ describe('projeto confidencial', () => {
   })
 
   it('nada dele entra no JSON-LD', () => {
-    const titles = secret.flatMap((p) => [p.name, p.title?.pt ?? '', p.title?.en ?? '', p.cardText?.pt ?? '', p.cardText?.en ?? ''])
+    const titles = secret.flatMap((p) => [p.name, p.title?.pt ?? '', p.title?.en ?? '', p.cardText?.pt ?? '', p.cardText?.en ?? ''].filter(Boolean))
     for (const page of ['resume', 'projects'] as const) {
       for (const locale of ['pt', 'en'] as const) {
         const meta = buildHeadMeta(resume, locale, site, page, 'Projetos')
