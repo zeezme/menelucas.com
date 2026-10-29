@@ -78,7 +78,7 @@ export const ProjectDetail = ({ project, hasTabs, locale, base, translate }: Pro
         <div className="flex min-w-0 flex-col gap-12">
           <ProjectOverview project={project} id={panels[0]?.id ?? `${slug}-overview`} locale={locale} translate={translate} />
           {(project.areas ?? []).map((area, areaIndex) => (
-            <AreaPanel key={area.title.en} area={area} id={panels[areaIndex + 1]?.id ?? ''} project={project} locale={locale} base={base} />
+            <AreaPanel key={area.title.en} area={area} id={panels[areaIndex + 1]?.id ?? ''} project={project} locale={locale} base={base} translate={translate} />
           ))}
           <nav
             aria-label={`${translate('pagerNav')}: ${title}`}

@@ -24,7 +24,7 @@ export const ProjectOverview = ({ project, id, locale, translate }: ProjectOverv
       <BulletList items={project.highlights} locale={locale} />
     </div>
     {(project.diagrams ?? []).map((diagram) => (
-      <FlowDiagram key={diagram.title.en} diagram={diagram} locale={locale} />
+      <FlowDiagram key={diagram.title.en} diagram={diagram} locale={locale} plannedLabel={translate('plannedStep')} />
     ))}
     {(project.detailSections ?? []).map((section) => (
       <div key={section.title.en} className="flex flex-col gap-3">

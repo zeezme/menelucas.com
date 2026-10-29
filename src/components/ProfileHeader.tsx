@@ -79,6 +79,7 @@ export const ProfileHeader = ({ resume, locale, base, translate }: ProfileHeader
         >
           <DownloadIcon />
           {translate('downloadPdf')}
+          <span className="sr-only"> ({translate('pdfFile')})</span>
         </a>
       </div>
 

@@ -1,4 +1,4 @@
-import { pick } from '../../internationalization'
+import { pick, type Translator } from '../../internationalization'
 import type { Area, Locale, Project } from '../../schema/resume'
 import { BulletList } from '../BulletList'
 import { CodeBlock } from './CodeBlock'
@@ -13,10 +13,11 @@ interface AreaPanelProps {
   project: Project
   locale: Locale
   base: string
+  translate: Translator
 }
 
 /** Painel de uma parte do sistema: explicação, diagramas, código e capturas de tela. */
-export const AreaPanel = ({ area, id, project, locale, base }: AreaPanelProps) => (
+export const AreaPanel = ({ area, id, project, locale, base, translate }: AreaPanelProps) => (
   <section id={id} aria-labelledby={`${id}-title`} className="flex flex-col gap-6 scroll-mt-6">
     <div className="flex flex-col gap-4">
       <h3 id={`${id}-title`} tabIndex={-1} className="text-xl font-semibold leading-snug tracking-title outline-none">
@@ -29,7 +30,7 @@ export const AreaPanel = ({ area, id, project, locale, base }: AreaPanelProps) =
     </div>
     {area.topics ? <TopicList topics={area.topics} locale={locale} /> : null}
     {(area.diagrams ?? []).map((diagram) => (
-      <FlowDiagram key={diagram.title.en} diagram={diagram} locale={locale} />
+      <FlowDiagram key={diagram.title.en} diagram={diagram} locale={locale} plannedLabel={translate('plannedStep')} />
     ))}
     {(area.snippets ?? []).map((snippet) => (
       <CodeBlock key={snippet.code} snippet={snippet} locale={locale} />
