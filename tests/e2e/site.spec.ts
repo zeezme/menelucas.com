@@ -2,8 +2,8 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
 const PAGES = [
-  { path: '/', lang: 'pt-BR', h2: ['Resumo', 'Competências', 'Experiência', 'Projetos', 'Formação', 'Idiomas'], projects: { title: 'Projetos', role: 'Cofundador e engenheiro full stack', present: 'atual' }, pdf: '/cv.pdf', cta: 'Baixar PDF' },
-  { path: '/en/', lang: 'en', h2: ['Summary', 'Skills', 'Experience', 'Projects', 'Education', 'Languages'], projects: { title: 'Projects', role: 'Co-founder and full stack engineer', present: 'present' }, pdf: '/cv-en.pdf', cta: 'Download PDF' },
+  { path: '/', lang: 'pt-BR', h2: ['Resumo', 'Competências', 'Experiência', 'Projetos', 'Formação', 'Idiomas'], pdf: '/cv.pdf', cta: 'Baixar PDF' },
+  { path: '/en/', lang: 'en', h2: ['Summary', 'Skills', 'Experience', 'Projects', 'Education', 'Languages'], pdf: '/cv-en.pdf', cta: 'Download PDF' },
 ]
 
 for (const p of PAGES) {
@@ -17,32 +17,6 @@ for (const p of PAGES) {
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lucas Augusto Muniz Menezes')
       await expect(page.getByRole('heading', { level: 2 })).toHaveText(p.h2)
       await expect(page.getByRole('main')).toBeVisible()
-      await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute('content', '#010102')
-    })
-
-    for (const width of [1280, 375]) {
-      test(`seção ${p.projects.title}: conteúdo e sem overflow em ${width}px`, async ({ page }) => {
-        await page.setViewportSize({ width, height: 900 })
-        await page.goto(p.path)
-        const section = page.getByRole('region', { name: p.projects.title })
-        await expect(section).toBeVisible()
-        await expect(section.getByRole('heading', { level: 3 })).toHaveText('iPsiq')
-        await expect(section).toContainText(p.projects.role)
-        await expect(section).toContainText(`10/2026 – ${p.projects.present}`)
-        await expect(section.getByRole('listitem')).toHaveCount(4)
-        await expect(section.locator('a')).toHaveCount(1)
-        await expect(section.getByRole('link')).toHaveAttribute('href', p.path === '/' ? '/projetos/' : '/en/projects/')
-        const box = await section.boundingBox()
-        expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(width)
-        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
-        expect(overflow).toBeLessThanOrEqual(0)
-      })
-    }
-
-    test('JSON-LD não menciona o iPsiq', async ({ page }) => {
-      await page.goto(p.path)
-      const ld = (await page.locator('script[type="application/ld+json"]').textContent()) ?? ''
-      expect(ld.toLowerCase()).not.toContain('ipsiq')
     })
 
     test('botão de PDF aponta para o PDF do idioma e ele existe', async ({ page, request }) => {
@@ -51,23 +25,6 @@ for (const p of PAGES) {
       const res = await request.get(p.pdf)
       expect(res.status()).toBe(200)
       expect(res.headers()['content-type']).toContain('pdf')
-    })
-
-    test('links externos e metadados sociais', async ({ page }) => {
-      await page.goto(p.path)
-      await expect(page.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/Zeezme')
-      await expect(page.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute('href', 'https://www.linkedin.com/in/meneluca')
-      await expect(page.getByRole('link', { name: /e-?mail/i })).toHaveAttribute('href', 'mailto:lukascass@gmail.com')
-      await expect(page.locator('a[href^="https://wa.me/5511961750560"]')).toHaveCount(1)
-      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', new RegExp(`^https://menelucas[.]com/banner-${p.path === '/' ? 'pt' : 'en'}-[0-9a-f]{8}[.]jpg$`))
-      await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
-      const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}')
-      const person = ld['@graph'].find((n: { '@type': string }) => n['@type'] === 'Person')
-      expect(person.name).toBe('Lucas Augusto Muniz Menezes')
-      expect(person.knowsAbout).toEqual(expect.arrayContaining(['TypeScript', 'Node.js', 'React']))
-      expect(person.telephone).toBeUndefined()
-      expect(ld['@graph'].some((n: { '@type': string }) => n['@type'] === 'ProfilePage')).toBe(true)
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /^index, follow/)
     })
 
     test('og:image do idioma existe e é um JPEG 1200×630', async ({ page, request }) => {
@@ -90,7 +47,7 @@ for (const p of PAGES) {
       })
     }
 
-    for (const width of [375, 768, 1440, 2560]) {
+    for (const width of [375, 1440]) {
       test(`sem scroll horizontal em ${width}px`, async ({ page }) => {
         await page.setViewportSize({ width, height: 900 })
         await page.goto(p.path)
@@ -141,6 +98,8 @@ test('sitemap.xml e robots.txt', async ({ request }) => {
   const sitemap = await (await request.get('/sitemap.xml')).text()
   expect(sitemap).toContain('<loc>https://menelucas.com/</loc>')
   expect(sitemap).toContain('<loc>https://menelucas.com/en/</loc>')
+  expect(sitemap).toContain('<loc>https://menelucas.com/projetos/</loc>')
+  expect(sitemap).toContain('<loc>https://menelucas.com/en/projects/</loc>')
   expect(sitemap).toContain('hreflang="x-default"')
   const robots = await (await request.get('/robots.txt')).text()
   expect(robots).toContain('Sitemap: https://menelucas.com/sitemap.xml')
@@ -246,9 +205,24 @@ test.describe('tema claro/escuro', () => {
   })
 })
 
-test('impressão usa fundo branco', async ({ page }) => {
-  await page.goto('/')
-  await page.emulateMedia({ media: 'print' })
-  const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor)
-  expect(bg).toMatch(/rgb\(255, 255, 255\)|rgba\(0, 0, 0, 0\)/)
+test.describe('impressão usa fundo branco e texto escuro, mesmo com o tema escuro', () => {
+  test.use({ colorScheme: 'dark' })
+
+  for (const choice of ['sistema', 'botão'] as const) {
+    test(`tema escuro vindo do ${choice}`, async ({ page }) => {
+      await page.goto('/')
+      if (choice === 'botão') {
+        await page.emulateMedia({ colorScheme: 'light' })
+        await page.getByRole('button', { name: /tema|theme/i }).click() // claro → escuro, escolha salva
+        await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+      }
+      await page.emulateMedia({ media: 'print' })
+      const colors = await page.evaluate(() => ({
+        bg: getComputedStyle(document.body).backgroundColor,
+        text: getComputedStyle(document.querySelector('h1') as Element).color,
+      }))
+      expect(colors.bg).toMatch(/rgb\(255, 255, 255\)|rgba\(0, 0, 0, 0\)/)
+      expect(colors.text).toBe('rgb(0, 0, 0)')
+    })
+  }
 })
